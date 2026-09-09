@@ -1,4 +1,5 @@
 # Homepage mapping for news , events and other essentials stuff . 
+```text
 NEWS
 ├── Container → .news-section
 ├── Items → .views-row
@@ -22,9 +23,9 @@ RESEARCH
 GALLERY
 ├── Container → .homepage-gallery
 └── Images → [find]
-
+```
 # selector can be used 
-
+```text
 Main content -> 	        #content
 Article -> 	                article.node
 Main content container -> 	.node__content
@@ -39,3 +40,4 @@ Government links ->     	.event-govt-links
 Gallery ->              	.homepage-gallery
 Footer -> 	                .site-footer
 
+```
