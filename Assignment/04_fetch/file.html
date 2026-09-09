@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Events Fixture</title>
+</head>
+<body>
+    <h1>Upcoming Events</h1>
+    <div class="events-list">
+        
+        <!-- 1. Normal event -->
+        <div class="event-container">
+            <h2 class="title">AI Seminar</h2>
+            <a class="item-link" href="/events/ai-seminar">Details</a>
+            <p class="date">Oct 10, 2023</p>
+            <p class="speaker">Dr. Smith</p>
+            <p class="location">Room 101</p>
+        </div>
+
+        <!-- 2. Missing speaker -->
+        <div class="event-container">
+            <h2 class="title">Networking Session</h2>
+            <a class="item-link" href="/events/networking">Details</a>
+            <p class="date">Oct 11, 2023</p>
+            <p class="location">Main Hall</p>
+        </div>
+
+        <!-- 3. Missing location -->
+        <div class="event-container">
+            <h2 class="title">Virtual ML Workshop</h2>
+            <a class="item-link" href="/events/ml-workshop">Details</a>
+            <p class="date">Oct 12, 2023</p>
+            <p class="speaker">Prof. Jones</p>
+        </div>
+
+        <!-- 4. Absolute URL -->
+        <div class="event-container">
+            <h2 class="title">External Tech Talk</h2>
+            <a class="item-link" href="https://external-website.com/tech-talk">Details</a>
+            <p class="date">Oct 13, 2023</p>
+            <p class="speaker">Alice Williams</p>
+            <p class="location">Auditorium</p>
+        </div>
+
+        <!-- 5. Whitespace for cleanup -->
+        <div class="event-container">
+            <h2 class="title">
+                
+                Data Science Panel    
+            </h2>
+            <a class="item-link" href="  /events/ds-panel  ">Details</a>
+            <p class="date">  Oct 14, 2023  </p>
+            <p class="speaker">
+                Panelists: Bob, Charlie
+            </p>
+            <p class="location">
+                Conference Room B
+            </p>
+        </div>
+
+        <!-- 6. Missing both speaker and location -->
+        <div class="event-container">
+            <h2 class="title">Holiday Announcement</h2>
+            <a class="item-link" href="/news/holiday">Read More</a>
+            <p class="date">Oct 15, 2023</p>
+        </div>
+
+        <!-- 7. Another absolute URL with missing location -->
+        <div class="event-container">
+            <h2 class="title">Online Hackathon</h2>
+            <a class="item-link" href="http://hackathon.org/register">Register</a>
+            <p class="date">Oct 16, 2023</p>
+            <p class="speaker">Organizer Team</p>
+        </div>
+
+        <!-- 8. Normal event, more whitespace -->
+        <div class="event-container">
+            <h2 class="title">Robotics Showcase</h2>
+            <a class="item-link" href="/events/robotics">Details</a>
+            <p class="date">Oct 17, 2023</p>
+            <p class="speaker">Robot Labs</p>
+            <p class="location">Lab 3</p>
+        </div>
+
+        <!-- 9. Normal event -->
+        <div class="event-container">
+            <h2 class="title">Physics Colloquium</h2>
+            <a class="item-link" href="/events/physics">Details</a>
+            <p class="date">Oct 18, 2023</p>
+            <p class="speaker">Dr. Adams</p>
+            <p class="location">Lecture Theater</p>
+        </div>
+
+        <!-- 10. Missing link completely (extreme case) -->
+        <div class="event-container">
+            <h2 class="title">Surprise Guest Lecture</h2>
+            <p class="date">Oct 19, 2023</p>
+            <p class="speaker">To be announced</p>
+            <p class="location">Secret Location</p>
+        </div>
+
+    </div>
+</body>
+</html>
