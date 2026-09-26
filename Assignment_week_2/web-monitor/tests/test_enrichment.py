@@ -104,6 +104,8 @@ def test_detail_404_is_isolated(caplog):
 
 @pytest.mark.skipif(os.environ.get("LIVE_TESTS") != "1", reason="hits the real HSS server; set LIVE_TESTS=1")
 def test_live_mistyped_url_is_a_real_404():
+    from src.config import load_source_configs
+    ca_bundle = load_source_configs()["iit_bombay_hss_seminars"].ca_bundle   # HSS omits its intermediate cert
     with pytest.raises(FetchError) as exc:
-        Fetcher(timeout_s=10, delay_s=0).get(MISTYPED_LIVE_URL)
+        Fetcher(timeout_s=10, delay_s=0, ca_bundle=ca_bundle).get(MISTYPED_LIVE_URL)
     assert exc.value.status == 404

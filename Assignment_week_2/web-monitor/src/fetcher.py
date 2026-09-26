@@ -2,6 +2,10 @@
 
 One Fetcher per source run. It owns the session, User-Agent, timeout, per-host politeness delay,
 robots.txt checks (RFC 9309), status/error handling and structured FETCH logging.
+
+TLS certificates are always verified. A source whose server omits an intermediate certificate gets
+a ca_bundle (config) that adds it; a verification failure is a FETCH_ERROR error_type=SSLError and
+is never retried without verification.
 """
 
 import logging
@@ -13,7 +17,6 @@ from urllib.parse import urlsplit
 from urllib.robotparser import RobotFileParser
 
 import requests
-import urllib3
 
 from src.logging_config import log_fetch, log_fetch_error
 
@@ -36,11 +39,12 @@ class FetchResult:
 class FetchError(Exception):
     """Any failed fetch: HTTP >= 400, network error, timeout, or disallowed by robots.txt."""
 
-    def __init__(self, url: str, status: Optional[int], reason: str):
+    def __init__(self, url: str, status: Optional[int], reason: str, error_type: Optional[str] = None):
         super().__init__(f"{reason} for url: {url}")
         self.url = url
         self.status = status
         self.reason = reason
+        self.error_type = error_type or type(self).__name__  # e.g. SSLError, ReadTimeout, ConnectionError
 
 
 class Fetcher:
@@ -51,12 +55,14 @@ class Fetcher:
         user_agent: str = DEFAULT_USER_AGENT,
         respect_robots: bool = True,
         logger: Optional[logging.Logger] = None,
+        ca_bundle: Optional[str] = None,
     ):
         self.timeout_s = timeout_s if timeout_s and timeout_s > 0 else DEFAULT_TIMEOUT_SECONDS
         self.delay_s = max(delay_s or 0.0, 0.0)
         self.respect_robots = respect_robots
         self.logger = logger or logging.getLogger("web_monitor.fetcher")
         self.session = requests.Session()
+        self.session.verify = ca_bundle or True  # PEM path or the default trust store; never False
         self.session.headers.update({
             "User-Agent": user_agent,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -77,12 +83,16 @@ class Fetcher:
             response = self._request(robots_url)
         except requests.RequestException as e:
             # RFC 9309: robots.txt unreachable -> assume complete disallow
-            raise FetchError(url, None, f"robots.txt unreachable ({type(e).__name__})") from e
+            error = FetchError(url, None, f"robots.txt unreachable ({type(e).__name__}: {e})", type(e).__name__)
+            log_fetch_error(self.logger, url=robots_url, status=None, error=error)
+            raise error from e
         self._last_request_at[parts.netloc] = time.monotonic()
         if 400 <= response.status_code < 500:
             parser = None
         elif response.status_code >= 500:
-            raise FetchError(url, None, f"robots.txt returned HTTP {response.status_code}")
+            error = FetchError(url, None, f"robots.txt returned HTTP {response.status_code}")
+            log_fetch_error(self.logger, url=robots_url, status=response.status_code, error=error)
+            raise error
         else:
             parser = RobotFileParser(robots_url)
             parser.parse(response.text.splitlines())
@@ -102,12 +112,7 @@ class Fetcher:
     # -- requests -----------------------------------------------------------
 
     def _request(self, url: str) -> requests.Response:
-        try:
-            response = self.session.get(url, timeout=self.timeout_s)
-        except requests.exceptions.SSLError as ssl_err:
-            self.logger.warning("SSL verification failed for %s (%s). Retrying with verify=False", url, type(ssl_err).__name__)
-            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-            response = self.session.get(url, timeout=self.timeout_s, verify=False)
+        response = self.session.get(url, timeout=self.timeout_s)
         # requests assumes ISO-8859-1 for text/* without a charset; fall back to content sniffing.
         if "charset" not in response.headers.get("Content-Type", "").lower():
             response.encoding = response.apparent_encoding
@@ -131,7 +136,7 @@ class Fetcher:
         try:
             response = self._request(url)
         except requests.RequestException as e:
-            error = FetchError(url, None, f"{type(e).__name__}: {e}")
+            error = FetchError(url, None, f"{type(e).__name__}: {e}", type(e).__name__)
             log_fetch_error(self.logger, url=url, status=None, error=error)
             raise error from e
         duration_ms = int((time.perf_counter() - start) * 1000)

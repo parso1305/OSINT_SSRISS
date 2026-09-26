@@ -11,7 +11,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any, Optional, Union
 
-DEFAULT_CONFIG_PATH = Path(__file__).resolve().parent.parent / "config" / "sources.json"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_CONFIG_PATH = PROJECT_ROOT / "config" / "sources.json"
 
 # Adapter contract: parse_listing and normalize are required; parse_detail when supports_detail.
 REQUIRED_ADAPTER_FUNCTIONS = ("parse_listing", "normalize")
@@ -34,8 +35,16 @@ class SourceConfig:
     timeout_s: float = 10.0
     interval_minutes: Optional[float] = None  # scheduler: run when this long since the last run
     lock_max_age_minutes: float = 120.0       # scheduler: older locks are stale
+    ca_bundle: Optional[str] = None           # PEM file for TLS verification (relative to the project root);
+                                              # None = default trust store. Verification is never disabled.
 
     def __post_init__(self) -> None:
+        if self.ca_bundle:
+            path = Path(self.ca_bundle)
+            path = path if path.is_absolute() else PROJECT_ROOT / path
+            if not path.is_file():
+                raise ValueError(f"{self.source_id}: ca_bundle not found: {path}")
+            self.ca_bundle = str(path)
         if self.max_pages < 1:
             raise ValueError(f"{self.source_id}: max_pages must be >= 1")
         if self.detail_limit < 0:

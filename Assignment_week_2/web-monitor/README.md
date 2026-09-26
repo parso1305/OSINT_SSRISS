@@ -41,3 +41,24 @@ Then, in Task Scheduler → the task → Properties (settings `schtasks /Create`
 Run history: `runs` table in `data/events.db`; per-source locks: `locks/<source_id>.lock`.
 Change a schedule by editing `interval_minutes` in `config/sources.json`. It's re-read every cycle,
 so no restart and no code change is needed.
+
+## TLS certificates (`ca_bundle`)
+
+Certificate verification is always on. The fetcher never retries with `verify=False`: a TLS failure is logged as
+`FETCH_ERROR … error_type=SSLError` and fails the run.
+
+`www.hss.iitb.ac.in` sends only its leaf certificate (`CN=iitb.ac.in`) and omits the intermediate
+*GlobalSign RSA OV SSL CA 2018* (diagnosed 2026-09-26 with `openssl s_client -showcerts`: one certificate in the
+chain, `verify error:num=21: unable to verify the first certificate`). Browsers and Windows schannel fetch the
+missing intermediate from the leaf's AIA URL. OpenSSL, and therefore Python/requests, does not, so every request
+fails with `CERTIFICATE_VERIFY_FAILED`.
+
+The fix is the server's to make. Until then, the source's config entry sets
+`"ca_bundle": "certs/iitb_ca_bundle.pem"`, which the fetcher passes to requests as `verify=<path>`. That file is
+certifi's CA bundle plus `certs/globalsign_rsa_ov_ssl_ca_2018.pem` (fetched from the leaf's AIA URL; SHA-256 and
+provenance in the file header; it chains to *GlobalSign Root CA - R3*, which certifi already trusts).
+It adds only the one missing intermediate and trusts nothing beyond that.
+
+* Rebuild after upgrading certifi: `python scripts/build_ca_bundle.py`.
+* The intermediate expires 2028-11-21. Re-check the chain before then, or when HSS renews its certificate.
+* Any source can use `ca_bundle` (a path relative to the project root; the config is rejected if the file is missing).

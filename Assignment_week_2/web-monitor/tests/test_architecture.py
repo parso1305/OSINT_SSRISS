@@ -45,6 +45,12 @@ def test_only_fetcher_uses_requests_and_only_storage_uses_sqlite():
             assert "sqlite3" not in source, path.name
 
 
+def test_tls_verification_is_never_disabled():
+    for path in PIPELINE_CODE:
+        source = path.read_text(encoding="utf-8")
+        assert not re.search(r"verify\s*=\s*False|disable_warnings|CERT_NONE|check_hostname\s*=\s*False", source), path.name
+
+
 def test_only_logging_config_configures_handlers():
     for path in PIPELINE_CODE:
         if path.name == "logging_config.py":

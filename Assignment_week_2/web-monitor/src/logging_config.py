@@ -55,9 +55,12 @@ def log_fetch(logger: logging.Logger, url: str, status: int, duration_ms: int) -
 
 
 def log_fetch_error(logger: logging.Logger, url: str, status: Optional[int], error: Exception) -> None:
-    """Logs a request that produced no HTTP response (network error, timeout, robots disallow)."""
+    """Logs a request that produced no usable response (TLS/network error, timeout, robots disallow).
+
+    error_type is the underlying cause (SSLError, ReadTimeout, ...) when the error records one."""
     logger.warning("FETCH_ERROR url=%s status=%s error_type=%s message=\"%s\"",
-                   url, status if status is not None else "none", type(error).__name__, _clean(error))
+                   url, status if status is not None else "none",
+                   getattr(error, "error_type", None) or type(error).__name__, _clean(error))
 
 
 def log_parse(logger: logging.Logger, records_count: int) -> None:

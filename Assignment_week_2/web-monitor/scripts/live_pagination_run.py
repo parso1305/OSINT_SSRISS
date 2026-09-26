@@ -36,7 +36,8 @@ def main() -> None:
     config = load_source_configs()[args.source]
     adapter = load_adapter(config.adapter)
     logger = setup_logger("web_monitor")
-    fetcher = Fetcher(timeout_s=config.timeout_s, delay_s=config.request_delay_s, logger=logger.getChild("fetcher"))
+    fetcher = Fetcher(timeout_s=config.timeout_s, delay_s=config.request_delay_s, logger=logger.getChild("fetcher"),
+                      ca_bundle=config.ca_bundle)
     fetches: list[dict] = []
 
     def fetch_and_save(url: str):

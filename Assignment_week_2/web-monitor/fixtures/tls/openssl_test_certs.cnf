@@ -1,0 +1,30 @@
+# Test-only certificates for tests/test_tls.py (local HTTPS server on 127.0.0.1). Never trusted outside tests.
+[ req ]
+distinguished_name = dn
+prompt = no
+[ dn ]
+CN = web-monitor test
+[ v3_selfsigned ]
+basicConstraints = critical, CA:TRUE
+keyUsage = critical, digitalSignature, keyCertSign
+extendedKeyUsage = serverAuth
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid
+subjectAltName = IP:127.0.0.1, DNS:localhost
+[ v3_root ]
+basicConstraints = critical, CA:TRUE
+keyUsage = critical, keyCertSign, cRLSign
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid
+[ v3_intermediate ]
+basicConstraints = critical, CA:TRUE, pathlen:0
+keyUsage = critical, keyCertSign, cRLSign
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid
+[ v3_leaf ]
+basicConstraints = critical, CA:FALSE
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid
+subjectAltName = IP:127.0.0.1, DNS:localhost

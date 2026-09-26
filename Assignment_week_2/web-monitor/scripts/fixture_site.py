@@ -11,10 +11,12 @@ tests and by scripts/run_fixtures.py.
   anything in fail_paths               404 "Page not found"
   anything in drop_paths               headers + half the body, then the connection is closed
   delay_s                              sleep before every response (slow server, for overlap demos)
+  tls=(certfile, keyfile)              serve HTTPS with that certificate (fixtures/tls/, TLS tests)
 
 Standalone:  python scripts/fixture_site.py --port 8765 [--delay-s 1] [--fail PATH] [--drop PATH]
 """
 
+import ssl
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -34,7 +36,7 @@ NOT_FOUND = b"<html><head><title>Page not found | Humanities and Social Sciences
 class FixtureSite:
     def __init__(self, fail_paths: Iterable[str] = (), robots_txt: Optional[str] = None,
                  overrides: Optional[dict[str, str]] = None, port: int = 0, delay_s: float = 0.0,
-                 drop_paths: Iterable[str] = ()):
+                 drop_paths: Iterable[str] = (), tls: Optional[tuple[Path, Path]] = None):
         self.fail_paths = set(fail_paths)
         self.drop_paths = set(drop_paths)
         self.delay_s = delay_s
@@ -65,11 +67,19 @@ class FixtureSite:
                 self.wfile.write(body)
 
         self._server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+        self.scheme = "http"
+        if tls:
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            context.load_cert_chain(certfile=str(tls[0]), keyfile=str(tls[1]))
+            # A client that rejects the certificate aborts the handshake inside accept(); the server
+            # drops that connection (OSError) and never sees an HTTP request.
+            self._server.socket = context.wrap_socket(self._server.socket, server_side=True)
+            self.scheme = "https"
         self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
 
     @property
     def url(self) -> str:
-        return f"http://127.0.0.1:{self._server.server_address[1]}"
+        return f"{self.scheme}://127.0.0.1:{self._server.server_address[1]}"
 
     @property
     def listing_url(self) -> str:

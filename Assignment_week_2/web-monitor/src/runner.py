@@ -41,7 +41,7 @@ def run_source(
     logger = logger or setup_logger()
     adapter = load_adapter(config.adapter, supports_detail=config.supports_detail)
     fetcher = fetcher or Fetcher(timeout_s=config.timeout_s, delay_s=config.request_delay_s,
-                                 logger=logger.getChild("fetcher"))
+                                 logger=logger.getChild("fetcher"), ca_bundle=config.ca_bundle)
     target_db = str(db_path or DEFAULT_DB_PATH)
     t_start = time.perf_counter()
     log_start(logger, source_id=config.source_id)
