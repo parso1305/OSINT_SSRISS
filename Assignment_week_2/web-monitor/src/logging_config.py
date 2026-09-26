@@ -89,6 +89,13 @@ def log_enrich(logger: logging.Logger, ok: int, failed: int, not_attempted: int)
     logger.info("ENRICH ok=%d failed=%d not_attempted=%d", ok, failed, not_attempted)
 
 
+def log_parse_warning(logger: logging.Logger, source_id: str, item_url: str, field: str, raw: str) -> None:
+    """Logs a value present in the HTML that could not be parsed. It is treated as 'no value': the listing
+    fallback or the stored value stands, so a format change is loud instead of erasing data."""
+    logger.warning("PARSE_WARNING source_id=%s item_url=%s field=%s raw=\"%s\"",
+                   source_id, item_url, field, str(raw).replace('"', "'").replace("\n", " "))
+
+
 def log_validation_failure(logger: logging.Logger, source_id: str, item_url: str, errors: list[str]) -> None:
     """Logs a record rejected by schema validation (not stored)."""
     logger.warning("VALIDATION_FAILURE source_id=%s item_url=%s errors=\"%s\"", source_id, item_url, "; ".join(errors))

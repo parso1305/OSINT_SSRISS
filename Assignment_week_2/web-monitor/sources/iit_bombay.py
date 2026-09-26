@@ -182,14 +182,31 @@ def _speakers(raw: Optional[str]) -> list[dict]:
 
 
 def normalize(record: dict) -> dict:
-    """Source-specific cleaning of a merged listing(+detail) record into shared-schema content fields."""
+    """Source-specific cleaning of a merged listing(+detail) record into shared-schema content fields.
+
+    A date that is present but unparseable is reported in parse_warnings {field: raw} (logged by the runner;
+    storage keeps the stored value) and treated as no value, so the listing fallback applies.
+    """
     title = _clean(record.get("title"))
     venue = _clean(record.get("venue"))
     description = _clean(record.get("description"))
+    parse_warnings: dict[str, str] = {}
+
+    def utc(field: str) -> Optional[str]:
+        raw = record.get(field)
+        value = _to_utc(raw)
+        if raw and value is None:
+            parse_warnings[field] = raw
+        return value
+
+    starts_at = utc("starts_at") or _listing_start_utc(record.get("date_raw"), record.get("time_raw"))
+    if starts_at is None and record.get("date_raw"):
+        parse_warnings.setdefault("starts_at", f"{record.get('date_raw')} {record.get('time_raw') or ''}".strip())
     return {
+        "parse_warnings": parse_warnings,
         "title": title.removesuffix(SITE_TITLE_SUFFIX) if title else None,
-        "starts_at": _to_utc(record.get("starts_at")) or _listing_start_utc(record.get("date_raw"), record.get("time_raw")),
-        "ends_at": _to_utc(record.get("ends_at")),
+        "starts_at": starts_at,
+        "ends_at": utc("ends_at"),
         "timezone": DISPLAY_TIMEZONE,
         "speakers": _speakers(record.get("speaker")),
         "venue": venue,

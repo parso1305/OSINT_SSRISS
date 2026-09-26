@@ -25,6 +25,9 @@ def merge_listing_and_detail(listing_item: dict, detail_item: dict) -> dict:
         It is never re-derived from the detail page, even if the detail page declares a
         different <link rel="canonical"> (kept separately as detail_canonical_url).
       - Provenance keys (detail_fetch_status, ...) are set by enrich_items, never by detail data.
+      - A detail value the adapter later cannot parse counts as no value: normalize() falls back to the
+        listing value and reports it in parse_warnings; storage then keeps the stored value
+        (storage._carry_forward). An unparseable date never erases data.
       - Which detail element feeds which key is the adapter's decision (documented in its
         parse_detail). Because "detail wins", an adapter must not map an unreliable detail element
         onto a key the listing already gets right; e.g. the title source rule in sources/*.py.

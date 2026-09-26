@@ -13,7 +13,7 @@ import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional, Union, Any, Literal
+from typing import Any, Iterable, Literal, Optional, Union
 
 from src.schema import CONTENT_FIELDS, IDENTIFIER_FIELDS, PROVENANCE_FIELDS
 
@@ -232,23 +232,32 @@ def count_records(db_path: str, source_id: Optional[str] = None) -> int:
         return conn.execute("SELECT COUNT(*) FROM records").fetchone()[0]
 
 
-def _carry_forward(record: dict, existing: dict) -> dict:
+def _carry_forward(record: dict, existing: dict, unparsed_fields: Iterable[str] = ()) -> dict:
     """
-    A detail fetch that did not succeed is not evidence that content was removed: content fields
-    the new record lacks keep their stored values (e.g. description, speakers, ends_at).
-    Provenance still records this run's outcome (detail_fetch_status="failed").
+    A missing value is not evidence that content was removed when it is missing because of this run:
+      - the detail fetch did not succeed: every empty content field keeps its stored value
+        (e.g. description, speakers, ends_at);
+      - the adapter could not parse the field (normalize() parse_warnings): that field keeps its stored
+        value, even on an ok detail fetch. A format change must never erase data.
+    A non-empty new value (e.g. starts_at from the listing fallback) still wins.
+    Provenance always records this run's outcome (detail_fetch_status, ...).
     """
-    if record.get("detail_fetch_status") == "ok":
+    detail_ok = record.get("detail_fetch_status") == "ok"
+    unparsed = set(unparsed_fields)
+    fields = [f for f in CONTENT_FIELDS if f in unparsed] if detail_ok else list(CONTENT_FIELDS)
+    if not fields:
         return record
     kept = dict(record)
-    for field in CONTENT_FIELDS:
+    for field in fields:
         if _is_empty(kept.get(field)) and not _is_empty(existing.get(field)):
             kept[field] = existing[field]
-    kept["extras"] = {**(existing.get("extras") or {}), **(kept.get("extras") or {})}
+    if not detail_ok:
+        kept["extras"] = {**(existing.get("extras") or {}), **(kept.get("extras") or {})}
     return kept
 
 
-def _upsert(conn: sqlite3.Connection, record: dict, now_iso: str) -> Literal["new", "existing", "changed"]:
+def _upsert(conn: sqlite3.Connection, record: dict, now_iso: str,
+            unparsed_fields: Iterable[str] = ()) -> Literal["new", "existing", "changed"]:
     """Upserts one record on an open connection (inside the caller's transaction)."""
     item_url = record.get("item_url")
     if not item_url:
@@ -256,7 +265,7 @@ def _upsert(conn: sqlite3.Connection, record: dict, now_iso: str) -> Literal["ne
     row = conn.execute("SELECT * FROM records WHERE item_url = ?", (item_url,)).fetchone()
     existing = _decode_row(row) if row else None
     if existing:
-        record = _carry_forward(record, existing)
+        record = _carry_forward(record, existing, unparsed_fields)
     digest = content_hash(record)
 
     values = {c: record.get(c) for c in _RECORD_COLUMNS}
@@ -277,11 +286,14 @@ def _upsert(conn: sqlite3.Connection, record: dict, now_iso: str) -> Literal["ne
     return "existing" if existing["content_hash"] == digest else "changed"
 
 
-def store_records(db_path: str, records: list[dict]) -> dict[str, int]:
+def store_records(db_path: str, records: list[dict],
+                  unparsed_fields: Optional[dict[str, Iterable[str]]] = None) -> dict[str, int]:
     """
     Stores a run's records in ONE transaction; returns {'new', 'existing', 'changed'} counts.
     Any exception rolls back every write of this call, so a failed run leaves the table as it was.
+    unparsed_fields: {item_url: fields the adapter could not parse}; their stored values are kept.
     """
+    unparsed_fields = unparsed_fields or {}
     init_records_table(db_path)
     counts = {"new": 0, "existing": 0, "changed": 0}
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -290,7 +302,7 @@ def store_records(db_path: str, records: list[dict]) -> dict[str, int]:
     try:
         conn.execute("BEGIN IMMEDIATE")
         for record in records:
-            counts[_upsert(conn, record, now_iso)] += 1
+            counts[_upsert(conn, record, now_iso, unparsed_fields.get(record.get("item_url"), ()))] += 1
         conn.execute("COMMIT")
     except BaseException:
         conn.execute("ROLLBACK")

@@ -25,7 +25,7 @@ from src.schema import assemble_record, validate_record
 from src.storage import store_records
 from src.logging_config import (
     setup_logger, log_start, log_end, log_parse, log_paginate, log_normalize, log_validate,
-    log_validation_failure, log_store, log_warning_item, log_failure,
+    log_validation_failure, log_store, log_warning_item, log_failure, log_parse_warning,
 )
 
 DEFAULT_DB_PATH = PROJECT_ROOT / "data" / "events.db"
@@ -87,9 +87,21 @@ def run_source(
     else:
         merged = [dict(item, detail_fetch_status="not_attempted") for item in items]
 
-    # 4. NORMALIZE (adapter) + assemble shared record (generic)
+    # 4. NORMALIZE (adapter) + assemble shared record (generic).
+    #    normalize() may report parse_warnings {field: raw}: values present in the HTML that it could not
+    #    parse. They are logged, and storage keeps the stored value for them (unknown, not removed).
+    records: list[dict] = []
+    unparsed: dict[str, set[str]] = {}
     try:
-        records = [assemble_record(config, m, adapter.normalize(m)) for m in merged]
+        for m in merged:
+            normalized = adapter.normalize(m)
+            record = assemble_record(config, m, normalized)
+            parse_warnings = normalized.get("parse_warnings") or {}
+            for field, raw in parse_warnings.items():
+                log_parse_warning(logger, config.source_id, str(record.get("item_url")), field, raw)
+            if parse_warnings and record.get("item_url"):
+                unparsed[record["item_url"]] = set(parse_warnings)
+            records.append(record)
     except Exception as e:
         log_failure(logger, source_id=config.source_id, url=config.listing_url, stage="normalize", error=e)
         raise
@@ -108,7 +120,7 @@ def run_source(
 
     # 6. STORE
     try:
-        counts = store_records(target_db, valid)
+        counts = store_records(target_db, valid, unparsed_fields=unparsed)
     except Exception as e:
         log_failure(logger, source_id=config.source_id, url=config.listing_url, stage="store", error=e)
         raise

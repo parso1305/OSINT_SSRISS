@@ -8,6 +8,7 @@ import hashlib
 import io
 import json
 import logging
+import re
 import sqlite3
 import sys
 from pathlib import Path
@@ -98,3 +99,78 @@ def test_case08_allow_empty_listing_accepts_an_empty_page_with_a_warning(tmp_pat
         result = run_once(config, db, locks, source_ids=[SOURCE_ID], force=True, logger=LOG)[0]
     assert result["status"] == "success" and result["counts"] == {"new": 0, "existing": 0, "changed": 0}
     assert f"[WARNING] logger=web_monitor WARNING source_id={SOURCE_ID}" in log_stream.getvalue()
+
+
+# -- audit case 9: detail date format changed ----------------------------------------------------------
+
+def textual_dates(slug: str) -> str:
+    html = (FIXTURES / "detail" / f"{slug}.html").read_text(encoding="utf-8")
+    return re.sub(r'datetime="[^"]+"', 'datetime="25 September 2025"', html)
+
+
+DETAIL_SLUGS = [m["item_url"].rsplit("/", 1)[-1]
+                for m in json.loads((FIXTURES / "detail" / "manifest.json").read_text(encoding="utf-8"))]
+
+
+def hss_config(site: FixtureSite, **overrides):
+    import dataclasses
+    from src.config import load_source_configs
+    return dataclasses.replace(load_source_configs()[SOURCE_ID], listing_url=site.listing_url, request_delay_s=0,
+                               supports_pagination=False, **overrides)
+
+
+def test_case09_unparseable_detail_dates_never_erase_stored_values(tmp_path, log_stream):
+    from src.runner import run_source
+    from src.storage import get_record
+    db = str(tmp_path / "t09.db")
+    with FixtureSite() as site:
+        first = run_source(hss_config(site), db_path=db)                      # 10 items, all enriched
+        urls = [r["item_url"] for r in first["records"]]
+        before = {u: get_record(db, u) for u in urls}
+        for slug in DETAIL_SLUGS:
+            site.overrides["/events/seminar-talk/" + slug] = textual_dates(slug)
+        mark = len(log_stream.getvalue())
+        second = run_source(hss_config(site), db_path=db)
+        after = {u: get_record(db, u) for u in urls}
+    log = log_stream.getvalue()[mark:]
+
+    assert second["detail_status"]["ok"] == 10
+    assert second["counts"] == {"new": 0, "existing": 10, "changed": 0}   # was changed=10
+    erased = [u for u in urls if before[u]["ends_at"] and not after[u]["ends_at"]]
+    assert erased == []                                                    # was 10/10
+    assert sum(before[u]["ends_at"] is not None for u in urls) == 10
+    for u in urls:
+        assert (after[u]["starts_at"], after[u]["ends_at"], after[u]["content_hash"]) == \
+               (before[u]["starts_at"], before[u]["ends_at"], before[u]["content_hash"])
+        assert after[u]["detail_fetch_status"] == "ok"
+    assert log.count('field=ends_at raw="25 September 2025"') == 10
+    assert log.count('field=starts_at raw="25 September 2025"') == 10     # listing fallback used, still loud
+    assert log.count("[WARNING] logger=web_monitor PARSE_WARNING source_id=iit_bombay_hss_seminars") == 20
+
+
+def test_case09_fresh_db_keeps_listing_start_and_warns(tmp_path, log_stream):
+    from src.runner import run_source
+    with FixtureSite() as site:
+        for slug in DETAIL_SLUGS:
+            site.overrides["/events/seminar-talk/" + slug] = textual_dates(slug)
+        result = run_source(hss_config(site), db_path=str(tmp_path / "t09b.db"))
+    assert result["invalid"] == [] and result["counts"]["new"] == 10
+    assert all(r["starts_at"] and r["ends_at"] is None for r in result["records"])   # nothing stored to keep
+    assert log_stream.getvalue().count("PARSE_WARNING") == 20
+
+
+def test_case09_listing_and_detail_dates_unparseable_rejects_new_and_keeps_stored(tmp_path, log_stream):
+    from src.runner import run_source
+    from src.storage import get_record
+    db = str(tmp_path / "t09c.db")
+    with FixtureSite() as site:
+        first = run_source(hss_config(site), db_path=db)
+        before = records_checksum(db)
+        for slug in DETAIL_SLUGS:
+            site.overrides["/events/seminar-talk/" + slug] = textual_dates(slug)
+        site.overrides[LISTING_PATH] = re.sub(r'(icon-calendar"></i>)[^<]+', r"\g<1>2025/09/25 ", listing_html())
+        second = run_source(hss_config(site), db_path=db)
+    assert len(second["invalid"]) == 10 and all("starts_at: required" in i["errors"] for i in second["invalid"])
+    assert records_checksum(db) == before
+    assert get_record(db, first["records"][0]["item_url"])["starts_at"] == first["records"][0]["starts_at"]
+    assert "PARSE_WARNING" in log_stream.getvalue() and "VALIDATION_FAILURE" in log_stream.getvalue()
