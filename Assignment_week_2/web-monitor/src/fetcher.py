@@ -140,7 +140,10 @@ class Fetcher:
             log_fetch_error(self.logger, url=url, status=None, error=error)
             raise error from e
         duration_ms = int((time.perf_counter() - start) * 1000)
-        log_fetch(self.logger, url=url, status=response.status_code, duration_ms=duration_ms)
+        redirected = bool(response.history) or response.url != url
+        log_fetch(self.logger, url=url, status=response.status_code, duration_ms=duration_ms,
+                  final_url=response.url if redirected else None,
+                  redirect_status=",".join(str(r.status_code) for r in response.history) or None)
 
         if response.status_code >= 400:
             raise FetchError(url, response.status_code, f"HTTP {response.status_code} {response.reason}")

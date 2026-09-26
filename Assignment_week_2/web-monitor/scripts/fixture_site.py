@@ -10,6 +10,7 @@ tests and by scripts/run_fixtures.py.
   /events/seminar-talk/<slug>          fixtures/iit_bombay_hss/detail/<slug>.html, else 404
   anything in fail_paths               404 "Page not found"
   anything in drop_paths               headers + half the body, then the connection is closed
+  redirects={path: (status, location)} redirect (e.g. 301 to the trailing-slash form)
   delay_s                              sleep before every response (slow server, for overlap demos)
   tls=(certfile, keyfile)              serve HTTPS with that certificate (fixtures/tls/, TLS tests)
 
@@ -36,12 +37,14 @@ NOT_FOUND = b"<html><head><title>Page not found | Humanities and Social Sciences
 class FixtureSite:
     def __init__(self, fail_paths: Iterable[str] = (), robots_txt: Optional[str] = None,
                  overrides: Optional[dict[str, str]] = None, port: int = 0, delay_s: float = 0.0,
-                 drop_paths: Iterable[str] = (), tls: Optional[tuple[Path, Path]] = None):
+                 drop_paths: Iterable[str] = (), tls: Optional[tuple[Path, Path]] = None,
+                 redirects: Optional[dict[str, tuple[int, str]]] = None):
         self.fail_paths = set(fail_paths)
         self.drop_paths = set(drop_paths)
         self.delay_s = delay_s
         self.robots_txt = robots_txt
         self.overrides = dict(overrides or {})  # path -> html body
+        self.redirects = dict(redirects or {})  # path -> (status, location)
         self.requests: list[str] = []
         site = self
 
@@ -53,6 +56,13 @@ class FixtureSite:
                 site.requests.append(self.path)
                 if site.delay_s:
                     time.sleep(site.delay_s)
+                if self.path in site.redirects:
+                    status, location = site.redirects[self.path]
+                    self.send_response(status)
+                    self.send_header("Location", location)
+                    self.send_header("Content-Length", "0")
+                    self.end_headers()
+                    return
                 status, body = site.route(self.path)
                 self.send_response(status)
                 self.send_header("Content-Type", "text/plain" if self.path == "/robots.txt" else "text/html; charset=UTF-8")

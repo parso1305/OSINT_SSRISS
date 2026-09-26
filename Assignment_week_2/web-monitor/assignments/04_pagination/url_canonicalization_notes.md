@@ -2,8 +2,10 @@
 
 All item URLs, next-page URLs and storage keys in web-monitor go through one function:
 `resolve_item_url(href, page_url)` in `src/urls.py`. It is the only `urljoin` call site in
-the codebase. Its output is the value stored in the `items.url` column
-(`url TEXT UNIQUE NOT NULL`, `src/storage.py:21`), so it is also the deduplication key.
+the codebase. Its output is the value stored in `records.item_url` (the table's `PRIMARY KEY`,
+`src/storage.py`, `init_records_table`), so it is also the deduplication key. The legacy Section 1-4A
+`items.url` column uses the same function. The same string is also the URL that gets **fetched**, so
+canonicalization must never change which resource the server returns.
 
 ## Sources of evidence
 
@@ -20,13 +22,42 @@ identical to `live_page_1.html`, so the examples below are still current.
 
 ## Canonicalization rules (`src/urls.py`)
 
-1. Resolve `href` against `page_url` (`urljoin`); protocol-relative `//host/...` with no base scheme gets `https:`.
-2. Lowercase scheme and host; path case is preserved.
-3. Strip default ports (`:80` for http, `:443` for https).
-4. Collapse duplicate slashes; drop the trailing slash on every non-root path (root stays `/`).
-5. Drop tracking/session query params (`utm_*`, `fbclid`, `gclid`, `sid`, `PHPSESSID`, `jsessionid`, ...) and `;jsessionid=` path params; sort the remaining params by key.
-6. Drop fragments, except client-side route fragments (`#!/...`, `#/...`).
-7. Return `""` for empty hrefs and non-HTTP(S) schemes (`mailto:`, `tel:`, `javascript:`).
+1. Strip surrounding whitespace and remove tab/CR/LF anywhere, as browsers do (real case: ME department hrefs end with a space, `"/event/slug "`).
+2. Resolve `href` against `page_url` (`urljoin`); protocol-relative `//host/...` with no base scheme gets `https:`.
+3. Lowercase scheme and host; path case is preserved.
+4. Strip default ports (`:80` for http, `:443` for https).
+5. **Keep the path exactly as given.** No trailing-slash stripping and no `//` collapsing; only an empty path becomes `/`.
+6. Drop tracking/session query params (`utm_*`, `fbclid`, `gclid`, `sid`, `PHPSESSID`, `jsessionid`, ...) and `;jsessionid=` path params (session tokens, not content); sort the remaining params by key.
+7. Drop fragments, except client-side route fragments (`#!/...`, `#/...`).
+8. Return `""` for empty hrefs and non-HTTP(S) schemes (`mailto:`, `tel:`, `javascript:`).
+
+### Why the path is no longer rewritten (changed 2026-09-27, audit fix)
+
+Until the Week 2 audit, rule 5 dropped the trailing slash on every non-root path and collapsed `//`.
+That assumed every server treats `/a/b/` and `/a/b` as the same resource. The audit showed the cost:
+
+* **CMI** serves its seminar listing at `https://www.cmi.ac.in/activities/`. The canonical form
+  `/activities` was what got fetched, and it only worked because the server answered
+  `301 Location: /activities/` (verified live 2026-09-26 13:53:22Z). Without that redirect the run
+  failed with a 404, and no config value could prevent it.
+* **EE** serves `/info/news/clip_seminar_satish/` and 301-redirects the no-slash form. Merging the
+  two was right for EE only because of how EE's server behaves, which the canonicalizer can't know.
+
+Now the path is kept as given, and a redirect is visible in the log instead of hidden:
+`FETCH url=… status=200 duration_ms=… final_url=…/activities/ redirect_status=301`.
+
+Consequences:
+
+* HSS item hrefs never carry a trailing slash or `//`, so every HSS key is unchanged and existing
+  databases see no churn.
+* Of the audit's six hand-made href forms for one HSS item (case 11), four still collapse to one key
+  (root-relative, relative, tracking query, fragment; upper-case scheme/host is also still
+  canonicalized). Two no longer do: `//host/…/islands…/` (trailing slash) and
+  `HTTP://HOST/events//seminar-talk/islands…/` (`//` plus trailing slash). Both were constructed
+  by the audit, not seen in real HTML (`tests/test_audit_regressions.py::test_case11_…`).
+* EE's slash and no-slash forms are now two keys (`tests/test_url_resolution.py::test_storage_ee_slash_and_no_slash_are_distinct_keys`).
+  Both real EE hrefs (listing link and detail canonical) carry the slash, so real EE data still
+  dedupes to one row.
 
 ## Before → after examples
 
@@ -78,10 +109,11 @@ milder:
 | `live_page_1.html:66` | `#main-content` (skip link) | `https://www.hss.iitb.ac.in/events/seminars-and-talks` | Positional fragment stripped |
 | `live_page_1.html:836` | `http://gymkhana.iitb.ac.in` | `http://gymkhana.iitb.ac.in/` | Empty path normalized to `/`; `http` scheme preserved, not upgraded |
 
-The canonicalization rules for mixed case, default ports, tracking params and duplicate slashes
+The canonicalization rules for mixed case, default ports, tracking params and the path policy
 are covered by unit tests in `tests/test_url_resolution.py` (`test_lowercases_...`,
-`test_strips_default_ports_only`, `test_trailing_slash_policy`, `test_strips_tracking_...`).
-Those tests use **hand-written inputs, not hrefs from fetched HTML.**
+`test_strips_default_ports_only`, `test_path_is_kept_as_given`, `test_strips_tracking_...`).
+Those tests use **hand-written inputs, not hrefs from fetched HTML**, except where a test comment
+says REAL.
 
 ## Real differently-formatted hrefs that must dedupe to one key
 

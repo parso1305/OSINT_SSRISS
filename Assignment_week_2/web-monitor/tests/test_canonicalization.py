@@ -75,12 +75,11 @@ def test_resolve_url_protocol_relative():
     assert resolve_item_url(raw, base) == expected
 
 
-def test_resolve_url_path_duplicate_slashes():
-    """Collapses consecutive duplicate slashes in the path component."""
+def test_resolve_url_keeps_path_as_given():
+    """Duplicate and trailing slashes can be significant to a server, so the path is not rewritten."""
     base = "https://www.ee.iitb.ac.in"
-    raw = "/info//news///2026/notice.html"
-    expected = "https://www.ee.iitb.ac.in/info/news/2026/notice.html"
-    assert resolve_item_url(raw, base) == expected
+    assert resolve_item_url("/info//news///2026/notice.html", base) == "https://www.ee.iitb.ac.in/info//news///2026/notice.html"
+    assert resolve_item_url("/info/news/", base) == "https://www.ee.iitb.ac.in/info/news/"
 
 
 # ---------------------------------------------------------------------------
@@ -95,7 +94,7 @@ def test_canonical_url_deduplication_in_storage(tmp_path):
     base_url = "https://www.ee.iitb.ac.in/info/news/"
 
     raw_variant_1 = "/info/news/seminar-prof-deb/index.html"
-    raw_variant_2 = "HTTPS://WWW.EE.IITB.AC.IN:443/info//news/seminar-prof-deb/index.html#abstract"
+    raw_variant_2 = "HTTPS://WWW.EE.IITB.AC.IN:443/info/news/seminar-prof-deb/index.html#abstract"
     raw_variant_3 = "https://www.ee.iitb.ac.in/info/news/seminar-prof-deb/index.html?utm_source=feed&ref=email"
 
     canon_1 = resolve_item_url(raw_variant_1, base_url)

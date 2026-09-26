@@ -115,8 +115,9 @@ DETAIL_SLUGS = [m["item_url"].rsplit("/", 1)[-1]
 def hss_config(site: FixtureSite, **overrides):
     import dataclasses
     from src.config import load_source_configs
-    return dataclasses.replace(load_source_configs()[SOURCE_ID], listing_url=site.listing_url, request_delay_s=0,
-                               supports_pagination=False, **overrides)
+    params = dict(listing_url=site.listing_url, request_delay_s=0, supports_pagination=False)
+    params.update(overrides)
+    return dataclasses.replace(load_source_configs()[SOURCE_ID], **params)
 
 
 def test_case09_unparseable_detail_dates_never_erase_stored_values(tmp_path, log_stream):
@@ -193,3 +194,60 @@ def test_caseX1_failed_run_is_retried_on_the_next_hourly_trigger(tmp_path, log_s
     assert [r["status"] for r in second] == ["success"]                    # was: not due until +24 h
     schedule = [line for line in log_stream.getvalue().splitlines() if "SCHEDULE" in line]
     assert "wait_minutes=60 " in schedule[-1] and "next_due_reason=retry_after_failure due=true" in schedule[-1]
+
+
+# -- audit case 11 + section 8.3: URL forms, trailing slashes, redirects ----------------------------------
+
+ISLANDS = "islands-tri-junction-fragility-and-vulnerability"
+
+
+def listing_with_hrefs(hrefs: list[str]) -> str:
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(listing_html(), "html.parser")
+    cards = soup.select(".event-card-wrapper")
+    template = str(cards[0])
+    container = soup.select_one(".view-seminars-and-talks .view-content")
+    for card in cards:
+        card.decompose()
+    for href in hrefs:
+        card = BeautifulSoup(template, "html.parser")
+        card.select_one(".event-name a")["href"] = href
+        container.append(card)
+    return str(soup)
+
+
+def test_case11_href_forms_that_differ_only_in_host_query_or_fragment_are_one_item(tmp_path):
+    from src.runner import run_source
+    from src.storage import count_records
+    path = f"/events/seminar-talk/{ISLANDS}"
+    with FixtureSite() as site:
+        host = site.url.split("://", 1)[1]
+        same = [path, f"seminar-talk/{ISLANDS}", f"{path}?utm_source=newsletter&fbclid=abc123", f"{path}#abstract",
+                f"HTTP://{host.upper()}{path}"]
+        # The audit's other two forms changed the PATH ("/.../" and "/events//..."): a trailing slash or "//"
+        # can name a different resource, so they are no longer merged into the same key.
+        different = [f"//{host}{path}/", f"HTTP://{host.upper()}/events//seminar-talk/{ISLANDS}/"]
+        site.overrides[LISTING_PATH] = listing_with_hrefs(same + different)
+        result = run_source(hss_config(site), db_path=str(tmp_path / "t11.db"))
+    keys = {r["item_url"] for r in result["records"]}
+    assert keys == {site.url + path, site.url + path + "/", site.url + "/events//seminar-talk/" + ISLANDS + "/"}
+    assert count_records(str(tmp_path / "t11.db")) == 3
+
+
+def test_listing_url_with_trailing_slash_is_fetched_as_given_and_redirects_are_logged(tmp_path, log_stream):
+    """Audit 8.3 (CMI): /activities/ was fetched as /activities and only worked through the server's 301."""
+    from src.runner import run_source
+    with FixtureSite(overrides={"/talks/": listing_html()}, redirects={"/talks": (301, "/talks/")}) as site:
+        as_given = run_source(hss_config(site, listing_url=site.url + "/talks/", detail_limit=0),
+                              db_path=str(tmp_path / "a.db"))
+        requested_as_given = list(site.requests)
+        site.requests.clear()
+        redirected = run_source(hss_config(site, listing_url=site.url + "/talks", detail_limit=0),
+                                db_path=str(tmp_path / "b.db"))
+    assert requested_as_given == ["/robots.txt", "/talks/"]                     # no redirect needed
+    assert as_given["counts"]["new"] == redirected["counts"]["new"] == 10
+    log = log_stream.getvalue()
+    assert f"FETCH url={site.url}/talks/ status=200 duration_ms=" in log
+    assert f"FETCH url={site.url}/talks status=200" in log
+    assert f"final_url={site.url}/talks/ redirect_status=301" in log
+    assert log.count("final_url=") == 1                                          # only the redirected request

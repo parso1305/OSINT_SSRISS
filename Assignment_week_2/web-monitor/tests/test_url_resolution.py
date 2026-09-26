@@ -47,7 +47,7 @@ HSS_HEADER_CAREERS = '<a href="https://www.hss.iitb.ac.in/careers" class="nav-li
 HSS_FOOTER_CAREERS = '<a href="/careers" class="nav-link" data-drupal-link-system-path="careers">Careers</a>'
 
 HSS_ITEM_CANONICAL = "https://www.hss.iitb.ac.in/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability"
-EE_ITEM_CANONICAL = "https://www.ee.iitb.ac.in/info/news/clip_seminar_satish"
+EE_ITEM_CANONICAL = "https://www.ee.iitb.ac.in/info/news/clip_seminar_satish/"   # path kept as served
 
 
 def href_of(snippet: str) -> str:
@@ -76,7 +76,7 @@ def test_query_relative_href_from_real_pager():
 def test_pure_relative_href():
     """SYNTHETIC: pure-relative paths resolve against the page's directory, including '..'."""
     assert resolve_item_url("clip_seminar_satish/", EE_LISTING) == EE_ITEM_CANONICAL
-    assert resolve_item_url("../people/", EE_LISTING) == "https://www.ee.iitb.ac.in/info/people"
+    assert resolve_item_url("../people/", EE_LISTING) == "https://www.ee.iitb.ac.in/info/people/"
     # Page without trailing slash: last segment is a file, so siblings replace it
     assert resolve_item_url("seminar-talk/x", HSS_LISTING) == "https://www.hss.iitb.ac.in/events/seminar-talk/x"
 
@@ -102,13 +102,21 @@ def test_strips_default_ports_only():
     assert resolve_item_url("https://www.ee.iitb.ac.in:8443/a", "") == "https://www.ee.iitb.ac.in:8443/a"
 
 
-def test_trailing_slash_policy():
-    """Non-root paths lose their trailing slash; the root path is always '/'."""
+def test_path_is_kept_as_given():
+    """A trailing slash or '//' can be significant, so the path is never rewritten; an empty path is '/'."""
     assert resolve_item_url("/info/news/clip_seminar_satish/", EE_LISTING) == EE_ITEM_CANONICAL
-    assert resolve_item_url("/info/news/clip_seminar_satish", EE_LISTING) == EE_ITEM_CANONICAL
+    assert resolve_item_url("/info/news/clip_seminar_satish", EE_LISTING) == EE_ITEM_CANONICAL.rstrip("/")
     assert resolve_item_url("https://www.ee.iitb.ac.in", "") == "https://www.ee.iitb.ac.in/"
     assert resolve_item_url("https://www.ee.iitb.ac.in/", "") == "https://www.ee.iitb.ac.in/"
-    assert resolve_item_url("/a//b///", "https://x.org/") == "https://x.org/a/b"
+    assert resolve_item_url("/a//b///", "https://x.org/") == "https://x.org/a//b///"
+    # REAL (audit, 2026-09-26): CMI serves /activities/; /activities only works via a 301 redirect
+    assert resolve_item_url("https://www.cmi.ac.in/activities/", "") == "https://www.cmi.ac.in/activities/"
+
+
+def test_whitespace_is_stripped_like_a_browser():
+    # REAL (audit, ME department listing): hrefs end with a space, e.g. "/event/slug "
+    assert resolve_item_url("/event/seminar-x ", "https://www.me.iitb.ac.in/events") == "https://www.me.iitb.ac.in/event/seminar-x"
+    assert resolve_item_url("  /event/\n  seminar-x\t", "https://x.org/") == "https://x.org/event/  seminar-x"
 
 
 def test_strips_tracking_and_session_params_keeps_semantic_ones():
@@ -188,8 +196,12 @@ def test_storage_dedups_on_canonical_url_not_raw_href(tmp_path):
     assert get_record(db, href_of(HSS_LISTING_CARD_LINK)) is None
 
 
-def test_storage_dedups_ee_trailing_slash_variants(tmp_path):
-    """EE serves the slash form and 301-redirects the no-slash form: both are one row."""
+def test_storage_ee_slash_and_no_slash_are_distinct_keys(tmp_path):
+    """
+    The two REAL EE hrefs (listing link, detail canonical) both carry the slash and dedupe to one row.
+    The no-slash form is a different URL: EE happens to 301-redirect it to the slash form (verified live),
+    but that is server behaviour the canonicalizer must not assume, so it is its own key.
+    """
     from src.schema import NormalizedItem
 
     db = str(tmp_path / "dedup_ee.db")
@@ -203,6 +215,7 @@ def test_storage_dedups_ee_trailing_slash_variants(tmp_path):
         NormalizedItem(source_name="ee", source_url=page, item_url=resolve_item_url(href, page), title="CLIP seminar")
         for href, page in raw_hrefs
     ]
-    assert store_all(db, items) == {"new": 1, "existing": 2, "changed": 0}
-    assert count_items(db) == 1
+    assert store_all(db, items) == {"new": 2, "existing": 1, "changed": 0}
+    assert count_items(db) == 2
     assert get_item_by_url(db, EE_ITEM_CANONICAL) is not None
+    assert get_item_by_url(db, EE_ITEM_CANONICAL.rstrip("/")) is not None

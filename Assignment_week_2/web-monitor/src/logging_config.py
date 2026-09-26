@@ -49,9 +49,11 @@ def log_start(logger: logging.Logger, source_id: str) -> None:
     logger.info("START source_id=%s", source_id)
 
 
-def log_fetch(logger: logging.Logger, url: str, status: int, duration_ms: int) -> None:
-    """Logs fetch step metrics."""
-    logger.info("FETCH url=%s status=%d duration_ms=%d", url, status, duration_ms)
+def log_fetch(logger: logging.Logger, url: str, status: int, duration_ms: int,
+              final_url: Optional[str] = None, redirect_status: Optional[str] = None) -> None:
+    """Logs fetch step metrics. A redirected request also logs where it ended up and the redirect status(es)."""
+    redirect = f" final_url={final_url} redirect_status={redirect_status or 'none'}" if final_url else ""
+    logger.info("FETCH url=%s status=%d duration_ms=%d%s", url, status, duration_ms, redirect)
 
 
 def log_fetch_error(logger: logging.Logger, url: str, status: Optional[int], error: Exception) -> None:

@@ -2,7 +2,9 @@
 
 resolve_item_url() is the single place in web-monitor where hrefs are resolved
 (the only urljoin call site). Every parser, normalizer and the pagination walker
-goes through it, so the canonical URL it returns is the storage dedup key.
+goes through it, so the canonical URL it returns is the storage dedup key. It is
+also the URL that gets fetched, so it must never change which resource a server
+returns: the path is kept exactly as given (a trailing slash or "//" can be significant).
 """
 
 import re
@@ -35,6 +37,9 @@ DEFAULT_PORTS = {"http": "80", "https": "443"}
 # ;jsessionid=ABC123 path parameters (Java servlet containers)
 _PATH_SESSION_RE = re.compile(r";(?:jsessionid|phpsessid|sid)=[^/?#]*", re.IGNORECASE)
 
+# Browsers drop ASCII tab/CR/LF anywhere in a URL (WHATWG URL spec); editors leave them in hrefs.
+_TAB_NEWLINE_RE = re.compile(r"[\t\r\n]")
+
 # Fragments that select content in client-side routed pages (#!/item/42, #/item/42)
 _IDENTITY_FRAGMENT_RE = re.compile(r"^!?/")
 
@@ -55,12 +60,14 @@ def resolve_item_url(href: Optional[str], page_url: Optional[str]) -> str:
       - pure-relative      "b", "../b", "?page=1"     -> relative to page_url's directory / path
 
     Canonicalization:
-      1. Scheme and host lowercased (path case preserved).
-      2. Default ports stripped (:80 for http, :443 for https).
-      3. Duplicate slashes in the path collapsed.
-      4. Trailing slash removed from every non-root path ("/a/b/" -> "/a/b"; root stays "/").
+      1. Surrounding whitespace stripped; tab/CR/LF removed anywhere (as browsers do).
+      2. Scheme and host lowercased (path case preserved).
+      3. Default ports stripped (:80 for http, :443 for https).
+      4. Path kept as given: no trailing-slash stripping, no "//" collapsing. "/a/b/" and "/a/b"
+         are different URLs; only the server knows whether they are the same resource (it may
+         redirect one to the other, which the FETCH log shows as final_url=...). An empty path is "/".
       5. Tracking and session query params removed (utm_*, fbclid, gclid, sid, PHPSESSID, ...)
-         along with ;jsessionid= path params. Remaining params are sorted by key.
+         along with ;jsessionid= path params (session tokens, not content). Remaining params sorted by key.
       6. Fragments stripped, except client-side route fragments ("#!/..." or "#/...")
          which identify the item rather than a position within it.
 
@@ -70,8 +77,8 @@ def resolve_item_url(href: Optional[str], page_url: Optional[str]) -> str:
     if not href or not href.strip():
         return ""
 
-    clean_href = href.strip()
-    clean_base = page_url.strip() if page_url else ""
+    clean_href = _TAB_NEWLINE_RE.sub("", href.strip())
+    clean_base = _TAB_NEWLINE_RE.sub("", page_url.strip()) if page_url else ""
 
     # Protocol-relative href with no base scheme to borrow: assume https
     if clean_href.startswith("//") and not urlsplit(clean_base).scheme:
@@ -92,12 +99,7 @@ def resolve_item_url(href: Optional[str], page_url: Optional[str]) -> str:
         return ""
     netloc = host if port is None or str(port) == DEFAULT_PORTS[scheme] else f"{host}:{port}"
 
-    path = _PATH_SESSION_RE.sub("", parts.path)
-    path = re.sub(r"/{2,}", "/", path)
-    if len(path) > 1:
-        path = path.rstrip("/")
-    if not path:
-        path = "/"
+    path = _PATH_SESSION_RE.sub("", parts.path) or "/"
 
     query_params = [
         (k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True)
