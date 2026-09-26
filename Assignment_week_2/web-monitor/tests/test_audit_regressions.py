@@ -251,3 +251,24 @@ def test_listing_url_with_trailing_slash_is_fetched_as_given_and_redirects_are_l
     assert f"FETCH url={site.url}/talks status=200" in log
     assert f"final_url={site.url}/talks/ redirect_status=301" in log
     assert log.count("final_url=") == 1                                          # only the redirected request
+
+
+# -- audit 8.3 (CMI): date-only events -------------------------------------------------------------------
+
+def base_record(**fields) -> dict:
+    record = {"item_url": "https://x.org/e#/item/abc", "source_id": "s", "institution": "I", "content_type": "event",
+              "title": "T", "starts_at": "2026-10-02", "timezone": "Asia/Kolkata", "detail_fetch_status": "not_attempted"}
+    record.update(fields)
+    return record
+
+
+def test_date_only_events_validate_with_their_rules():
+    from src.schema import validate_record
+    assert validate_record(base_record()) == []
+    assert validate_record(base_record(ends_at="2026-10-03")) == []
+    assert validate_record(base_record(timezone=None)) == \
+        ["timezone: required when starts_at is date-only (it is a local calendar date)"]
+    assert validate_record(base_record(ends_at="2026-10-03T10:00:00Z")) == ["ends_at: must be date-only exactly when starts_at is"]
+    assert validate_record(base_record(ends_at="2026-10-01")) == ["ends_at: earlier than starts_at"]
+    assert any("starts_at: expected" in e for e in validate_record(base_record(starts_at="2026-02-30")))
+    assert any("listing_fetched_at: expected" in e for e in validate_record(base_record(listing_fetched_at="2026-10-02")))

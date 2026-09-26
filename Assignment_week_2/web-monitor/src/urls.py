@@ -7,6 +7,7 @@ also the URL that gets fetched, so it must never change which resource a server
 returns: the path is kept exactly as given (a trailing slash or "//" can be significant).
 """
 
+import hashlib
 import re
 from typing import Optional
 from urllib.parse import urljoin, urlsplit, urlunsplit, parse_qsl, urlencode
@@ -111,3 +112,27 @@ def resolve_item_url(href: Optional[str], page_url: Optional[str]) -> str:
     fragment = parts.fragment if _IDENTITY_FRAGMENT_RE.match(parts.fragment) else ""
 
     return urlunsplit((scheme, netloc, path, query, fragment))
+
+
+def synthetic_item_url(page_url: str, *identity: object) -> str:
+    """
+    Stable item_url for an item that has no URL of its own (e.g. a seminar whose abstract is only a POST form).
+
+    Returns "<listing URL without query>#/item/<16 hex chars of sha256(identity)>".
+
+    identity: the most stable values the source offers, in this order of preference:
+      1. an id the site itself assigns (e.g. a form's record number): survives title/date edits;
+      2. otherwise title + start date as displayed. An edited title or a moved date then becomes a new item
+         (plus the old one no longer listed): acceptable only when nothing better exists.
+    Whitespace is collapsed and case is folded before hashing, so re-rendering noise does not create new items.
+    The query is dropped so pagination (?page=N) never changes an item's identity; the "#/" fragment survives
+    resolve_item_url (route-fragment rule) and is never sent to a server. Such an item_url is an identifier,
+    not a fetchable page: keep supports_detail off for the source.
+    """
+    values = [" ".join(str(v).split()).casefold() for v in identity if v is not None and str(v).strip()]
+    if not values:
+        raise ValueError("synthetic_item_url needs at least one non-empty identity value")
+    parts = urlsplit(resolve_item_url(page_url, page_url))
+    listing = urlunsplit((parts.scheme, parts.netloc, parts.path, "", ""))
+    digest = hashlib.sha256("\x1f".join(values).encode("utf-8")).hexdigest()[:16]
+    return f"{listing}#/item/{digest}"

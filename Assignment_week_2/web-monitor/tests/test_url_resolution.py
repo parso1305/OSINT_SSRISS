@@ -219,3 +219,21 @@ def test_storage_ee_slash_and_no_slash_are_distinct_keys(tmp_path):
     assert count_items(db) == 2
     assert get_item_by_url(db, EE_ITEM_CANONICAL) is not None
     assert get_item_by_url(db, EE_ITEM_CANONICAL.rstrip("/")) is not None
+
+
+# ---------------------------------------------------------------------------
+# 5. Synthetic identifiers for items without a URL of their own
+# ---------------------------------------------------------------------------
+
+def test_synthetic_item_url_is_stable_canonical_and_page_independent():
+    from src.urls import synthetic_item_url
+    listing = "https://www.cmi.ac.in/activities/"
+    a = synthetic_item_url(listing, "2026", "138")
+    assert a.startswith("https://www.cmi.ac.in/activities/#/item/") and len(a.rsplit("/", 1)[-1]) == 16
+    assert resolve_item_url(a, "") == a                                        # survives canonicalization
+    assert synthetic_item_url(listing + "?page=3", "2026", " 138 ") == a       # pagination, whitespace
+    assert synthetic_item_url("https://x.org/talks", "Knot  Invariants", "2026-10-02") == \
+           synthetic_item_url("https://x.org/talks", "knot invariants", "2026-10-02")
+    assert synthetic_item_url(listing, "2026", "137") != a
+    with pytest.raises(ValueError):
+        synthetic_item_url(listing, None, "  ")

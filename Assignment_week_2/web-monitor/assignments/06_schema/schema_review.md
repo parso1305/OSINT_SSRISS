@@ -267,3 +267,53 @@ scaffolding, so everyone following it likely used them.
   18:30 IST is untested on real data.
 * The records reflect the pipeline as of 2026-09-26. The check 7 overwrite-on-failure defect has not
   affected these rows because every fetch succeeded.
+
+---
+
+## (h) Added after the Week 2 audit (2026-09-27): two assumptions the HSS data could not reveal
+
+A second, structurally different source (Chennai Mathematical Institute seminars, audit sandbox
+`assignments/week2_audit/sources/cmi_seminars.py`) broke two rules that were implicit in this schema.
+
+### 1. Every item has its own URL. It doesn't.
+
+CMI lists 135 seminars with **no per-item link**. The abstract sits behind a `POST` form that carries a
+per-request nonce. `item_url` is still the one identifier, so a source like this must *build* a stable one:
+
+* Use the generic helper `src.urls.synthetic_item_url(listing_url, *identity)`, which returns
+  `<listing URL without query>#/item/<16 hex chars of sha256(identity)>`.
+* **Identity, in order of preference:** (1) an id the site itself assigns (CMI: the form's `absyear` +
+  `absref`); (2) otherwise title + start date as displayed. Option 2 makes an edited title a new item, so use
+  it only when nothing better exists.
+* **Never** use a value that changes per request (the nonce, a session id), or the page an item was found on.
+  The helper drops the query, so `?page=N` never changes an item's identity.
+* Whitespace is collapsed and case is folded before hashing, so re-rendering noise can't create new items.
+* The `#/…` fragment survives `resolve_item_url` (route-fragment rule) and is never sent to a server.
+  Such an identifier is **not fetchable**, so keep `supports_detail` off for that source.
+
+The CMI sandbox adapter originally built this key inline as `show-abstract.php?absyear=…&absref=…`. That
+looks like a fetchable URL, but a `GET` of it does not return the abstract. It now calls the generic helper.
+
+### 2. Every event has a UTC start instant. Some sites only give a date.
+
+`starts_at` (and `ends_at`) may now be a **date-only** ISO value `YYYY-MM-DD`. It is the event's local calendar
+date in `timezone`, never converted to UTC, because a date without a time has no UTC instant. Validation
+(`src/schema.py`, `validate_record`) requires `timezone` in that case, and `ends_at` must be date-only exactly
+when `starts_at` is. This is a convention rather than an `all_day` column: the value describes itself, existing
+rows keep their shape, and no stored `content_hash` changes.
+
+**What the CMI re-run showed.** The audit rejected 8 of 135 CMI items. None of them was actually date-only:
+
+| CMI items (`absref`) | Why the audit rejected them | Now |
+|---|---|---|
+| 124, 117, 38, 35, 32 | start time on the lines *after* a blank `Time:` or a "usual format:" line (`11:00 - 11:30 am: Pre-seminar`) | valid, starts at the first listed time |
+| 70 | different layout: no `Venue:`, title right after `Time:` | valid (title = unlabelled lines before the speaker) |
+| 28, 16 | multi-session lecture series, no `Date:` line | valid: the listing's header date is one of the sessions; the full schedule is kept in `extras.time_raw` |
+
+The stricter layout rules also corrected 3 records the audit had counted as valid (`20` and `14` stored
+`"Time: …"` as the title; `2` stored a title cut at a stray backslash-newline). They also correctly reject
+**one** item (`66`), whose listing entry has no title line (the old rule stored the speaker's name as the
+title). Result: **134 valid, 1 rejected with `title: required`** (was 127 / 8). Evidence:
+`assignments/week2_audit/logs/after_fixes/generalization_run.log`. The date-only path is exercised by
+`tests/test_generic_source.py::test_source_without_item_links_and_with_a_date_only_event` and
+`tests/test_audit_regressions.py::test_date_only_events_validate_with_their_rules`.

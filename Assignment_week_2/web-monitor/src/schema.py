@@ -8,6 +8,19 @@ Record layout for content_type "event":
                 detail_error (+ content_hash, first_seen_at, last_seen_at, added by storage)
   extras        dict of source-specific fields (never shared columns)
 
+Dates (starts_at, ends_at):
+  "YYYY-MM-DDTHH:MM:SSZ"   an instant, always UTC
+  "YYYY-MM-DD"             date-only: the event's local calendar date in `timezone` (all-day, or the site
+                           gives no time). Never converted to UTC (a date without a time has no UTC instant).
+                           Requires `timezone`; ends_at, if present, must then be date-only too.
+  A convention rather than an all_day column: the value describes itself, and existing rows and their
+  content_hash stay unchanged.
+
+item_url for items without a URL of their own (no per-item link, POST-only detail, ...):
+  build it with src.urls.synthetic_item_url(listing_url, <stable identity>): the listing URL plus
+  "#/item/<hash>". Prefer an id the site assigns; fall back to title + start date. Never use a value that
+  changes per request (a nonce, a session id). Keep supports_detail off: the identifier is not fetchable.
+
 The legacy NormalizedItem / normalize_event(s) at the bottom serve the Section 1-4A fixture
 adapter (sources/*_legacy.py) and its tests only.
 """
@@ -33,10 +46,23 @@ REQUIRED_FIELDS = ("item_url", "source_id", "institution", "content_type", "titl
 DETAIL_FETCH_STATUSES = ("ok", "failed", "not_attempted")
 CONTENT_TYPES = ("event",)
 UTC_TIMESTAMP_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 _STRING_FIELDS = ("source_id", "institution", "content_type", "title", "timezone", "venue",
                   "event_type", "organizer", "description", "detail_error")
-_TIMESTAMP_FIELDS = ("starts_at", "ends_at", "listing_fetched_at", "detail_fetched_at")
+_EVENT_TIME_FIELDS = ("starts_at", "ends_at")                  # UTC timestamp or date-only
+_FETCH_TIME_FIELDS = ("listing_fetched_at", "detail_fetched_at")  # always UTC timestamps
+
+
+def is_date_only(value: Any) -> bool:
+    """True for a valid ISO calendar date 'YYYY-MM-DD' (the date-only form of starts_at / ends_at)."""
+    if not isinstance(value, str) or not ISO_DATE_RE.match(value):
+        return False
+    try:
+        datetime.strptime(value, "%Y-%m-%d")
+    except ValueError:
+        return False
+    return True
 
 
 def assemble_record(config: Any, merged: dict, normalized: dict) -> dict:
@@ -77,10 +103,14 @@ def validate_record(record: dict) -> list[str]:
         if value is not None and not isinstance(value, str):
             errors.append(f"{field}: expected str, got {type(value).__name__}")
 
-    for field in _TIMESTAMP_FIELDS:
+    for field in _FETCH_TIME_FIELDS:
         value = record.get(field)
         if value is not None and not (isinstance(value, str) and UTC_TIMESTAMP_RE.match(value)):
             errors.append(f"{field}: expected ISO 8601 UTC 'YYYY-MM-DDTHH:MM:SSZ', got {value!r}")
+    for field in _EVENT_TIME_FIELDS:
+        value = record.get(field)
+        if value is not None and not (is_date_only(value) or (isinstance(value, str) and UTC_TIMESTAMP_RE.match(value))):
+            errors.append(f"{field}: expected ISO 8601 UTC 'YYYY-MM-DDTHH:MM:SSZ' or date-only 'YYYY-MM-DD', got {value!r}")
 
     item_url = record.get("item_url")
     if item_url and resolve_item_url(item_url, "") != item_url:
@@ -90,8 +120,13 @@ def validate_record(record: dict) -> list[str]:
         errors.append(f"content_type: expected one of {CONTENT_TYPES}")
 
     starts_at, ends_at = record.get("starts_at"), record.get("ends_at")
-    if isinstance(starts_at, str) and isinstance(ends_at, str) and ends_at < starts_at:
-        errors.append("ends_at: earlier than starts_at")
+    if is_date_only(starts_at) and not record.get("timezone"):
+        errors.append("timezone: required when starts_at is date-only (it is a local calendar date)")
+    if isinstance(starts_at, str) and isinstance(ends_at, str):
+        if is_date_only(starts_at) != is_date_only(ends_at):
+            errors.append("ends_at: must be date-only exactly when starts_at is")
+        elif ends_at < starts_at:
+            errors.append("ends_at: earlier than starts_at")
 
     speakers = record.get("speakers")
     if speakers is not None:
