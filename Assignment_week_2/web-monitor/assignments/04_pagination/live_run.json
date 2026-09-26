@@ -1,0 +1,281 @@
+{
+  "start_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+  "max_pages": 3,
+  "stop_reason": "max_pages_reached",
+  "pages_crawled": 3,
+  "visited_urls": [
+    "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+    "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1",
+    "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=2"
+  ],
+  "fetches": [
+    {
+      "page": 1,
+      "requested_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+      "final_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+      "http_status": 200,
+      "fetched_at": "2026-09-25T14:51:51+00:00",
+      "saved_as": "fixtures/iit_bombay_hss/live_page_1.html"
+    },
+    {
+      "page": 2,
+      "requested_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1",
+      "final_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1",
+      "http_status": 200,
+      "fetched_at": "2026-09-25T14:51:53+00:00",
+      "saved_as": "fixtures/iit_bombay_hss/live_page_2.html"
+    },
+    {
+      "page": 3,
+      "requested_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=2",
+      "final_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=2",
+      "http_status": 200,
+      "fetched_at": "2026-09-25T14:51:54+00:00",
+      "saved_as": "fixtures/iit_bombay_hss/live_page_3.html"
+    }
+  ],
+  "items_total": 30,
+  "items_unique_urls": 30,
+  "items": [
+    {
+      "discovered_on_page": 1,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+      "raw_href": "/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability",
+      "title": "The A&N Islands – At the tri-junction of fragility and vulnerability",
+      "date_raw": "25th Sep 2025"
+    },
+    {
+      "discovered_on_page": 1,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+      "raw_href": "/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+      "title": "Tracing the Success of Indian Democracy to Success in Nation-Building",
+      "date_raw": "17th Sep 2025"
+    },
+    {
+      "discovered_on_page": 1,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+      "raw_href": "/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup",
+      "title": "Echoes of Translation: Audibility and Relationality in Indian Jewish Women’s Songs (OUP, forthcoming 2026)",
+      "date_raw": "22nd Aug 2025"
+    },
+    {
+      "discovered_on_page": 1,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+      "raw_href": "/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice",
+      "title": "Experiential Self and the Mitigation of Epistemic Injustice",
+      "date_raw": "25th Aug 2025"
+    },
+    {
+      "discovered_on_page": 1,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+      "raw_href": "/events/seminar-talk/embodied-translation",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/embodied-translation",
+      "title": "Embodied Translation",
+      "date_raw": "26th Aug 2025"
+    },
+    {
+      "discovered_on_page": 1,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+      "raw_href": "/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns",
+      "title": "Gramsci and South Asia: A Dialogue with Subalterns",
+      "date_raw": "20th Aug 2025"
+    },
+    {
+      "discovered_on_page": 1,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+      "raw_href": "/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks",
+      "title": "Translating Untranslatability: Environmental Justice and Sacredness in Spivak’s Translation of Devi’s Pterodactyl",
+      "date_raw": "25th Jul 2025"
+    },
+    {
+      "discovered_on_page": 1,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+      "raw_href": "/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance",
+      "title": "Prayers and Curses: Utterance Forms, Political Speech and Literary Performance",
+      "date_raw": "9th Jul 2025"
+    },
+    {
+      "discovered_on_page": 1,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+      "raw_href": "/events/seminar-talk/rortys-revolution",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/rortys-revolution",
+      "title": "Rorty's Revolution",
+      "date_raw": "9th Apr 2025"
+    },
+    {
+      "discovered_on_page": 1,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+      "raw_href": "/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris",
+      "title": "\"Those Four Years\": A History of 19th-Century Chinese Migration to the Nilgiris",
+      "date_raw": "7th Apr 2025"
+    },
+    {
+      "discovered_on_page": 2,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1",
+      "raw_href": "/events/seminar-talk/ambedkar-subcontinental-philosopher",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/ambedkar-subcontinental-philosopher",
+      "title": "Ambedkar as Subcontinental Philosopher",
+      "date_raw": "26th Mar 2025"
+    },
+    {
+      "discovered_on_page": 2,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1",
+      "raw_href": "/events/seminar-talk/mapping-asiddha-principle-abhiya-section-paninis-astadhyayi",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/mapping-asiddha-principle-abhiya-section-paninis-astadhyayi",
+      "title": "Mapping the asiddha principle from the ābhīya section of Pāṇini's Aṣṭādhyāyī",
+      "date_raw": "22nd Mar 2025"
+    },
+    {
+      "discovered_on_page": 2,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1",
+      "raw_href": "/events/seminar-talk/english-studies-india-its-past-and-its-future",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/english-studies-india-its-past-and-its-future",
+      "title": "English Studies in India: Its past and its future",
+      "date_raw": "11th Mar 2025"
+    },
+    {
+      "discovered_on_page": 2,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1",
+      "raw_href": "/events/seminar-talk/northeast-corridors-hominins-dispersals-and-out-subcontinent",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/northeast-corridors-hominins-dispersals-and-out-subcontinent",
+      "title": "The Northeast Corridors Hominins: Dispersals in and Out of the Subcontinent",
+      "date_raw": "7th Mar 2025"
+    },
+    {
+      "discovered_on_page": 2,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1",
+      "raw_href": "/events/seminar-talk/political-families-and-democracy-modern-india",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/political-families-and-democracy-modern-india",
+      "title": "Political Families and Democracy in Modern India",
+      "date_raw": "12th Mar 2025"
+    },
+    {
+      "discovered_on_page": 2,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1",
+      "raw_href": "/events/seminar-talk/quality-and-equity-higher-education-decoding-social-justice-nation-education",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/quality-and-equity-higher-education-decoding-social-justice-nation-education",
+      "title": "Quality and Equity in Higher Education: Decoding Social Justice in Nation Education Policy 2020",
+      "date_raw": "6th Mar 2025"
+    },
+    {
+      "discovered_on_page": 2,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1",
+      "raw_href": "/events/seminar-talk/garden-dam-do-engineers-and-historians-think-differently-about-rivers-south",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/garden-dam-do-engineers-and-historians-think-differently-about-rivers-south",
+      "title": "Garden to a Dam: Do Engineers and Historians think differently about Rivers in South Asia?",
+      "date_raw": "10th Mar 2025"
+    },
+    {
+      "discovered_on_page": 2,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1",
+      "raw_href": "/events/seminar-talk/emotion-and-action",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/emotion-and-action",
+      "title": "Emotion and Action",
+      "date_raw": "24th Feb 2025"
+    },
+    {
+      "discovered_on_page": 2,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1",
+      "raw_href": "/events/seminar-talk/infinite-addressee-some-poetic-lessons-historical-life",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/infinite-addressee-some-poetic-lessons-historical-life",
+      "title": "The Infinite Addressee: some Poetic Lessons for Historical Life",
+      "date_raw": "19th Feb 2025"
+    },
+    {
+      "discovered_on_page": 2,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1",
+      "raw_href": "/events/seminar-talk/leaning-together-men-allies-promoting-gender-equality-organizations-ambivalence",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/leaning-together-men-allies-promoting-gender-equality-organizations-ambivalence",
+      "title": "Leaning In Together? Men as Allies in Promoting Gender Equality in Organizations from an Ambivalence Perspective",
+      "date_raw": "20th Feb 2025"
+    },
+    {
+      "discovered_on_page": 3,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=2",
+      "raw_href": "/events/seminar-talk/non-one-sidedness-itself-non-onesided-anekantavada-itself-anaikantika",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/non-one-sidedness-itself-non-onesided-anekantavada-itself-anaikantika",
+      "title": "Is Non-one-sidedness itself Non-onesided (Is Anekāntavāda itself Anaikāntika)?",
+      "date_raw": "31st Jan 2025"
+    },
+    {
+      "discovered_on_page": 3,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=2",
+      "raw_href": "/events/seminar-talk/necessary-co-apprehension-some-notes-history-buddhist-idea",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/necessary-co-apprehension-some-notes-history-buddhist-idea",
+      "title": "On Necessary Co-apprehension: Some Notes on the History of a Buddhist Idea",
+      "date_raw": "29th Jan 2025"
+    },
+    {
+      "discovered_on_page": 3,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=2",
+      "raw_href": "/events/seminar-talk/three-formulations-autonomy-kant-sade-and-nietzsche",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/three-formulations-autonomy-kant-sade-and-nietzsche",
+      "title": "Three Formulations of Autonomy: Kant, Sade and Nietzsche",
+      "date_raw": "22nd Jan 2025"
+    },
+    {
+      "discovered_on_page": 3,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=2",
+      "raw_href": "/events/seminar-talk/who-visual-subject-representation-labouring-lives-contemporary-india",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/who-visual-subject-representation-labouring-lives-contemporary-india",
+      "title": "Who is a Visual Subject?: The Representation of Labouring Lives in Contemporary India",
+      "date_raw": "22nd Jan 2025"
+    },
+    {
+      "discovered_on_page": 3,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=2",
+      "raw_href": "/events/seminar-talk/outernationalist-dub-work-ir-indigenous-resistance",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/outernationalist-dub-work-ir-indigenous-resistance",
+      "title": "Outernationalist Dub in the Work of  IR ::  Indigenous Resistance",
+      "date_raw": "24th Jan 2025"
+    },
+    {
+      "discovered_on_page": 3,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=2",
+      "raw_href": "/events/seminar-talk/thinking-body-academic-new-materialist-approach-academic-labour",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/thinking-body-academic-new-materialist-approach-academic-labour",
+      "title": "Thinking the Body Academic: A New Materialist Approach to Academic Labour",
+      "date_raw": "17th Jan 2025"
+    },
+    {
+      "discovered_on_page": 3,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=2",
+      "raw_href": "/events/seminar-talk/sojourners-circulating-society-migrant-labor-inof-south-asia",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/sojourners-circulating-society-migrant-labor-inof-south-asia",
+      "title": "Sojourners in a Circulating Society: Migrant Labor in/of South Asia",
+      "date_raw": "15th Jan 2025"
+    },
+    {
+      "discovered_on_page": 3,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=2",
+      "raw_href": "/events/seminar-talk/book-talk-toward-more-perfect-rebellion-multiracial-media-activism-made-la",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/book-talk-toward-more-perfect-rebellion-multiracial-media-activism-made-la",
+      "title": "Book talk: Toward a More Perfect Rebellion: Multiracial Media Activism Made in L.A. (University of California Press, May 2025)",
+      "date_raw": "8th Jan 2025"
+    },
+    {
+      "discovered_on_page": 3,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=2",
+      "raw_href": "/events/seminar-talk/exploring-buddhist-ocean",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/exploring-buddhist-ocean",
+      "title": "Exploring the Buddhist Ocean",
+      "date_raw": "9th Jan 2025"
+    },
+    {
+      "discovered_on_page": 3,
+      "discovered_on_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=2",
+      "raw_href": "/events/seminar-talk/primacy-practice-some-implications-why-self-constituting-agents-are-not-ends",
+      "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/primacy-practice-some-implications-why-self-constituting-agents-are-not-ends",
+      "title": "Primacy of Practice : Some Implications & Why Self-Constituting Agents are not Ends in Themselves",
+      "date_raw": "2nd Jan 2025"
+    }
+  ]
+}

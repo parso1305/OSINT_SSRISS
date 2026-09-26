@@ -1,0 +1,17 @@
+counts={'new': 0, 'existing': 0, 'changed': 0} detail={'ok': 10, 'failed': 0, 'not_attempted': 0} invalid=10
+baseline (before format change): starts_at=None ends_at=None
+after format change:            starts_at=None ends_at=None
+first invalid: [{'item_url': 'http://127.0.0.1:56840/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability', 'errors': ['starts_at: required']}]
+--- WARNING/ERROR lines ---
+2026-09-26 19:24:59 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:56840/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability errors="starts_at: required"
+2026-09-26 19:24:59 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:56840/events/seminar-talk/tracing-success-indian-democracy-success-nation-building errors="starts_at: required"
+2026-09-26 19:24:59 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:56840/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup errors="starts_at: required"
+2026-09-26 19:24:59 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:56840/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice errors="starts_at: required"
+2026-09-26 19:24:59 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:56840/events/seminar-talk/embodied-translation errors="starts_at: required"
+2026-09-26 19:24:59 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:56840/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns errors="starts_at: required"
+2026-09-26 19:24:59 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:56840/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks errors="starts_at: required"
+2026-09-26 19:24:59 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:56840/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance errors="starts_at: required"
+2026-09-26 19:24:59 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:56840/events/seminar-talk/rortys-revolution errors="starts_at: required"
+2026-09-26 19:24:59 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:56840/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris errors="starts_at: required"
+2026-09-26 19:24:59 [INFO] logger=web_monitor VALIDATE valid=0 invalid=10
+2026-09-26 19:24:59 [INFO] logger=web_monitor STORE new=0 existing=0 changed=0

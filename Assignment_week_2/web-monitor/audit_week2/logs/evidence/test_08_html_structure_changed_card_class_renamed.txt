@@ -1,0 +1,11 @@
+scheduler result: {'run_id': '813449e2adc945f6abc7557093f441bd', 'source_id': 'iit_bombay_hss_seminars', 'status': 'success', 'counts': {'new': 0, 'existing': 0, 'changed': 0}}
+runs: [('success', 0, 0, None)]
+rows stored: 0
+speakers on ok-enriched rows: None
+--- WARNING/ERROR/summary lines ---
+2026-09-26 19:24:54 [INFO] logger=web_monitor PARSE records=0
+2026-09-26 19:24:54 [WARNING] logger=web_monitor WARNING source_id=iit_bombay_hss_seminars url=http://127.0.0.1:56767/events/seminars-and-talks stage=parse message="Listing returned HTTP 200 but parsed 0 items: possible silent layout change"
+2026-09-26 19:24:54 [INFO] logger=web_monitor ENRICH ok=0 failed=0 not_attempted=0
+2026-09-26 19:24:54 [INFO] logger=web_monitor VALIDATE valid=0 invalid=0
+2026-09-26 19:24:54 [INFO] logger=web_monitor STORE new=0 existing=0 changed=0
+2026-09-26 19:24:54 [INFO] logger=web_monitor RUN_END run_id=813449e2adc945f6abc7557093f441bd source=iit_bombay_hss_seminars status=success duration_ms=85 new=0 existing=0 changed=0 failed=0 error=""

@@ -1,0 +1,11 @@
+# Direct dependencies, pinned to the versions verified in a fresh venv (2026-09-26 audit, Python 3.13).
+# Install:  python -m venv venv && venv\Scripts\python -m pip install -r requirements.txt
+
+# runtime
+requests==2.34.2
+urllib3==2.8.0
+beautifulsoup4==4.15.0
+
+# tests
+pytest==9.1.1
+pytest-cov==7.1.0

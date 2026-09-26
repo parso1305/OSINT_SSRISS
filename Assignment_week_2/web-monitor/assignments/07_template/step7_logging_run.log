@@ -1,0 +1,28 @@
+
+===== run 1 (db=C:\Users\parth\AppData\Local\Temp\tmp03jux2oz\fixtures_run.db) =====
+2026-09-26 12:08:56 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
+2026-09-26 12:08:56 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:PORT/events/seminars-and-talks status=200 duration_ms=3
+2026-09-26 12:08:57 [INFO] logger=web_monitor Page 1 yielded 10 items
+2026-09-26 12:08:57 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:PORT/events/seminars-and-talks?page=1 status=200 duration_ms=26
+2026-09-26 12:08:57 [INFO] logger=web_monitor Page 2 yielded 10 items
+2026-09-26 12:08:57 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:PORT/events/seminars-and-talks?page=2 status=404 duration_ms=25
+2026-09-26 12:08:57 [ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:PORT/events/seminars-and-talks?page=2 stage=fetch error_type=FetchError message="HTTP 404 Not Found for url: http://127.0.0.1:PORT/events/seminars-and-talks?page=2"
+2026-09-26 12:08:57 [INFO] logger=web_monitor PAGINATE pages_crawled=2 stop_reason=fetch_failed
+2026-09-26 12:08:57 [INFO] logger=web_monitor PARSE records=20
+2026-09-26 12:08:57 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:PORT/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=2
+2026-09-26 12:08:57 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:PORT/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=404 duration_ms=2
+2026-09-26 12:08:57 [WARNING] logger=web_monitor.detail DETAIL_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:PORT/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=404 error_type=FetchError message="HTTP 404 Not Found for url: http://127.0.0.1:PORT/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"
+2026-09-26 12:08:57 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:PORT/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=24
+2026-09-26 12:08:57 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:PORT/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=2
+2026-09-26 12:08:57 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:PORT/events/seminar-talk/embodied-translation status=200 duration_ms=2
+2026-09-26 12:08:57 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:PORT/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=2
+2026-09-26 12:08:57 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:PORT/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=2
+2026-09-26 12:08:57 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:PORT/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=2
+2026-09-26 12:08:57 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:PORT/events/seminar-talk/rortys-revolution status=200 duration_ms=2
+2026-09-26 12:08:57 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:PORT/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=2
+2026-09-26 12:08:57 [INFO] logger=web_monitor ENRICH ok=9 failed=1 not_attempted=10
+2026-09-26 12:08:57 [INFO] logger=web_monitor NORMALIZE records=20
+2026-09-26 12:08:57 [INFO] logger=web_monitor VALIDATE valid=20 invalid=0
+2026-09-26 12:08:57 [INFO] logger=web_monitor STORE new=20 existing=0 changed=0
+2026-09-26 12:08:57 [INFO] logger=web_monitor END source_id=iit_bombay_hss_seminars duration_ms=509
+summary: pages=2 stop=fetch_failed detail={'ok': 9, 'failed': 1, 'not_attempted': 10} counts={'new': 20, 'existing': 0, 'changed': 0} validated=20 valid=20 rejected=0

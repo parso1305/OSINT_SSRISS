@@ -1,0 +1,43 @@
+2026-09-26 19:23:34 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_me_events interval_minutes=1440 last_started_at=never next_due_at=now due=true
+2026-09-26 19:23:34 [INFO] logger=web_monitor RUN_START run_id=0daff1e1e1c2498fab0031ca2e20a52f source=iit_bombay_me_events
+2026-09-26 19:23:34 [INFO] logger=web_monitor START source_id=iit_bombay_me_events
+2026-09-26 19:23:34 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:65014/events status=200 duration_ms=18
+2026-09-26 19:23:34 [INFO] logger=web_monitor Page 1 yielded 20 items
+2026-09-26 19:23:34 [INFO] logger=web_monitor PAGINATE pages_crawled=1 stop_reason=max_pages_reached
+2026-09-26 19:23:34 [INFO] logger=web_monitor PARSE records=20
+2026-09-26 19:23:34 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:65014/event/talk-dr-pc-jain-industry-academia-collaboration-drdo-perspective status=200 duration_ms=14
+2026-09-26 19:23:34 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:65014/event/64th-convocationdepartmental-degree-award-functionddaf status=404 duration_ms=20
+2026-09-26 19:23:34 [WARNING] logger=web_monitor.detail DETAIL_FAILURE source_id=iit_bombay_me_events item_url=http://127.0.0.1:65014/event/64th-convocationdepartmental-degree-award-functionddaf status=404 error_type=FetchError message="HTTP 404 Not Found for url: http://127.0.0.1:65014/event/64th-convocationdepartmental-degree-award-functionddaf"
+2026-09-26 19:23:34 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:65014/event/prof-anirban-guha-condolence-meeting status=404 duration_ms=15
+2026-09-26 19:23:34 [WARNING] logger=web_monitor.detail DETAIL_FAILURE source_id=iit_bombay_me_events item_url=http://127.0.0.1:65014/event/prof-anirban-guha-condolence-meeting status=404 error_type=FetchError message="HTTP 404 Not Found for url: http://127.0.0.1:65014/event/prof-anirban-guha-condolence-meeting"
+2026-09-26 19:23:34 [INFO] logger=web_monitor ENRICH ok=1 failed=2 not_attempted=17
+2026-09-26 19:23:34 [INFO] logger=web_monitor NORMALIZE records=20
+2026-09-26 19:23:34 [INFO] logger=web_monitor VALIDATE valid=20 invalid=0
+2026-09-26 19:23:34 [INFO] logger=web_monitor STORE new=20 existing=0 changed=0
+2026-09-26 19:23:34 [INFO] logger=web_monitor END source_id=iit_bombay_me_events duration_ms=141
+2026-09-26 19:23:34 [INFO] logger=web_monitor RUN_END run_id=0daff1e1e1c2498fab0031ca2e20a52f source=iit_bombay_me_events status=success duration_ms=152 new=20 existing=0 changed=0 failed=2 error=""
+2026-09-26 19:23:34 [INFO] logger=web_monitor SCHEDULE source=cmi_seminars interval_minutes=720 last_started_at=never next_due_at=now due=true
+2026-09-26 19:23:34 [INFO] logger=web_monitor RUN_START run_id=c864f1498fda435083c05486f5231f06 source=cmi_seminars
+2026-09-26 19:23:34 [INFO] logger=web_monitor START source_id=cmi_seminars
+2026-09-26 19:23:34 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:65014/activities status=200 duration_ms=31
+2026-09-26 19:23:35 [INFO] logger=web_monitor Page 1 yielded 135 items
+2026-09-26 19:23:35 [INFO] logger=web_monitor PARSE records=135
+2026-09-26 19:23:35 [INFO] logger=web_monitor NORMALIZE records=135
+2026-09-26 19:23:35 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=cmi_seminars item_url=https://www.cmi.ac.in/activities/show-abstract.php?absref=124&absyear=2026 errors="starts_at: required"
+2026-09-26 19:23:35 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=cmi_seminars item_url=https://www.cmi.ac.in/activities/show-abstract.php?absref=117&absyear=2026 errors="starts_at: required"
+2026-09-26 19:23:35 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=cmi_seminars item_url=https://www.cmi.ac.in/activities/show-abstract.php?absref=70&absyear=2026 errors="title: required"
+2026-09-26 19:23:35 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=cmi_seminars item_url=https://www.cmi.ac.in/activities/show-abstract.php?absref=38&absyear=2026 errors="starts_at: required"
+2026-09-26 19:23:35 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=cmi_seminars item_url=https://www.cmi.ac.in/activities/show-abstract.php?absref=35&absyear=2026 errors="starts_at: required"
+2026-09-26 19:23:35 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=cmi_seminars item_url=https://www.cmi.ac.in/activities/show-abstract.php?absref=32&absyear=2026 errors="starts_at: required"
+2026-09-26 19:23:35 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=cmi_seminars item_url=https://www.cmi.ac.in/activities/show-abstract.php?absref=28&absyear=2026 errors="starts_at: required"
+2026-09-26 19:23:35 [WARNING] logger=web_monitor VALIDATION_FAILURE source_id=cmi_seminars item_url=https://www.cmi.ac.in/activities/show-abstract.php?absref=16&absyear=2026 errors="starts_at: required"
+2026-09-26 19:23:35 [INFO] logger=web_monitor VALIDATE valid=127 invalid=8
+2026-09-26 19:23:35 [INFO] logger=web_monitor STORE new=127 existing=0 changed=0
+2026-09-26 19:23:35 [INFO] logger=web_monitor END source_id=cmi_seminars duration_ms=153
+2026-09-26 19:23:35 [INFO] logger=web_monitor RUN_END run_id=c864f1498fda435083c05486f5231f06 source=cmi_seminars status=success duration_ms=164 new=127 existing=0 changed=0 failed=8 error=""
+2026-09-26 19:23:35 [INFO] logger=web_monitor SCHEDULE source=me_with_hss_adapter interval_minutes=1440 last_started_at=never next_due_at=now due=true
+2026-09-26 19:23:35 [INFO] logger=web_monitor RUN_START run_id=2e689dd4b8d943e19cca599a3f2e4552 source=me_with_hss_adapter
+2026-09-26 19:23:35 [INFO] logger=web_monitor START source_id=me_with_hss_adapter
+2026-09-26 19:23:35 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:65014/events status=200 duration_ms=16
+2026-09-26 19:23:35 [ERROR] logger=web_monitor FAILURE source_id=me_with_hss_adapter url=http://127.0.0.1:65014/events stage=parse error_type=StructuralError message="Structural layout mismatch: Target container '.view-seminars-and-talks .view-content' not found in HTML. Site structure may have changed."
+2026-09-26 19:23:35 [ERROR] logger=web_monitor RUN_END run_id=2e689dd4b8d943e19cca599a3f2e4552 source=me_with_hss_adapter status=failed duration_ms=56 new=0 existing=0 changed=0 failed=0 error="StructuralError: Structural layout mismatch: Target container '.view-seminars-and-talks .view-content' not found in HTML. Site structure may have changed."

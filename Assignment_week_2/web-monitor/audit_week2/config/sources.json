@@ -1,0 +1,72 @@
+{
+  "sources": [
+    {
+      "source_id": "iit_bombay_hss_seminars",
+      "institution": "IIT Bombay",
+      "organizer": "Department of Humanities and Social Sciences",
+      "content_type": "event",
+      "adapter": "sources.iit_bombay",
+      "listing_url": "https://www.hss.iitb.ac.in/events/seminars-and-talks",
+      "enabled": true,
+      "supports_pagination": true,
+      "max_pages": 2,
+      "supports_detail": true,
+      "detail_limit": 10,
+      "request_delay_s": 1.5,
+      "timeout_s": 10,
+      "interval_minutes": 1440,
+      "lock_max_age_minutes": 60
+    },
+    {
+      "source_id": "local_fixture",
+      "institution": "IIT Bombay",
+      "organizer": "Department of Humanities and Social Sciences",
+      "content_type": "event",
+      "adapter": "sources.iit_bombay",
+      "listing_url": "http://127.0.0.1:8765/events/seminars-and-talks",
+      "enabled": false,
+      "supports_pagination": true,
+      "max_pages": 2,
+      "supports_detail": true,
+      "detail_limit": 3,
+      "request_delay_s": 0.2,
+      "timeout_s": 10,
+      "interval_minutes": 3,
+      "lock_max_age_minutes": 30
+    },
+    {
+      "source_id": "iit_bombay_me_events",
+      "institution": "IIT Bombay",
+      "organizer": "Department of Mechanical Engineering",
+      "content_type": "event",
+      "adapter": "audit_week2.sources.me_iitb",
+      "listing_url": "https://www.me.iitb.ac.in/events",
+      "enabled": false,
+      "supports_pagination": true,
+      "max_pages": 1,
+      "supports_detail": true,
+      "detail_limit": 3,
+      "request_delay_s": 2.0,
+      "timeout_s": 10,
+      "interval_minutes": 1440,
+      "lock_max_age_minutes": 60
+    },
+    {
+      "source_id": "cmi_seminars",
+      "institution": "Chennai Mathematical Institute",
+      "organizer": null,
+      "content_type": "event",
+      "adapter": "audit_week2.sources.cmi_seminars",
+      "listing_url": "https://www.cmi.ac.in/activities/",
+      "enabled": false,
+      "supports_pagination": false,
+      "max_pages": 1,
+      "supports_detail": false,
+      "detail_limit": 0,
+      "request_delay_s": 2.0,
+      "timeout_s": 10,
+      "interval_minutes": 720,
+      "lock_max_age_minutes": 60
+    }
+  ]
+}

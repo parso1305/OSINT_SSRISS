@@ -1,0 +1,2 @@
+# Raw captured bytes are evidence: never convert line endings on checkout.
+*.bin binary

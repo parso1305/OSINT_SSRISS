@@ -1,0 +1,2 @@
+run1 counts={'new': 20, 'existing': 0, 'changed': 0} rows=20
+run2 counts={'new': 0, 'existing': 20, 'changed': 0} rows=20

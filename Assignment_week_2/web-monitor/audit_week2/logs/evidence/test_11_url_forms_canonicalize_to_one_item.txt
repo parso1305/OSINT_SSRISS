@@ -1,0 +1,10 @@
+href variant -> item_url:
+  '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability'                         -> http://127.0.0.1:56866/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
+  'seminar-talk/islands-tri-junction-fragility-and-vulnerability'                                 -> http://127.0.0.1:56866/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
+  '//127.0.0.1:56866/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability/'       -> http://127.0.0.1:56866/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
+  '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability?utm_source=newsletter&fbclid=abc123' -> http://127.0.0.1:56866/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
+  '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability#abstract'                -> http://127.0.0.1:56866/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
+  'HTTP://127.0.0.1:56866/events//seminar-talk/islands-tri-junction-fragility-and-vulnerability/' -> http://127.0.0.1:56866/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
+runner counts={'new': 1, 'existing': 5, 'changed': 0} detail={'ok': 6, 'failed': 0, 'not_attempted': 0}
+rows stored=1
+detail GETs issued for this one item: 6 ['/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability', '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability', '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability', '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability', '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability', '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability']

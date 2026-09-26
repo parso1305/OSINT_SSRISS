@@ -1,0 +1,4 @@
+cycle1: [('iit_bombay_hss_seminars', {'new': 10, 'existing': 0, 'changed': 0}), ('audit_parent_site', {'new': 0, 'existing': 0, 'changed': 10})]
+cycle2: [('iit_bombay_hss_seminars', {'new': 0, 'existing': 0, 'changed': 10}), ('audit_parent_site', {'new': 0, 'existing': 0, 'changed': 10})]
+rows total=10; rows per source: iit_bombay_hss_seminars=0 audit_parent_site=10
+shared row after cycle 1: source_id=audit_parent_site organizer=Institute events office

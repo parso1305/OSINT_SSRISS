@@ -1,0 +1,218 @@
+counts:
+{
+ "pages_crawled": 2,
+ "stop_reason": "max_pages_reached",
+ "detail_status": {
+  "ok": 10,
+  "failed": 0,
+  "not_attempted": 10
+ },
+ "counts": {
+  "new": 20,
+  "existing": 0,
+  "changed": 0
+ }
+}
+invalid (runner) = []
+rows in records = 20
+validate_record on every stored row: 20/20 valid
+HTTP requests made (13): ['/robots.txt', '/events/seminars-and-talks', '/events/seminars-and-talks?page=1', '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability', '/events/seminar-talk/tracing-success-indian-democracy-success-nation-building', '/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup', '/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice', '/events/seminar-talk/embodied-translation', '/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns', '/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks', '/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance', '/events/seminar-talk/rortys-revolution', '/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris']
+--- 5 stored records, all fields ---
+{
+ "item_url": "http://127.0.0.1:61279/events/seminar-talk/ambedkar-subcontinental-philosopher",
+ "source_id": "iit_bombay_hss_seminars",
+ "institution": "IIT Bombay",
+ "content_type": "event",
+ "title": "Ambedkar as Subcontinental Philosopher",
+ "starts_at": "2025-03-26T10:00:00Z",
+ "ends_at": null,
+ "timezone": "Asia/Kolkata",
+ "speakers": [],
+ "venue": "HSS Seminar Room, Department of HSS",
+ "is_online": null,
+ "event_type": "Seminar / Talk",
+ "organizer": "Department of Humanities and Social Sciences",
+ "description": null,
+ "listing_fetched_at": "2026-09-26T13:54:40Z",
+ "detail_fetched_at": null,
+ "detail_fetch_status": "not_attempted",
+ "detail_http_status": null,
+ "detail_error": null,
+ "extras": {
+  "date_raw": "26th Mar 2025",
+  "discovered_on_page": 2,
+  "discovered_on_url": "http://127.0.0.1:61279/events/seminars-and-talks?page=1",
+  "raw_href": "/events/seminar-talk/ambedkar-subcontinental-philosopher",
+  "raw_text": "26 Mar 2025 Seminar / Talk Ambedkar as Subcontinental Philosopher 26th Mar 2025 15:30 PM HSS Seminar Room, Department of HSS",
+  "time_raw": "15:30 PM"
+ },
+ "content_hash": "2b21752067a4cd52b2142c727e65d7f05c7f66b61c99d2277c6611f7d09830a3",
+ "first_seen_at": "2026-09-26T13:54:41Z",
+ "last_seen_at": "2026-09-26T13:54:41Z"
+}
+{
+ "item_url": "http://127.0.0.1:61279/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup",
+ "source_id": "iit_bombay_hss_seminars",
+ "institution": "IIT Bombay",
+ "content_type": "event",
+ "title": "Echoes of Translation: Audibility and Relationality in Indian Jewish Women’s Songs (OUP, forthcoming 2026)",
+ "starts_at": "2025-08-22T10:00:00Z",
+ "ends_at": "2025-08-22T12:30:00Z",
+ "timezone": "Asia/Kolkata",
+ "speakers": [
+  {
+   "affiliation": null,
+   "name": "Anna C. Schultz"
+  }
+ ],
+ "venue": "HSS Seminar Room, Department of HSS",
+ "is_online": null,
+ "event_type": "Seminar / Talk",
+ "organizer": "Department of Humanities and Social Sciences",
+ "description": "The Bene Israel are a Jewish community from western India who, over centuries, developed a distinctive identity in relation to other Jewish and non-Jewish communities, translating their sounds, words, and practices to have uniquely Marathi Jewish meanings. Some men sing Marathi Jewish songs, but over the past half century, women have assumed the important cultural role of stewarding these songs for the future. As author Anna C. Schultz demonstrates, the Bene Israel women are translators who creatively mediate the worlds around them through song; while they may not always be visible, they are audible, and this book amplifies their relational soundings. Schultz explores sonic translation among the Bene Israel through the metaphor of the echo: a resonant, transformative, relational phenomenon. The voices of Bene Israel women today, like Ovid’s Echo, resonate empathically with loved ones they have survived, and, faintly, with those they never knew. Singing this repertoire teaches singers and listeners not only how to be Jewish, but how to be Bene Israel. It also fosters sociality, providing a medium through which women echo one another, sharing cultural expertise while securing affective ties. But women also echo with one another, that is, they collectively and audibly translate sacred texts as embodied experience in the here and now. Women’s repertories and practices were shaped in a richly diverse context, coloured by interlinguistic translation between Hebrew, Marathi, Hindi, and English, as well as by other forms of cultural translation: translations from Cochin and Baghdadi Jewish to Bene Israel practice, Christian and Hindu religious discourse to Jewish religious discourse, from one ritual context to another, from men to women, from the written page to embodied performance, and from the past to the present.",
+ "listing_fetched_at": "2026-09-26T13:54:40Z",
+ "detail_fetched_at": "2026-09-26T13:54:40Z",
+ "detail_fetch_status": "ok",
+ "detail_http_status": 200,
+ "detail_error": null,
+ "extras": {
+  "date_raw": "22nd Aug 2025",
+  "detail_canonical_url": "https://www.hss.iitb.ac.in/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup",
+  "discovered_on_page": 1,
+  "discovered_on_url": "http://127.0.0.1:61279/events/seminars-and-talks",
+  "node_id": "2704",
+  "raw_href": "/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup",
+  "raw_text": "22 Aug 2025 Seminar / Talk Echoes of Translation: Audibility and Relationality in Indian Jewish Women’s Songs (OUP, forthcoming 2026) 22nd Aug 2025 15:30 PM HSS Seminar Room, Department of HSS",
+  "time_raw": "15:30 PM"
+ },
+ "content_hash": "019c7cf1d0bd0552e65e7e62fc05772008b3c06c9e2c3de894a1c39b7be6df0c",
+ "first_seen_at": "2026-09-26T13:54:41Z",
+ "last_seen_at": "2026-09-26T13:54:41Z"
+}
+{
+ "item_url": "http://127.0.0.1:61279/events/seminar-talk/embodied-translation",
+ "source_id": "iit_bombay_hss_seminars",
+ "institution": "IIT Bombay",
+ "content_type": "event",
+ "title": "Embodied Translation",
+ "starts_at": "2025-08-26T09:30:00Z",
+ "ends_at": "2025-08-26T11:30:00Z",
+ "timezone": "Asia/Kolkata",
+ "speakers": [
+  {
+   "affiliation": null,
+   "name": "Anna C. Schultz"
+  }
+ ],
+ "venue": "HSS Seminar Room, Department of HSS",
+ "is_online": null,
+ "event_type": "Seminar / Talk",
+ "organizer": "Department of Humanities and Social Sciences",
+ "description": "This seminar introduces my concept of embodied translation to describe how women make religious and cultural meaning not only through language, but also through voice, emotion, memory, and ritual. Embodied translation is discursive and performative; it goes beyond interlingual translation and is more specific than “cultural translation.” Embodied translation transforms speech into song (and vice versa) and extends into domains not traditionally considered semiotic, such as embodied habits, religious practice, and emotions, which in turn produce further habits, practices, and emotions. This ongoing process of translation exists in a political field of power marked by the malleability, contestation, and negotiation of signs. To provide context for this heuristic, we will discuss portions of the following readings: Roman Jakobson, “On Linguistic Aspects of Translation,” in On Translation, ed. Reuben Arthur Brower (Cambridge: Harvard University Press, 1959), 232–239. Talal Asad,Secular Translations: Nation-State, Modern Self, and Calculative Reason(New York: Columbia University Press, 2018), pp. 4–6. Tony Perman,Signs of the Spirit: Music and the Experience of Meaning in Ndau Ceremonial Life(Urbana, Chicago, Springfield: University of Illinois Press, 2020), 76. Case studies: Bene Israel kirtan, a Tamil Christian hymn.",
+ "listing_fetched_at": "2026-09-26T13:54:40Z",
+ "detail_fetched_at": "2026-09-26T13:54:40Z",
+ "detail_fetch_status": "ok",
+ "detail_http_status": 200,
+ "detail_error": null,
+ "extras": {
+  "date_raw": "26th Aug 2025",
+  "detail_canonical_url": "https://www.hss.iitb.ac.in/events/seminar-talk/embodied-translation",
+  "discovered_on_page": 1,
+  "discovered_on_url": "http://127.0.0.1:61279/events/seminars-and-talks",
+  "node_id": "2702",
+  "raw_href": "/events/seminar-talk/embodied-translation",
+  "raw_text": "26 Aug 2025 Seminar / Talk Embodied Translation 26th Aug 2025 15:00 PM HSS Seminar Room, Department of HSS",
+  "time_raw": "15:00 PM"
+ },
+ "content_hash": "7e2b48a032d65c78d5368f3511a82c9556f845ff414e19a7828db6f91556b75d",
+ "first_seen_at": "2026-09-26T13:54:41Z",
+ "last_seen_at": "2026-09-26T13:54:41Z"
+}
+{
+ "item_url": "http://127.0.0.1:61279/events/seminar-talk/emotion-and-action",
+ "source_id": "iit_bombay_hss_seminars",
+ "institution": "IIT Bombay",
+ "content_type": "event",
+ "title": "Emotion and Action",
+ "starts_at": "2025-02-24T05:30:00Z",
+ "ends_at": null,
+ "timezone": "Asia/Kolkata",
+ "speakers": [],
+ "venue": "Seminar Room No. 3, VMCC, IIT Bombay",
+ "is_online": null,
+ "event_type": "Seminar / Talk",
+ "organizer": "Department of Humanities and Social Sciences",
+ "description": null,
+ "listing_fetched_at": "2026-09-26T13:54:40Z",
+ "detail_fetched_at": null,
+ "detail_fetch_status": "not_attempted",
+ "detail_http_status": null,
+ "detail_error": null,
+ "extras": {
+  "date_raw": "24th Feb 2025",
+  "discovered_on_page": 2,
+  "discovered_on_url": "http://127.0.0.1:61279/events/seminars-and-talks?page=1",
+  "raw_href": "/events/seminar-talk/emotion-and-action",
+  "raw_text": "24 Feb 2025 Seminar / Talk Emotion and Action 24th Feb 2025 11:00 AM Seminar Room No. 3, VMCC, IIT Bombay",
+  "time_raw": "11:00 AM"
+ },
+ "content_hash": "a56937818596da789e5daee2021e6a414902832884934808c9092a7f0d3699bb",
+ "first_seen_at": "2026-09-26T13:54:41Z",
+ "last_seen_at": "2026-09-26T13:54:41Z"
+}
+{
+ "item_url": "http://127.0.0.1:61279/events/seminar-talk/english-studies-india-its-past-and-its-future",
+ "source_id": "iit_bombay_hss_seminars",
+ "institution": "IIT Bombay",
+ "content_type": "event",
+ "title": "English Studies in India: Its past and its future",
+ "starts_at": "2025-03-11T10:00:00Z",
+ "ends_at": null,
+ "timezone": "Asia/Kolkata",
+ "speakers": [],
+ "venue": "HSS Seminar Room, Department of HSS",
+ "is_online": null,
+ "event_type": "Seminar / Talk",
+ "organizer": "Department of Humanities and Social Sciences",
+ "description": null,
+ "listing_fetched_at": "2026-09-26T13:54:40Z",
+ "detail_fetched_at": null,
+ "detail_fetch_status": "not_attempted",
+ "detail_http_status": null,
+ "detail_error": null,
+ "extras": {
+  "date_raw": "11th Mar 2025",
+  "discovered_on_page": 2,
+  "discovered_on_url": "http://127.0.0.1:61279/events/seminars-and-talks?page=1",
+  "raw_href": "/events/seminar-talk/english-studies-india-its-past-and-its-future",
+  "raw_text": "11 Mar 2025 Seminar / Talk English Studies in India: Its past and its future 11th Mar 2025 15:30 PM HSS Seminar Room, Department of HSS",
+  "time_raw": "15:30 PM"
+ },
+ "content_hash": "2018491529d14a07e69d6fc1c31babb6d2b86462f6a09b50a4eadf0456def52d",
+ "first_seen_at": "2026-09-26T13:54:41Z",
+ "last_seen_at": "2026-09-26T13:54:41Z"
+}
+--- full log ---
+2026-09-26 19:24:40 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
+2026-09-26 19:24:40 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminars-and-talks status=200 duration_ms=2
+2026-09-26 19:24:40 [INFO] logger=web_monitor Page 1 yielded 10 items
+2026-09-26 19:24:40 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminars-and-talks?page=1 status=200 duration_ms=3
+2026-09-26 19:24:40 [INFO] logger=web_monitor Page 2 yielded 10 items
+2026-09-26 19:24:40 [INFO] logger=web_monitor PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+2026-09-26 19:24:40 [INFO] logger=web_monitor PARSE records=20
+2026-09-26 19:24:40 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=3
+2026-09-26 19:24:40 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=2
+2026-09-26 19:24:40 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=16
+2026-09-26 19:24:40 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=12
+2026-09-26 19:24:40 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminar-talk/embodied-translation status=200 duration_ms=26
+2026-09-26 19:24:40 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=4
+2026-09-26 19:24:40 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=3
+2026-09-26 19:24:41 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=20
+2026-09-26 19:24:41 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminar-talk/rortys-revolution status=200 duration_ms=3
+2026-09-26 19:24:41 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=2
+2026-09-26 19:24:41 [INFO] logger=web_monitor ENRICH ok=10 failed=0 not_attempted=10
+2026-09-26 19:24:41 [INFO] logger=web_monitor NORMALIZE records=20
+2026-09-26 19:24:41 [INFO] logger=web_monitor VALIDATE valid=20 invalid=0
+2026-09-26 19:24:41 [INFO] logger=web_monitor STORE new=20 existing=0 changed=0
+2026-09-26 19:24:41 [INFO] logger=web_monitor END source_id=iit_bombay_hss_seminars duration_ms=381
+

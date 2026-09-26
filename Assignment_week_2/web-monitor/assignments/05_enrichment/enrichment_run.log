@@ -1,0 +1,17 @@
+2026-09-26 11:23:32 [INFO] START source=iit_bombay_hss_seminars
+2026-09-26 11:23:33 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminars-and-talks status=200 duration_ms=625
+2026-09-26 11:23:33 [INFO] PARSE records=10
+2026-09-26 11:23:34 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=502
+2026-09-26 11:23:36 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=705
+2026-09-26 11:23:38 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=592
+2026-09-26 11:23:40 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=755
+2026-09-26 11:23:42 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/embodied-translation status=200 duration_ms=646
+2026-09-26 11:23:45 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=713
+2026-09-26 11:23:47 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=708
+2026-09-26 11:23:49 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=724
+2026-09-26 11:23:51 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/rortys-revolution status=200 duration_ms=671
+2026-09-26 11:23:54 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=738
+2026-09-26 11:23:54 [INFO] ENRICH ok=10 failed=0 not_attempted=0
+2026-09-26 11:23:54 [INFO] STORE new=0 existing=0 changed=10
+2026-09-26 11:23:54 [INFO] STORE_ENRICHMENT rows=10 db=C:\Project\OSINT_SSRISS\Assignment_week_2\web-monitor\data\events.db
+2026-09-26 11:23:54 [INFO] Merged records written to assignments\05_enrichment\merged_records.json

@@ -1,0 +1,20 @@
+2026-09-26 11:21:56 [INFO] START source=iit_bombay_hss_seminars
+2026-09-26 11:21:57 [WARNING] SSL verification failed for https://www.hss.iitb.ac.in/events/seminars-and-talks (CERTIFICATE_VERIFY_FAILED). Retrying with verify=False
+2026-09-26 11:21:57 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminars-and-talks status=200 duration_ms=645
+2026-09-26 11:21:57 [INFO] PARSE records=10
+2026-09-26 11:21:57 [INFO] CHECKPOINT mistyped item 2: https://www.hss.iitb.ac.in/events/seminar-talk/tracing-success-indian-democracy-success-nation-building -> https://www.hss.iitb.ac.in/events/seminar-talk/tracing-success-indian-democracy-success-nation-buildign
+2026-09-26 11:21:57 [WARNING] SSL verification failed for https://www.hss.iitb.ac.in/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability (CERTIFICATE_VERIFY_FAILED). Retrying with verify=False
+2026-09-26 11:21:57 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=497
+2026-09-26 11:21:59 [WARNING] SSL verification failed for https://www.hss.iitb.ac.in/events/seminar-talk/tracing-success-indian-democracy-success-nation-buildign (CERTIFICATE_VERIFY_FAILED). Retrying with verify=False
+2026-09-26 11:22:00 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/tracing-success-indian-democracy-success-nation-buildign status=404 duration_ms=602
+2026-09-26 11:22:00 [WARNING] DETAIL_FAILURE source=iit_bombay_hss_seminars item_url=https://www.hss.iitb.ac.in/events/seminar-talk/tracing-success-indian-democracy-success-nation-buildign status=404 error_type=HTTPError message="404 Client Error: Not Found for url: https://www.hss.iitb.ac.in/events/seminar-talk/tracing-success-indian-democracy-success-nation-buildign"
+2026-09-26 11:22:01 [WARNING] SSL verification failed for https://www.hss.iitb.ac.in/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup (CERTIFICATE_VERIFY_FAILED). Retrying with verify=False
+2026-09-26 11:22:02 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=777
+2026-09-26 11:22:04 [WARNING] SSL verification failed for https://www.hss.iitb.ac.in/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice (CERTIFICATE_VERIFY_FAILED). Retrying with verify=False
+2026-09-26 11:22:04 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=718
+2026-09-26 11:22:06 [WARNING] SSL verification failed for https://www.hss.iitb.ac.in/events/seminar-talk/embodied-translation (CERTIFICATE_VERIFY_FAILED). Retrying with verify=False
+2026-09-26 11:22:06 [INFO] FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/embodied-translation status=200 duration_ms=781
+2026-09-26 11:22:06 [INFO] ENRICH ok=4 failed=1 not_attempted=5
+2026-09-26 11:22:06 [INFO] STORE new=10 existing=0 changed=0
+2026-09-26 11:22:07 [INFO] STORE_ENRICHMENT rows=10 db=data/checkpoint5_404.db
+2026-09-26 11:22:07 [INFO] Merged records written to assignments\05_enrichment\checkpoint_404_merged.json

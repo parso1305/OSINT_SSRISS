@@ -1,0 +1,17 @@
+# Python bytecode and tool caches
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments (never committed; rebuild with: pip install -r requirements.txt)
+/venv/
+audit_week2/venv/
+audit_week2/tmp/
+
+# Runtime state: SQLite databases, lock files, scheduler logs.
+# Anchored with a leading "/" so evidence folders named logs/ inside assignments/ stay tracked.
+/data/*.db
+/locks/
+/logs/

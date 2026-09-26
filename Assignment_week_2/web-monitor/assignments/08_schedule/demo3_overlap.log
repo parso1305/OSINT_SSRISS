@@ -1,0 +1,5 @@
+2026-09-26 12:29:44 [INFO] logger=web_monitor SCHEDULE source=local_fixture interval_minutes=1 last_started_at=2026-09-26T06:59:07Z next_due_at=2026-09-26T07:00:07Z due=true
+2026-09-26 12:29:44 [INFO] logger=web_monitor RUN_START run_id=5c6eec9a872c405a94dd358986be4eb9 source=local_fixture
+2026-09-26 12:29:51 [INFO] logger=web_monitor RUN_END run_id=5c6eec9a872c405a94dd358986be4eb9 source=local_fixture status=success duration_ms=6522 new=0 existing=20 changed=0 failed=0 error=""
+2026-09-26 12:29:46 [INFO] logger=web_monitor SCHEDULE source=local_fixture interval_minutes=1 last_started_at=2026-09-26T06:59:44Z next_due_at=2026-09-26T07:00:44Z due=true
+2026-09-26 12:29:46 [INFO] logger=web_monitor RUN_SKIPPED source=local_fixture reason=already_running holder=pid:1812@2026-09-26T06:59:44Z

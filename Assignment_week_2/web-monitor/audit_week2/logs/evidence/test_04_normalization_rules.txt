@@ -1,0 +1,28 @@
+slug | raw speaker -> speakers | raw description prefix -> stored prefix | title
+islands-tri-junction-fragility-and-vulne | 'Prof Pankaj Sekhsaria' -> [{'affiliation': None, 'name': 'Pankaj Sekhsaria'}] | 'Abstract: The ' -> 'The Andaman an' | 'The A&N Islands – At the tri-junction of fragility and vulnerability'
+tracing-success-indian-democracy-success | 'Prof Salvatore Babones, University of Sydney' -> [{'affiliation': 'University of Sydney', 'name': 'Salvatore Babones'}] | 'Abstract: Why ' -> 'Why did democr' | 'Tracing the Success of Indian Democracy to Success in Nation-Building'
+echoes-translation-audibility-and-relati | 'Prof Anna C. Schultz' -> [{'affiliation': None, 'name': 'Anna C. Schultz'}] | 'Description: T' -> 'The Bene Israe' | 'Echoes of Translation: Audibility and Relationality in Indian Jewish Women’s Songs (OUP, forthcoming 2026)'
+experiential-self-and-mitigation-epistem | 'Prof Hari Narayanan V' -> [{'affiliation': None, 'name': 'Hari Narayanan V'}] | 'Abstract: Epis' -> 'Epistemic inju' | 'Experiential Self and the Mitigation of Epistemic Injustice'
+embodied-translation                     | 'Prof Anna C. Schultz' -> [{'affiliation': None, 'name': 'Anna C. Schultz'}] | 'This seminar i' -> 'This seminar i' | 'Embodied Translation'
+gramsci-and-south-asia-dialogue-subalter | 'Prof Arun Kumar Patnaik' -> [{'affiliation': None, 'name': 'Arun Kumar Patnaik'}] | 'South Asian sc' -> 'South Asian sc' | 'Gramsci and South Asia: A Dialogue with Subalterns'
+translating-untranslatability-environmen | 'Dr Sayan Chattopadhyay' -> [{'affiliation': None, 'name': 'Sayan Chattopadhyay'}] | 'Abstract: This' -> 'This talk expl' | 'Translating Untranslatability: Environmental Justice and Sacredness in Spivak’s Translation of Devi’s Pterodactyl'
+prayers-and-curses-utterance-forms-polit | 'Prof Udaya Kumar' -> [{'affiliation': None, 'name': 'Udaya Kumar'}] | 'Abstract: This' -> 'This talk will' | 'Prayers and Curses: Utterance Forms, Political Speech and Literary Performance'
+rortys-revolution                        | 'Carlin Romano' -> [{'affiliation': None, 'name': 'Carlin Romano'}] | 'Abstract: The ' -> 'The American p' | "Rorty's Revolution"
+those-four-years-history-19th-century-ch | 'Joe Thomas Karackattu' -> [{'affiliation': None, 'name': 'Joe Thomas Karackattu'}] | 'Abstract: [THO' -> '[THOSE 4 YEARS' | '"Those Four Years": A History of 19th-Century Chinese Migration to the Nilgiris'
+titles still carrying the site suffix: []
+non-UTC-Z timestamps: []
+--- IST display (detail page visible text) vs stored UTC, 3 records ---
+islands-tri-junction-fragility-and-vulne visible IST='Thu, 09/25/2025 - 15:30' -> UTC 2025-09-25T10:00:00Z | stored starts_at=2025-09-25T10:00:00Z | timezone=Asia/Kolkata
+tracing-success-indian-democracy-success visible IST='Wed, 09/17/2025 - 15:00' -> UTC 2025-09-17T09:30:00Z | stored starts_at=2025-09-17T09:30:00Z | timezone=Asia/Kolkata
+echoes-translation-audibility-and-relati visible IST='Fri, 08/22/2025 - 15:30' -> UTC 2025-08-22T10:00:00Z | stored starts_at=2025-08-22T10:00:00Z | timezone=Asia/Kolkata
+venue -> is_online:
+{
+ "HSS Seminar Room, Department of HSS": null,
+ "Seminar Room No. 3, VMCC, IIT Bombay": null,
+ "LT 101": null,
+ "HSS Seminar room": null,
+ "HSS Seminar Room, IIT Bombay": null,
+ "Online Seminar": true
+}
+affiliation split (Tracing): [{'affiliation': 'University of Sydney', 'name': 'Salvatore Babones'}]
+failures: []

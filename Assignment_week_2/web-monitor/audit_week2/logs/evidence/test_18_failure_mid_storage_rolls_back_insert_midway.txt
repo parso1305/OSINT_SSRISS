@@ -1,0 +1,6 @@
+before: sha256=4d6adddfe78e9e99 rows=10
+after:  sha256=4d6adddfe78e9e99 rows=10
+result: {'run_id': '2fee0643dd134cc1aa882f3f145a1d11', 'source_id': 'iit_bombay_hss_seminars', 'status': 'failed', 'error': 'IntegrityError: audit injected failure'}
+runs: [('success', 10, None), ('failed', None, 'IntegrityError: audit injected failure')]
+2026-09-26 19:25:26 [ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:57179/events/seminars-and-talks stage=store error_type=IntegrityError message="audit injected failure"
+2026-09-26 19:25:26 [ERROR] logger=web_monitor RUN_END run_id=2fee0643dd134cc1aa882f3f145a1d11 source=iit_bombay_hss_seminars status=failed duration_ms=425 new=0 existing=0 changed=0 failed=0 error="IntegrityError: audit injected failure"

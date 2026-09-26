@@ -1,0 +1,6 @@
+crashed: None
+counts={'new': 10, 'existing': 0, 'changed': 0} detail={'ok': 10, 'failed': 0, 'not_attempted': 0}
+record: title='Echoes of Translation: Audibility and Relationality in Indian Jewish Women’s Songs (OUP, forthcoming 2026)'
+speakers=[] status=ok
+description[:80]='The Bene Israel are a Jewish community from western India who, over centuries, d'
+

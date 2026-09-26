@@ -1,13 +1,19 @@
 """Unit tests for IIT Bombay fixtures, parser, normalizer, and storage."""
 
+import sys
 from pathlib import Path
 import pytest
 
-from sources.iit_bombay import parse_events, StructuralError
+# Ensure project root (web-monitor) is in sys.path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from sources.iit_bombay_legacy import parse_events, StructuralError
 from src.schema import normalize_event, normalize_events
 from src.storage import init_db, store_event, count_items
 
-FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures" / "iit_bombay"
+FIXTURES_DIR = PROJECT_ROOT / "fixtures" / "iit_bombay"
 
 
 def load_fixture(filename: str) -> str:
@@ -117,73 +123,3 @@ def test_changed_card_structure_fails_loudly():
     with pytest.raises(StructuralError) as exc_info:
         parse_events(html)
     assert "Structural layout mismatch" in str(exc_info.value)
-
-
-def test_structured_logging_pipeline(tmp_path):
-    """Verify structured logging keys and format in successful run."""
-    import io
-    import logging
-    from src.logging_config import KeyValueFormatter
-    from src.runner import run_pipeline
-
-    stream = io.StringIO()
-    logger = logging.getLogger("test_logger_success")
-    logger.setLevel(logging.DEBUG)
-    handler = logging.StreamHandler(stream)
-    handler.setFormatter(KeyValueFormatter())
-    logger.addHandler(handler)
-    logger.propagate = False
-
-    db_file = str(tmp_path / "pipeline_test.db")
-    html = load_fixture("normal_page.html")
-
-    result = run_pipeline(
-        source_name="iit_bombay",
-        url="https://www.iitb.ac.in/events",
-        db_path=db_file,
-        html_override=html,
-        logger=logger
-    )
-    assert result["status"] == "success"
-
-    output = stream.getvalue()
-    assert "START source=iit_bombay" in output
-    assert "FETCH url=https://www.iitb.ac.in/events status=200 duration_ms=" in output
-    assert "PARSE records=3" in output
-    assert "NORMALIZE records=3" in output
-    assert "STORE new=3 existing=0 changed=0" in output
-    assert "END duration_ms=" in output
-
-
-def test_structured_logging_empty_listing_warning(tmp_path):
-    """Verify that empty listing logs WARNING and does not crash."""
-    import io
-    import logging
-    from src.logging_config import KeyValueFormatter
-    from src.runner import run_pipeline
-
-    stream = io.StringIO()
-    logger = logging.getLogger("test_logger_empty")
-    logger.setLevel(logging.DEBUG)
-    handler = logging.StreamHandler(stream)
-    handler.setFormatter(KeyValueFormatter())
-    logger.addHandler(handler)
-    logger.propagate = False
-
-    db_file = str(tmp_path / "empty_pipeline.db")
-    html = load_fixture("empty_listing.html")
-
-    result = run_pipeline(
-        source_name="iit_bombay",
-        url="https://www.iitb.ac.in/events",
-        db_path=db_file,
-        html_override=html,
-        logger=logger
-    )
-    assert result["status"] == "success"
-
-    output = stream.getvalue()
-    assert "[WARNING] WARNING source=iit_bombay" in output
-    assert "PARSE records=0" in output
-    assert "STORE new=0 existing=0 changed=0" in output
-

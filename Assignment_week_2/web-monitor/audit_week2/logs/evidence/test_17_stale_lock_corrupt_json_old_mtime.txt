@@ -1,0 +1,6 @@
+lock content: (removed)
+crashed: None
+result: [{'run_id': 'bc54c5003d4643f586941b232fe251f8', 'source_id': 'iit_bombay_hss_seminars', 'status': 'success', 'counts': {'new': 20, 'existing': 0, 'changed': 0}}]
+runs: [('success', None)]
+2026-09-26 19:25:22 [WARNING] logger=web_monitor STALE_LOCK source=iit_bombay_hss_seminars holder=pid:None@None reason=max_age_exceeded(age_s=10800,max_s=3600) action=removed
+2026-09-26 19:25:22 [INFO] logger=web_monitor RUN_END run_id=bc54c5003d4643f586941b232fe251f8 source=iit_bombay_hss_seminars status=success duration_ms=447 new=20 existing=0 changed=0 failed=0 error=""

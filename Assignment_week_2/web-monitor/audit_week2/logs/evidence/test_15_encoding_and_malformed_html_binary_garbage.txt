@@ -1,0 +1,6 @@
+crashed: None
+counts={'new': 10, 'existing': 0, 'changed': 0} detail={'ok': 9, 'failed': 1, 'not_attempted': 0}
+record: title='Echoes of Translation: Audibility and Relationality in Indian Jewish Women’s Songs (OUP, forthcoming 2026)'
+speakers=[] status=failed
+description[:80]=''
+2026-09-26 19:25:15 [WARNING] logger=web_monitor.detail DETAIL_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:57061/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 error_type=StructuralError message="Structural layout mismatch: detail container 'article.node--type-events' not found on http://127.0.0.1:57061/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup."

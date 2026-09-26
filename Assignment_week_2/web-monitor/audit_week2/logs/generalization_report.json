@@ -1,0 +1,429 @@
+{
+ "base": "http://127.0.0.1:65014",
+ "db": "C:\\Users\\parth\\AppData\\Local\\Temp\\audit_gen_2zw3hgls\\generalization.db",
+ "config": "C:\\Users\\parth\\AppData\\Local\\Temp\\audit_gen_2zw3hgls\\sources.json",
+ "results": [
+  {
+   "run_id": "0daff1e1e1c2498fab0031ca2e20a52f",
+   "source_id": "iit_bombay_me_events",
+   "status": "success",
+   "counts": {
+    "new": 20,
+    "existing": 0,
+    "changed": 0
+   }
+  },
+  {
+   "run_id": "c864f1498fda435083c05486f5231f06",
+   "source_id": "cmi_seminars",
+   "status": "success",
+   "counts": {
+    "new": 127,
+    "existing": 0,
+    "changed": 0
+   }
+  },
+  {
+   "run_id": "2e689dd4b8d943e19cca599a3f2e4552",
+   "source_id": "me_with_hss_adapter",
+   "status": "failed",
+   "error": "StructuralError: Structural layout mismatch: Target container '.view-seminars-and-talks .view-content' not found in HTML. Site structure may have changed."
+  }
+ ],
+ "runs": [
+  {
+   "run_id": "0daff1e1e1c2498fab0031ca2e20a52f",
+   "source_id": "iit_bombay_me_events",
+   "started_at": "2026-09-26T13:53:34Z",
+   "finished_at": "2026-09-26T13:53:34Z",
+   "status": "success",
+   "new_count": 20,
+   "existing_count": 0,
+   "changed_count": 0,
+   "failed_count": 2,
+   "error": null
+  },
+  {
+   "run_id": "c864f1498fda435083c05486f5231f06",
+   "source_id": "cmi_seminars",
+   "started_at": "2026-09-26T13:53:34Z",
+   "finished_at": "2026-09-26T13:53:35Z",
+   "status": "success",
+   "new_count": 127,
+   "existing_count": 0,
+   "changed_count": 0,
+   "failed_count": 8,
+   "error": null
+  },
+  {
+   "run_id": "2e689dd4b8d943e19cca599a3f2e4552",
+   "source_id": "me_with_hss_adapter",
+   "started_at": "2026-09-26T13:53:35Z",
+   "finished_at": "2026-09-26T13:53:35Z",
+   "status": "failed",
+   "new_count": null,
+   "existing_count": null,
+   "changed_count": null,
+   "failed_count": 0,
+   "error": "StructuralError: Structural layout mismatch: Target container '.view-seminars-and-talks .view-content' not found in HTML. Site structure may have changed."
+  }
+ ],
+ "server_requests": [
+  "/robots.txt",
+  "/events",
+  "/event/talk-dr-pc-jain-industry-academia-collaboration-drdo-perspective",
+  "/event/64th-convocationdepartmental-degree-award-functionddaf",
+  "/event/prof-anirban-guha-condolence-meeting",
+  "/robots.txt",
+  "/activities",
+  "/activities/",
+  "/robots.txt",
+  "/events"
+ ],
+ "sources": {
+  "iit_bombay_me_events": {
+   "rows": 20,
+   "validation_errors": {},
+   "field_fill": {
+    "content_type": 20,
+    "title": 20,
+    "starts_at": 20,
+    "ends_at": 0,
+    "timezone": 20,
+    "speakers": 0,
+    "venue": 1,
+    "is_online": 0,
+    "event_type": 0,
+    "organizer": 20,
+    "description": 1
+   },
+   "sample": [
+    {
+     "item_url": "http://127.0.0.1:65014/event/talk-dr-pc-jain-industry-academia-collaboration-drdo-perspective",
+     "source_id": "iit_bombay_me_events",
+     "institution": "IIT Bombay",
+     "content_type": "event",
+     "title": "Talk by Dr. P.C. Jain – “Industry–Academia Collaboration: A DRDO Perspective”",
+     "starts_at": "2026-09-28T09:30:00Z",
+     "ends_at": null,
+     "timezone": "Asia/Kolkata",
+     "speakers": [],
+     "venue": "ME Auditorium",
+     "is_online": null,
+     "event_type": null,
+     "organizer": "Department of Mechanical Engineering",
+     "description": "Talk by Dr. Prakash Chand Jain , Outstanding Scientist / Scientist 'H' and Group Director, Defence Research and Development Laboratory (DRDL), Ministry of Defence, Government of India. Title of the Talk: Industry–Academia Collaboration: A DRDO Perspective Funding Opportunities, Thrust Research Areas and Our Case Studies The talk will cover DRDO Technology Clusters, Aeronautics Research & Development Boards, DRDO's engagement with academia, broad research thrust areas, and the research proposal submission process. The talk will also highlight key aspects of missile development, including multidisciplinary modelling and simulation, mechanical/aerospace structures, vibration environments, case studies, and future research directions. About the Speaker: Dr. Prakash Chand Jain is an Outstanding Scientist / Scientist 'H' and Group Director at DRDL, Ministry of Defence, Government of India. An alumnus of IIT Roorkee, IIT Bombay, and a BOYSCAST Fellow from Pennsylvania State University, USA, he has contributed significantly to India's defence preparedness over three decades. The airframes of the BrahMos and Akash missiles (deployed during Operation Sindoor) were designed and developed by Dr. Jain and his team. He has several research publications, patents, and technology transfers to his credit. He has served as AICTE-INAE Distinguished Visiting Professor at IIT Delhi. He is a Fellow of ASME, an Associate Fellow of AIAA, and a Fellow of the Telangana State Academy of Sciences. He is also a recipient of the Homi J. Bhabha National Award and the Dr. Biren Roy Space Science Award. Date: September 28, 2026 Time: 3-4 PM Venue: ME Auditorium",
+     "listing_fetched_at": "2026-09-26T13:53:34Z",
+     "detail_fetched_at": "2026-09-26T13:53:34Z",
+     "detail_fetch_status": "ok",
+     "detail_http_status": 200,
+     "detail_error": null,
+     "extras": {
+      "date_text": "28  September,  2026",
+      "detail_canonical_url": "https://www.me.iitb.ac.in/event/talk-dr-pc-jain-industry-academia-collaboration-drdo-perspective",
+      "discovered_on_url": "http://127.0.0.1:65014/events",
+      "listing_datetime": "2026-09-28T15:00:00Z",
+      "node_id": "3696",
+      "raw_href": "/event/talk-dr-pc-jain-industry-academia-collaboration-drdo-perspective "
+     },
+     "content_hash": "e1362168bd7c5418213668136240cbeeb1b1940d33d02a03cf1c6a5a5e872e4c",
+     "first_seen_at": "2026-09-26T13:53:34Z",
+     "last_seen_at": "2026-09-26T13:53:34Z"
+    },
+    {
+     "item_url": "http://127.0.0.1:65014/event/64th-convocationdepartmental-degree-award-functionddaf",
+     "source_id": "iit_bombay_me_events",
+     "institution": "IIT Bombay",
+     "content_type": "event",
+     "title": "64th Convocation/Departmental Degree Award Function(DDAF)",
+     "starts_at": "2026-08-22T08:30:00Z",
+     "ends_at": null,
+     "timezone": "Asia/Kolkata",
+     "speakers": [],
+     "venue": null,
+     "is_online": null,
+     "event_type": null,
+     "organizer": "Department of Mechanical Engineering",
+     "description": null,
+     "listing_fetched_at": "2026-09-26T13:53:34Z",
+     "detail_fetched_at": "2026-09-26T13:53:34Z",
+     "detail_fetch_status": "failed",
+     "detail_http_status": 404,
+     "detail_error": "FetchError: HTTP 404 Not Found for url: http://127.0.0.1:65014/event/64th-convocationdepartmental-degree-award-functionddaf",
+     "extras": {
+      "date_text": "22  August,  2026",
+      "discovered_on_url": "http://127.0.0.1:65014/events",
+      "listing_datetime": "2026-08-22T14:00:00Z",
+      "raw_href": "/event/64th-convocationdepartmental-degree-award-functionddaf "
+     },
+     "content_hash": "c736bb77d93b0ee5892aaecaa21808a2b212342c80871fe8801369f5706683dd",
+     "first_seen_at": "2026-09-26T13:53:34Z",
+     "last_seen_at": "2026-09-26T13:53:34Z"
+    },
+    {
+     "item_url": "http://127.0.0.1:65014/event/prof-anirban-guha-condolence-meeting",
+     "source_id": "iit_bombay_me_events",
+     "institution": "IIT Bombay",
+     "content_type": "event",
+     "title": "Prof. Anirban Guha: Condolence Meeting",
+     "starts_at": "2026-06-11T10:30:00Z",
+     "ends_at": null,
+     "timezone": "Asia/Kolkata",
+     "speakers": [],
+     "venue": null,
+     "is_online": null,
+     "event_type": null,
+     "organizer": "Department of Mechanical Engineering",
+     "description": null,
+     "listing_fetched_at": "2026-09-26T13:53:34Z",
+     "detail_fetched_at": "2026-09-26T13:53:34Z",
+     "detail_fetch_status": "failed",
+     "detail_http_status": 404,
+     "detail_error": "FetchError: HTTP 404 Not Found for url: http://127.0.0.1:65014/event/prof-anirban-guha-condolence-meeting",
+     "extras": {
+      "date_text": "11  June,  2026",
+      "discovered_on_url": "http://127.0.0.1:65014/events",
+      "listing_datetime": "2026-06-11T16:00:00Z",
+      "raw_href": "/event/prof-anirban-guha-condolence-meeting "
+     },
+     "content_hash": "854c877ce97b96e2413bed3893f1e55036f3f8c0ba6d74874c8f9f46356f9113",
+     "first_seen_at": "2026-09-26T13:53:34Z",
+     "last_seen_at": "2026-09-26T13:53:34Z"
+    }
+   ],
+   "status_counts": {
+    "ok": 1,
+    "failed": 2,
+    "not_attempted": 17
+   }
+  },
+  "cmi_seminars": {
+   "rows": 127,
+   "validation_errors": {},
+   "field_fill": {
+    "content_type": 127,
+    "title": 127,
+    "starts_at": 127,
+    "ends_at": 0,
+    "timezone": 127,
+    "speakers": 127,
+    "venue": 127,
+    "is_online": 1,
+    "event_type": 127,
+    "organizer": 0,
+    "description": 0
+   },
+   "sample": [
+    {
+     "item_url": "https://www.cmi.ac.in/activities/show-abstract.php?absref=138&absyear=2026",
+     "source_id": "cmi_seminars",
+     "institution": "Chennai Mathematical Institute",
+     "content_type": "event",
+     "title": "Observability of eccentricity in merging black hole binaries using gravitational waves",
+     "starts_at": "2026-10-01T05:00:00Z",
+     "ends_at": null,
+     "timezone": "Asia/Kolkata",
+     "speakers": [
+      {
+       "affiliation": "Cardiff University",
+       "name": "Mukesh Kumar Singh"
+      }
+     ],
+     "venue": "LH802",
+     "is_online": null,
+     "event_type": "Physics Seminar",
+     "organizer": null,
+     "description": null,
+     "listing_fetched_at": "2026-09-26T13:53:34Z",
+     "detail_fetched_at": null,
+     "detail_fetch_status": "not_attempted",
+     "detail_http_status": null,
+     "detail_error": null,
+     "extras": {
+      "absref": "138",
+      "absyear": "2026",
+      "date_raw": "Thursday, 1 October 2026",
+      "header_date": "01-10-2026",
+      "time_raw": "10:30 am - 11:30 am"
+     },
+     "content_hash": "22b7e452af6b3f5ebeaca99d00a4cde4958a47ea1ce3e7e6816097921b419695",
+     "first_seen_at": "2026-09-26T13:53:35Z",
+     "last_seen_at": "2026-09-26T13:53:35Z"
+    },
+    {
+     "item_url": "https://www.cmi.ac.in/activities/show-abstract.php?absref=137&absyear=2026",
+     "source_id": "cmi_seminars",
+     "institution": "Chennai Mathematical Institute",
+     "content_type": "event",
+     "title": "Studying the redshift spectrum in next-generation GW detectors",
+     "starts_at": "2026-09-30T10:15:00Z",
+     "ends_at": null,
+     "timezone": "Asia/Kolkata",
+     "speakers": [
+      {
+       "affiliation": "Cardiff University",
+       "name": "Divyajyoti"
+      }
+     ],
+     "venue": "Lecture Hall 802",
+     "is_online": null,
+     "event_type": "Physics Seminar",
+     "organizer": null,
+     "description": null,
+     "listing_fetched_at": "2026-09-26T13:53:34Z",
+     "detail_fetched_at": null,
+     "detail_fetch_status": "not_attempted",
+     "detail_http_status": null,
+     "detail_error": null,
+     "extras": {
+      "absref": "137",
+      "absyear": "2026",
+      "date_raw": "Wednesday, 30 September",
+      "header_date": "30-09-2026",
+      "time_raw": "3:45pm - 4:45pm"
+     },
+     "content_hash": "ee524e0814ef0976f10758a2db67776b753185f68cf09fd12d8d04efd99fc5be",
+     "first_seen_at": "2026-09-26T13:53:35Z",
+     "last_seen_at": "2026-09-26T13:53:35Z"
+    },
+    {
+     "item_url": "https://www.cmi.ac.in/activities/show-abstract.php?absref=136&absyear=2026",
+     "source_id": "cmi_seminars",
+     "institution": "Chennai Mathematical Institute",
+     "content_type": "event",
+     "title": "Is Ideological Reversal Possible for Political Parties?",
+     "starts_at": "2026-09-30T08:30:00Z",
+     "ends_at": null,
+     "timezone": "Asia/Kolkata",
+     "speakers": [
+      {
+       "affiliation": "Madras School of Economics",
+       "name": "Aman Ray"
+      }
+     ],
+     "venue": "LH802",
+     "is_online": null,
+     "event_type": "Seminar announcement",
+     "organizer": null,
+     "description": null,
+     "listing_fetched_at": "2026-09-26T13:53:34Z",
+     "detail_fetched_at": null,
+     "detail_fetch_status": "not_attempted",
+     "detail_http_status": null,
+     "detail_error": null,
+     "extras": {
+      "absref": "136",
+      "absyear": "2026",
+      "date_raw": "Wednesday, 30 September 2026",
+      "header_date": "30-09-2026",
+      "time_raw": "2.00 - 3.00 p.m."
+     },
+     "content_hash": "b7083850b78745597e0e8850704d6d0b844374d6d05bfdd64b5c5e3a9b236c03",
+     "first_seen_at": "2026-09-26T13:53:35Z",
+     "last_seen_at": "2026-09-26T13:53:35Z"
+    }
+   ],
+   "status_counts": {
+    "ok": 0,
+    "failed": 0,
+    "not_attempted": 127
+   }
+  }
+ },
+ "me_enriched_via_generic_merge": [
+  {
+   "record": {
+    "content_type": "event",
+    "title": "Seminar by Dr. Maciej Mazur (RMIT University) – 26th Sept, 4:00–5:30 PM",
+    "starts_at": "2025-09-26T10:30:00Z",
+    "ends_at": null,
+    "timezone": "Asia/Kolkata",
+    "speakers": [],
+    "venue": "Mechanical Engineering Department Auditorium, second floor, ME Building",
+    "is_online": null,
+    "event_type": null,
+    "organizer": "Department of Mechanical Engineering",
+    "description": "Seminar on \"RMIT-IIT Research Collaboration Opportunities in Additive Manufacturing & Beyond\" by Dr. Maciej Mazur, RMIT University, Melbourne, Australia 🗓 Date: Friday, 26th September 2025 🕓 Time: 4:00 PM – 5:30 PM 📍 Venue: Mechanical Engineering Department Auditorium, second floor, ME Building About the Talk: Additive manufacturing (AM) is a disruptive technology with the potential to transform a range of industries by enabling the manufacture of devices which were previously not possible. AM provides new opportunities to rethink old design solutions and exploit new opportunities, through a range of technical and economic advantages, including; increased design complexity, low-cost customisability, and short lead times. A range of industries have embraced AM to deliver transformative products, ranging from customised biomedical implants to highly-efficient rocket engines. RMIT University Centre for Additive Manufacturing (RCAM) is Australia's largest AM research institution focusing on advancing the frontier of what is possible with additive manufacturing. This talk will focus on the advantages of AM and the research being undertaken at RMIT, with the intention of promoting collaborative opportunities between researchers at IIT and RMIT. With new collaborative research partnerships, exciting new opportunities for long-term scientific and technological collaboration between RMIT University and IIT will emerge. About the Speaker: Dr. Maciej Mazur is a scholar at RMIT University's Centre for Additive Manufacturing (RCAM) and Centre for Advanced Materials and Industrial Chemistry (CAMIC) who specializes in Design and Optimisation for Additive Manufacturing (DfAM). His research focuses on the additive manufacturing of light\u0002weight cellular materials, industrial tooling, fluid flow devices, and aerospace components for chemical, aerospace, and manufacturing applications. This work spans the design-to-performance continuum, from computationally enabling complex geometries to experimentally validating components with tailored properties. A key focus of his work is metal cellular materials fabricated via laser powder bed fusion, where he works on identifying critical geometry-property relationships and advancing functional surface engineering for applications like thermal management in hypersonic aircraft. He emphasizes designing components specifically for AM, developing patented uniform fractal flow distributors and mixer designs. His contributions also include advanced DfAM methods for industrial tooling, such as conformally cooled injection moulds and aluminium extrusion dies, integrating numerical modelling with experimental validation. Beyond structural design, Maciej enhances process development for metals and polymers, investigating alloy composition, defect formation, and void reduction, while incorporating quality engineering through automated inspection. His publications have attracted more than 3,600 citations, reflecting contributions that have helped move additive manufacturing from geometric possibility to engineered performance across structural, thermal, and chemical sciences applications.",
+    "item_url": "http://127.0.0.1:65014/event/seminar-dr-maciej-mazur-rmit-university-26th-sept-400-530-pm",
+    "source_id": "iit_bombay_me_events",
+    "institution": "IIT Bombay",
+    "listing_fetched_at": null,
+    "detail_fetched_at": null,
+    "detail_fetch_status": "ok",
+    "detail_http_status": null,
+    "detail_error": null,
+    "extras": {
+     "node_id": "3306",
+     "detail_canonical_url": "https://www.me.iitb.ac.in/event/seminar-dr-maciej-mazur-rmit-university-26th-sept-400-530-pm",
+     "listing_datetime": "2025-09-26T16:00:00Z",
+     "date_text": "26  September,  2025",
+     "raw_href": "/event/seminar-dr-maciej-mazur-rmit-university-26th-sept-400-530-pm "
+    }
+   },
+   "errors": []
+  },
+  {
+   "record": {
+    "content_type": "event",
+    "title": "Seminar on Machine learning augmented massively parallel flow solvers | Fri 26 Sep @ 2:15 pm | ME Auditorium",
+    "starts_at": "2025-09-26T08:45:00Z",
+    "ends_at": null,
+    "timezone": "Asia/Kolkata",
+    "speakers": [],
+    "venue": "ME Auditorium",
+    "is_online": null,
+    "event_type": null,
+    "organizer": "Department of Mechanical Engineering",
+    "description": "Seminar on \"Machine learning augmented massively parallel flow solvers: application to combustion\", by Prof. K. Aditya from the Department of Computational and Data Sciences, IISc, on Friday, 26 th Sept 2025 at 2:15 pm. The venue is Mech Eng Department Auditorium. The details of the talk and bio of the speaker are given below. Machine learning augmented massively parallel flow solvers: application to combustion Konduri Aditya Assistant Professor Department of Computational and Data Sciences Indian Institute of Science High-fidelity direct numerical simulations (DNS) of turbulent combustion are often performed to gain fundamental insights into flow–chemistry interactions under conditions relevant to practical engines. These simulations solve highly nonlinear partial differential equations, which require massive computations on large supercomputers. A key challenge is to perform the simulations efficiently and in a scalable manner. In this talk, we introduce two methods that can significantly improve the scalability of DNS solvers: First, an asynchronous computing method that significantly minimizes the data movement costs at extreme scales. Second, a low-dimensional manifold is used to reduce the chemistry computation costs. Current state-of-the-art direct numerical simulations are routinely performed on hundreds of thousands of processing elements (PEs). At an extreme scale, it was observed that data movement and its synchronization pose a bottleneck to the scalability of solvers. We introduce an asynchronous computing method that relaxes communication synchronization at the mathematical level and has shown significant promise in improving the scalability of PDE solvers. In this method, communication synchronization between PEs owing to halo exchanges is relaxed, and computations proceed regardless of the communication status. It was shown that the numerical accuracy of standard schemes, such as finite differences implemented with relaxed communication synchronization, is significantly affected. Subsequently, new asynchrony-tolerant schemes have been developed to compute accurate solutions and demonstrate good scalability. This section presents an overview of the status of asynchronous computing methods for PDE solvers and their applicability to exascale simulations. Identifying low-dimensional manifolds (LDMs) to represent the thermochemical state in reacting flows is crucial for significantly reducing the computational costs. Widely used principal component analysis (PCA) achieves this by obtaining an eigenvector basis for the LDM through eigenvalue decomposition of the data covariance matrix. However, this may not effectively capture the stiff chemical dynamics when the reaction zones are localized in space and time. Alternatively, we propose a co-kurtosis PCA (CoK-PCA), wherein the principal components are obtained from the singular value decomposition (SVD) of the matricized co-kurtosis tensor. The efficacy of the CoK-PCA-based reduced manifold was assessed by simulating spontaneous ignition in a homogeneous reactor. The time-evolved profiles of the PCs and reconstructed thermochemical scalars demonstrate the robustness of the CoK-PCA-based low-dimensional manifold in accurately capturing the ignition process. The results of this study show the potential of CoK-PCA-based manifolds to be implemented in massively parallel reacting flow solvers. Biography: Konduri Aditya is an Assistant Professor in the Department of Computational and Data Sciences at the Indian Institute of Science, Bengaluru, where he leads the FLAME Laboratory. His research spans computational fluid dynamics, turbulent combustion and propulsion, high-performance computing, and scientific machine learning.",
+    "item_url": "http://127.0.0.1:65014/event/seminar-machine-learning-augmented-massively-parallel-flow-solvers-fri-26-sep-215-pm-me",
+    "source_id": "iit_bombay_me_events",
+    "institution": "IIT Bombay",
+    "listing_fetched_at": null,
+    "detail_fetched_at": null,
+    "detail_fetch_status": "ok",
+    "detail_http_status": null,
+    "detail_error": null,
+    "extras": {
+     "node_id": "3304",
+     "detail_canonical_url": "https://www.me.iitb.ac.in/event/seminar-machine-learning-augmented-massively-parallel-flow-solvers-fri-26-sep-215-pm-me",
+     "listing_datetime": "2025-09-26T14:15:00Z",
+     "date_text": "26  September,  2025",
+     "raw_href": "/event/seminar-machine-learning-augmented-massively-parallel-flow-solvers-fri-26-sep-215-pm-me "
+    }
+   },
+   "errors": []
+  },
+  {
+   "record": {
+    "content_type": "event",
+    "title": "Talk by Dr. P.C. Jain – “Industry–Academia Collaboration: A DRDO Perspective”",
+    "starts_at": "2026-09-28T09:30:00Z",
+    "ends_at": null,
+    "timezone": "Asia/Kolkata",
+    "speakers": [],
+    "venue": "ME Auditorium",
+    "is_online": null,
+    "event_type": null,
+    "organizer": "Department of Mechanical Engineering",
+    "description": "Talk by Dr. Prakash Chand Jain , Outstanding Scientist / Scientist 'H' and Group Director, Defence Research and Development Laboratory (DRDL), Ministry of Defence, Government of India. Title of the Talk: Industry–Academia Collaboration: A DRDO Perspective Funding Opportunities, Thrust Research Areas and Our Case Studies The talk will cover DRDO Technology Clusters, Aeronautics Research & Development Boards, DRDO's engagement with academia, broad research thrust areas, and the research proposal submission process. The talk will also highlight key aspects of missile development, including multidisciplinary modelling and simulation, mechanical/aerospace structures, vibration environments, case studies, and future research directions. About the Speaker: Dr. Prakash Chand Jain is an Outstanding Scientist / Scientist 'H' and Group Director at DRDL, Ministry of Defence, Government of India. An alumnus of IIT Roorkee, IIT Bombay, and a BOYSCAST Fellow from Pennsylvania State University, USA, he has contributed significantly to India's defence preparedness over three decades. The airframes of the BrahMos and Akash missiles (deployed during Operation Sindoor) were designed and developed by Dr. Jain and his team. He has several research publications, patents, and technology transfers to his credit. He has served as AICTE-INAE Distinguished Visiting Professor at IIT Delhi. He is a Fellow of ASME, an Associate Fellow of AIAA, and a Fellow of the Telangana State Academy of Sciences. He is also a recipient of the Homi J. Bhabha National Award and the Dr. Biren Roy Space Science Award. Date: September 28, 2026 Time: 3-4 PM Venue: ME Auditorium",
+    "item_url": "http://127.0.0.1:65014/event/talk-dr-pc-jain-industry-academia-collaboration-drdo-perspective",
+    "source_id": "iit_bombay_me_events",
+    "institution": "IIT Bombay",
+    "listing_fetched_at": null,
+    "detail_fetched_at": null,
+    "detail_fetch_status": "ok",
+    "detail_http_status": null,
+    "detail_error": null,
+    "extras": {
+     "node_id": "3696",
+     "detail_canonical_url": "https://www.me.iitb.ac.in/event/talk-dr-pc-jain-industry-academia-collaboration-drdo-perspective",
+     "listing_datetime": "2026-09-28T15:00:00Z",
+     "date_text": "28  September,  2026",
+     "raw_href": "/event/talk-dr-pc-jain-industry-academia-collaboration-drdo-perspective "
+    }
+   },
+   "errors": []
+  }
+ ],
+ "generic_files_unchanged": true
+}

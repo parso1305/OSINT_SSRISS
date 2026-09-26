@@ -1,0 +1,38 @@
+timestamp_utc	url	status	note
+2026-09-26T13:35:36Z	https://www.hss.iitb.ac.in/robots.txt	000	curl --max-time 15: timeout (exit 28); HSS unreachable, LIVE_TESTS not run
+2026-09-26T13:46:11Z	https://www.iitb.ac.in/robots.txt	200	curl --max-time 10 probe
+2026-09-26T13:46:11Z	https://www.me.iitb.ac.in/robots.txt	200	curl --max-time 10 probe
+2026-09-26T13:46:11Z	https://www.phy.iitb.ac.in/robots.txt	200	curl --max-time 10 probe
+2026-09-26T13:46:11Z	https://www.chem.iitb.ac.in/robots.txt	200	curl --max-time 10 probe
+2026-09-26T13:46:11Z	https://www.civil.iitb.ac.in/robots.txt	200	curl --max-time 10 probe
+2026-09-26T13:46:11Z	https://www.cse.iitb.ac.in/robots.txt	200	curl --max-time 10 probe
+2026-09-26T13:46:11Z	https://www.ee.iitb.ac.in/robots.txt	200	curl --max-time 10 probe
+2026-09-26T13:46:11Z	https://www.math.iitb.ac.in/robots.txt	404	curl --max-time 10 probe
+2026-09-26T13:46:58Z	https://www.me.iitb.ac.in/robots.txt	(fetched by Fetcher before first page)	robots check
+2026-09-26T13:47:01Z	https://www.me.iitb.ac.in/robots.txt	200	robots check by Fetcher
+2026-09-26T13:47:01Z	https://www.me.iitb.ac.in/	200	saved fixtures/recon/www.me.iitb.ac.in__index.html
+2026-09-26T13:47:14Z	https://www.phy.iitb.ac.in/robots.txt	(fetched by Fetcher before first page)	robots check
+2026-09-26T13:47:17Z	https://www.phy.iitb.ac.in/	200	saved fixtures/recon/www.phy.iitb.ac.in__index.html (183778 chars) final_url=https://www.phy.iitb.ac.in/
+2026-09-26T13:47:45Z	https://www.phy.iitb.ac.in/robots.txt	(fetched by Fetcher before first page)	robots check
+2026-09-26T13:47:47Z	https://www.phy.iitb.ac.in/news-events	200	saved fixtures/recon/www.phy.iitb.ac.in__news-events.html (145746 chars) final_url=https://www.phy.iitb.ac.in/news-events
+2026-09-26T13:47:47Z	https://www.me.iitb.ac.in/robots.txt	(fetched by Fetcher before first page)	robots check
+2026-09-26T13:47:50Z	https://www.me.iitb.ac.in/events	200	saved fixtures/recon/www.me.iitb.ac.in__events.html (37474 chars) final_url=https://www.me.iitb.ac.in/events
+2026-09-26T13:48:27Z	https://www.me.iitb.ac.in/events	200	curl raw bytes + headers (encoding check)
+2026-09-26T13:48:46Z	https://www.me.iitb.ac.in/robots.txt	(fetched by Fetcher before first page)	robots check
+2026-09-26T13:48:48Z	https://www.me.iitb.ac.in/event/seminar-dr-maciej-mazur-rmit-university-26th-sept-400-530-pm	200	saved fixtures/me_iitb/detail/www.me.iitb.ac.in__event__seminar-dr-maciej-mazur-rmit-university-26th-sept-400-530-pm.html (30225 chars) final_url=https://www.me.iitb.ac.in/event/seminar-dr-maciej-mazur-rmit-university-26th-sept-400-530-pm
+2026-09-26T13:48:50Z	https://www.me.iitb.ac.in/event/seminar-machine-learning-augmented-massively-parallel-flow-solvers-fri-26-sep-215-pm-me	200	saved fixtures/me_iitb/detail/www.me.iitb.ac.in__event__seminar-machine-learning-augmented-massively-parallel-flow-solvers-fri-26-sep-215-pm-me.html (33613 chars) final_url=https://www.me.iitb.ac.in/event/seminar-machine-learning-augmented-massively-parallel-flow-solvers-fri-26-sep-215-pm-me
+2026-09-26T13:48:52Z	https://www.me.iitb.ac.in/event/talk-dr-pc-jain-industry-academia-collaboration-drdo-perspective	200	saved fixtures/me_iitb/detail/www.me.iitb.ac.in__event__talk-dr-pc-jain-industry-academia-collaboration-drdo-perspective.html (29440 chars) final_url=https://www.me.iitb.ac.in/event/talk-dr-pc-jain-industry-academia-collaboration-drdo-perspective
+2026-09-26T13:49:30Z	https://www.imsc.res.in/robots.txt	200	curl --max-time 10 probe
+2026-09-26T13:49:30Z	https://iisc.ac.in/robots.txt	301	curl --max-time 10 probe
+2026-09-26T13:49:30Z	https://www.icts.res.in/robots.txt	200	curl --max-time 10 probe
+2026-09-26T13:49:30Z	https://www.cmi.ac.in/robots.txt	404	curl --max-time 10 probe
+2026-09-26T13:49:30Z	https://talks.cam.ac.uk/robots.txt	200	curl --max-time 10 probe
+2026-09-26T13:49:47Z	https://www.cmi.ac.in/robots.txt	(fetched by Fetcher before first page)	robots check
+2026-09-26T13:49:50Z	https://www.cmi.ac.in/	200	saved fixtures/recon/www.cmi.ac.in__index.html (6880 chars) final_url=https://www.cmi.ac.in/
+2026-09-26T13:49:50Z	https://www.imsc.res.in/robots.txt	(fetched by Fetcher before first page)	robots check
+2026-09-26T13:50:01Z	https://www.imsc.res.in/	200	saved fixtures/recon/www.imsc.res.in__index.html (60271 chars) final_url=https://www.imsc.res.in/
+2026-09-26T13:50:12Z	https://www.cmi.ac.in/robots.txt	(fetched by Fetcher before first page)	robots check
+2026-09-26T13:50:14Z	https://www.cmi.ac.in/events/	200	saved fixtures/recon/www.cmi.ac.in__events.html (38630 chars) final_url=https://www.cmi.ac.in/events/
+2026-09-26T13:50:31Z	https://www.cmi.ac.in/robots.txt	(fetched by Fetcher before first page)	robots check
+2026-09-26T13:50:33Z	https://www.cmi.ac.in/activities/	200	saved fixtures/recon/www.cmi.ac.in__activities.html (93807 chars) final_url=https://www.cmi.ac.in/activities/
+2026-09-26T13:53:22Z	https://www.cmi.ac.in/activities	301	curl, no redirect follow: checks whether the slash-stripped listing URL redirects; Location=https://www.cmi.ac.in/activities/

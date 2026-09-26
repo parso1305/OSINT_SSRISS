@@ -1,0 +1,33 @@
+$ grep -nE "import requests|sqlite3|basicConfig|addHandler|Session\(|open\(" sources/iit_bombay.py
+exit=1
+
+$ python word-boundary scan of src/*.py for: iit iitb bombay hss drupal field-event node--type .ac.in event-card view-seminars icon-* humanities asia/kolkata +05:30 IST seminar
+(no hits)
+
+$ grep -nE "requests|urlopen|fetch|Fetcher|sqlite3|open\(" sources/iit_bombay.py src/urls.py
+sources/iit_bombay.py:4:enrichment, validation and storage are generic (src/). Selectors verified against live HTML fetched
+exit=0
+
+$ grep -nE "BeautifulSoup|bs4|select\(|select_one|re\.compile|parse_" src/storage.py
+exit=1
+
+$ grep -nE "^(import|from) " src/scheduler.py
+20:import sys
+21:from pathlib import Path
+27:import json
+28:import logging
+29:import os
+30:import socket
+31:import time
+32:import uuid
+33:from datetime import datetime, timedelta, timezone
+34:from typing import Optional
+36:from src.config import SourceConfig, load_source_configs, DEFAULT_CONFIG_PATH
+37:from src.logging_config import (
+40:from src.runner import run_source, DEFAULT_DB_PATH
+41:from src.storage import start_run, finish_run, abandon_running_runs, last_run_started_at
+
+$ grep -rn "BeautifulSoup" src/
+src/pagination.py:7:from bs4 import BeautifulSoup
+src/pagination.py:27:    link = BeautifulSoup(html, "html.parser").select_one(selector)
+Binary file src/__pycache__/pagination.cpython-313.pyc matches

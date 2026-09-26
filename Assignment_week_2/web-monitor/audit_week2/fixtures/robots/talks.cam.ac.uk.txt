@@ -1,0 +1,87 @@
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: OAI-SearchBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: GoogleOther
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: *
+Disallow: /show/archive/
+Disallow: /user/edit/
+Disallow: /user/update/
+Disallow: /talk/edit/
+Disallow: /talk/update/
+Disallow: /talk/create/
+Disallow: /talk/delete/
+Disallow: /list/edit/
+Disallow: /list/update/
+Disallow: /list/destroy/
+Disallow: /list/manage/
+Disallow: /login/
+Disallow: /oauth/
+Disallow: /include/
+Disallow: /subscriptions/
+Disallow: /user/merge/
+Disallow: /custom_views/
+Crawl-delay: 10
+
+Sitemap: https://talks.cam.ac.uk/sitemap.xml

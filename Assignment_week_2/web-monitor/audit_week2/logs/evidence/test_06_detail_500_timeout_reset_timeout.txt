@@ -1,0 +1,39 @@
+detail_status={'ok': 9, 'failed': 1, 'not_attempted': 10} counts={'new': 20, 'existing': 0, 'changed': 0}
+stored record for the failing item:
+{
+ "item_url": "http://127.0.0.1:56690/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+ "source_id": "iit_bombay_hss_seminars",
+ "institution": "IIT Bombay",
+ "content_type": "event",
+ "title": "Tracing the Success of Indian Democracy to Success in Nation-Building",
+ "starts_at": "2025-09-17T09:30:00Z",
+ "ends_at": null,
+ "timezone": "Asia/Kolkata",
+ "speakers": [],
+ "venue": "Online Seminar",
+ "is_online": true,
+ "event_type": "Seminar / Talk",
+ "organizer": "Department of Humanities and Social Sciences",
+ "description": null,
+ "listing_fetched_at": "2026-09-26T13:54:47Z",
+ "detail_fetched_at": "2026-09-26T13:54:47Z",
+ "detail_fetch_status": "failed",
+ "detail_http_status": null,
+ "detail_error": "FetchError: ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=56690): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:56690/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+ "extras": {
+  "date_raw": "17th Sep 2025",
+  "discovered_on_page": 1,
+  "discovered_on_url": "http://127.0.0.1:56690/events/seminars-and-talks",
+  "raw_href": "/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+  "raw_text": "17 Sep 2025 Seminar / Talk Tracing the Success of Indian Democracy to Success in Nation-Building 17th Sep 2025 15:00 PM Online Seminar",
+  "time_raw": "15:00 PM"
+ },
+ "content_hash": "08e9dca3fdab762e92a7142d57c53b0f3ec2bed410b8c32433633f9f240fa939",
+ "first_seen_at": "2026-09-26T13:54:48Z",
+ "last_seen_at": "2026-09-26T13:54:48Z"
+}
+--- relevant log lines ---
+2026-09-26 19:24:48 [WARNING] logger=web_monitor.fetcher FETCH_ERROR url=http://127.0.0.1:56690/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=none error_type=FetchError message="ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=56690): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:56690/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"
+2026-09-26 19:24:48 [WARNING] logger=web_monitor.detail DETAIL_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:56690/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=none error_type=FetchError message="ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=56690): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:56690/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"
+2026-09-26 19:24:48 [INFO] logger=web_monitor ENRICH ok=9 failed=1 not_attempted=10
+detail_http_status=None detail_error="FetchError: ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=56690): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:56690/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"

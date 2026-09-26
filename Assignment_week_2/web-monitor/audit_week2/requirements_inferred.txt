@@ -1,0 +1,6 @@
+# AUDIT-GENERATED. The repo has NO requirements.txt; this list is inferred from third-party
+# imports in src/, sources/, scripts/, tests/ (requests, urllib3, bs4, pytest). Unpinned on purpose,
+# so the install shows what a fresh machine would get today.
+requests
+beautifulsoup4
+pytest

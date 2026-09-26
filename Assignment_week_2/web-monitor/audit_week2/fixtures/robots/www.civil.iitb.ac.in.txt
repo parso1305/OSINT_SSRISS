@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /mailman/admin/
+Disallow: /mailman/admindb/
+Disallow: /mailman/options/
+Disallow: /mailman/private/

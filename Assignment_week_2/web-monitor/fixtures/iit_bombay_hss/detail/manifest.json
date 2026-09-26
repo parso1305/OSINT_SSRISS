@@ -1,0 +1,62 @@
+[
+  {
+    "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability",
+    "status": 200,
+    "fetched_at": "2026-09-26T05:49:07+00:00",
+    "saved_as": "fixtures/iit_bombay_hss/detail/islands-tri-junction-fragility-and-vulnerability.html"
+  },
+  {
+    "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+    "status": 200,
+    "fetched_at": "2026-09-26T05:49:09+00:00",
+    "saved_as": "fixtures/iit_bombay_hss/detail/tracing-success-indian-democracy-success-nation-building.html"
+  },
+  {
+    "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup",
+    "status": 200,
+    "fetched_at": "2026-09-26T05:49:11+00:00",
+    "saved_as": "fixtures/iit_bombay_hss/detail/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup.html"
+  },
+  {
+    "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice",
+    "status": 200,
+    "fetched_at": "2026-09-26T05:49:13+00:00",
+    "saved_as": "fixtures/iit_bombay_hss/detail/experiential-self-and-mitigation-epistemic-injustice.html"
+  },
+  {
+    "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/embodied-translation",
+    "status": 200,
+    "fetched_at": "2026-09-26T05:49:15+00:00",
+    "saved_as": "fixtures/iit_bombay_hss/detail/embodied-translation.html"
+  },
+  {
+    "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns",
+    "status": 200,
+    "fetched_at": "2026-09-26T05:49:17+00:00",
+    "saved_as": "fixtures/iit_bombay_hss/detail/gramsci-and-south-asia-dialogue-subalterns.html"
+  },
+  {
+    "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks",
+    "status": 200,
+    "fetched_at": "2026-09-26T05:49:19+00:00",
+    "saved_as": "fixtures/iit_bombay_hss/detail/translating-untranslatability-environmental-justice-and-sacredness-spivaks.html"
+  },
+  {
+    "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance",
+    "status": 200,
+    "fetched_at": "2026-09-26T05:49:21+00:00",
+    "saved_as": "fixtures/iit_bombay_hss/detail/prayers-and-curses-utterance-forms-political-speech-and-literary-performance.html"
+  },
+  {
+    "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/rortys-revolution",
+    "status": 200,
+    "fetched_at": "2026-09-26T05:49:23+00:00",
+    "saved_as": "fixtures/iit_bombay_hss/detail/rortys-revolution.html"
+  },
+  {
+    "item_url": "https://www.hss.iitb.ac.in/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris",
+    "status": 200,
+    "fetched_at": "2026-09-26T05:49:25+00:00",
+    "saved_as": "fixtures/iit_bombay_hss/detail/those-four-years-history-19th-century-chinese-migration-nilgiris.html"
+  }
+]

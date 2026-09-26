@@ -1,0 +1,388 @@
+....F......                                                              [100%]
+================================== FAILURES ===================================
+_________________ test_17_stale_lock[unparseable_started_at] __________________
+
+tmp_path = WindowsPath('C:/Users/parth/AppData/Local/Temp/pytest-of-parth/pytest-51/test_17_stale_lock_unparseable0')
+log_stream = <_io.StringIO object at 0x00000132C20B5480>
+evidence = <conftest.Evidence object at 0x00000132C217CE90>
+kind = 'unparseable_started_at'
+
+    @pytest.mark.parametrize("kind", ["dead_pid", "old_timestamp_live_pid", "corrupt_json_old_mtime",
+                                      "unparseable_started_at", "other_host_fresh"])
+    def test_17_stale_lock(tmp_path, log_stream, evidence, kind):
+        db, locks = str(tmp_path / "t17.db"), tmp_path / "locks"
+        locks.mkdir()
+        lock = locks / f"{SOURCE_ID}.lock"
+        now = datetime.now(timezone.utc)
+        content = {
+            "dead_pid": {"pid": dead_pid(), "host": socket.gethostname(), "started_at": now.strftime(TS)},
+            "old_timestamp_live_pid": {"pid": os.getpid(), "host": socket.gethostname(),
+                                       "started_at": (now - timedelta(hours=3)).strftime(TS)},
+            "unparseable_started_at": {"pid": os.getpid(), "host": socket.gethostname(), "started_at": "2026-09-26 06:00"},
+            "other_host_fresh": {"pid": 4242, "host": "some-other-machine", "started_at": now.strftime(TS)},
+        }.get(kind)
+        lock.write_text("{not json" if content is None else json.dumps(content), encoding="utf-8")
+        if kind == "corrupt_json_old_mtime":
+            old = time.time() - 3 * 3600
+            os.utime(lock, (old, old))
+        crashed = None
+        with AuditSite() as site:
+            cfg = write_sandbox_config(tmp_path / "sources.json", [real_entry(listing_url=site.listing_url, request_delay_s=0)])
+            try:
+                result = run_once(cfg, db, locks, source_ids=[SOURCE_ID], force=True, logger=LOG)
+            except Exception as e:  # noqa: BLE001
+                crashed, result = f"{type(e).__name__}: {e}", None
+        runs = [(r["status"], r["error"]) for r in list_runs(db)] if Path(db).exists() else []
+        evidence(f"lock content: {lock.read_text() if lock.exists() else '(removed)'}", f"crashed: {crashed}",
+                 f"result: {result}", f"runs: {runs}", lines(log_stream.getvalue(), "STALE_LOCK", "RUN_SKIPPED", "RUN_END"))
+>       assert crashed is None, "a malformed lock must not crash the scheduler cycle"
+E       AssertionError: a malformed lock must not crash the scheduler cycle
+E       assert "ValueError: time data '2026-09-26 06:00' does not match format '%Y-%m-%dT%H:%M:%SZ'" is None
+
+audit_week2\tests\test_scheduler_behaviour.py:107: AssertionError
+------------------------------ Captured log call ------------------------------
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=never next_due_at=now due=true
+=================================== PASSES ====================================
+________________________ test_17_stale_lock[dead_pid] _________________________
+------------------------------ Captured log call ------------------------------
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=never next_due_at=now due=true
+WARNING  web_monitor:logging_config.py:148 STALE_LOCK source=iit_bombay_hss_seminars holder=pid:15588@2026-09-26T13:45:08Z reason=process_dead(pid=15588) action=removed
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=04c846d99f5f46e4a7915e70a7cd2af4 source=iit_bombay_hss_seminars
+INFO     web_monitor:logging_config.py:49 START source_id=iit_bombay_hss_seminars
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52982/events/seminars-and-talks status=200 duration_ms=26
+INFO     web_monitor:pagination.py:107 Page 1 yielded 10 items
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52982/events/seminars-and-talks?page=1 status=200 duration_ms=23
+INFO     web_monitor:pagination.py:107 Page 2 yielded 10 items
+INFO     web_monitor:logging_config.py:75 PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+INFO     web_monitor:logging_config.py:65 PARSE records=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52982/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=17
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52982/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=15
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52982/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=32
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52982/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=14
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52982/events/seminar-talk/embodied-translation status=200 duration_ms=26
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52982/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=12
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52982/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=13
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52982/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=16
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52982/events/seminar-talk/rortys-revolution status=200 duration_ms=18
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52982/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=24
+INFO     web_monitor:logging_config.py:86 ENRICH ok=10 failed=0 not_attempted=10
+INFO     web_monitor:logging_config.py:70 NORMALIZE records=20
+INFO     web_monitor:logging_config.py:96 VALIDATE valid=20 invalid=0
+INFO     web_monitor:logging_config.py:101 STORE new=20 existing=0 changed=0
+INFO     web_monitor:logging_config.py:106 END source_id=iit_bombay_hss_seminars duration_ms=466
+INFO     web_monitor:logging_config.py:137 RUN_END run_id=04c846d99f5f46e4a7915e70a7cd2af4 source=iit_bombay_hss_seminars status=success duration_ms=476 new=20 existing=0 changed=0 failed=0 error=""
+_________________ test_17_stale_lock[old_timestamp_live_pid] __________________
+------------------------------ Captured log call ------------------------------
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=never next_due_at=now due=true
+WARNING  web_monitor:logging_config.py:148 STALE_LOCK source=iit_bombay_hss_seminars holder=pid:19764@2026-09-26T10:45:09Z reason=max_age_exceeded(age_s=10800,max_s=3600) action=removed
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=29f86595e63b474ca16d2c883540e131 source=iit_bombay_hss_seminars
+INFO     web_monitor:logging_config.py:49 START source_id=iit_bombay_hss_seminars
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52996/events/seminars-and-talks status=200 duration_ms=11
+INFO     web_monitor:pagination.py:107 Page 1 yielded 10 items
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52996/events/seminars-and-talks?page=1 status=200 duration_ms=2
+INFO     web_monitor:pagination.py:107 Page 2 yielded 10 items
+INFO     web_monitor:logging_config.py:75 PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+INFO     web_monitor:logging_config.py:65 PARSE records=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52996/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=3
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52996/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52996/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52996/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52996/events/seminar-talk/embodied-translation status=200 duration_ms=15
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52996/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=21
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52996/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52996/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=24
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52996/events/seminar-talk/rortys-revolution status=200 duration_ms=17
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:52996/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=2
+INFO     web_monitor:logging_config.py:86 ENRICH ok=10 failed=0 not_attempted=10
+INFO     web_monitor:logging_config.py:70 NORMALIZE records=20
+INFO     web_monitor:logging_config.py:96 VALIDATE valid=20 invalid=0
+INFO     web_monitor:logging_config.py:101 STORE new=20 existing=0 changed=0
+INFO     web_monitor:logging_config.py:106 END source_id=iit_bombay_hss_seminars duration_ms=303
+INFO     web_monitor:logging_config.py:137 RUN_END run_id=29f86595e63b474ca16d2c883540e131 source=iit_bombay_hss_seminars status=success duration_ms=311 new=20 existing=0 changed=0 failed=0 error=""
+_________________ test_17_stale_lock[corrupt_json_old_mtime] __________________
+------------------------------ Captured log call ------------------------------
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=never next_due_at=now due=true
+WARNING  web_monitor:logging_config.py:148 STALE_LOCK source=iit_bombay_hss_seminars holder=pid:None@None reason=max_age_exceeded(age_s=10800,max_s=3600) action=removed
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=d6d387249902458d83ddff356af015ce source=iit_bombay_hss_seminars
+INFO     web_monitor:logging_config.py:49 START source_id=iit_bombay_hss_seminars
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53011/events/seminars-and-talks status=200 duration_ms=2
+INFO     web_monitor:pagination.py:107 Page 1 yielded 10 items
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53011/events/seminars-and-talks?page=1 status=200 duration_ms=24
+INFO     web_monitor:pagination.py:107 Page 2 yielded 10 items
+INFO     web_monitor:logging_config.py:75 PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+INFO     web_monitor:logging_config.py:65 PARSE records=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53011/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53011/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53011/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53011/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=1
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53011/events/seminar-talk/embodied-translation status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53011/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53011/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53011/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53011/events/seminar-talk/rortys-revolution status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53011/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=2
+INFO     web_monitor:logging_config.py:86 ENRICH ok=10 failed=0 not_attempted=10
+INFO     web_monitor:logging_config.py:70 NORMALIZE records=20
+INFO     web_monitor:logging_config.py:96 VALIDATE valid=20 invalid=0
+INFO     web_monitor:logging_config.py:101 STORE new=20 existing=0 changed=0
+INFO     web_monitor:logging_config.py:106 END source_id=iit_bombay_hss_seminars duration_ms=229
+INFO     web_monitor:logging_config.py:137 RUN_END run_id=d6d387249902458d83ddff356af015ce source=iit_bombay_hss_seminars status=success duration_ms=237 new=20 existing=0 changed=0 failed=0 error=""
+____________________ test_17_stale_lock[other_host_fresh] _____________________
+------------------------------ Captured log call ------------------------------
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=never next_due_at=now due=true
+INFO     web_monitor:logging_config.py:144 RUN_SKIPPED source=iit_bombay_hss_seminars reason=already_running holder=pid:4242@2026-09-26T13:45:12Z
+____________ test_18_failure_mid_storage_rolls_back[update_midway] ____________
+------------------------------ Captured log call ------------------------------
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=never next_due_at=now due=true
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=9918cc54ac854cdab3210ad22b714ac9 source=iit_bombay_hss_seminars
+INFO     web_monitor:logging_config.py:49 START source_id=iit_bombay_hss_seminars
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminars-and-talks status=200 duration_ms=16
+INFO     web_monitor:pagination.py:107 Page 1 yielded 10 items
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminars-and-talks?page=1 status=200 duration_ms=20
+INFO     web_monitor:pagination.py:107 Page 2 yielded 10 items
+INFO     web_monitor:logging_config.py:75 PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+INFO     web_monitor:logging_config.py:65 PARSE records=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=12
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=21
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/embodied-translation status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=23
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/rortys-revolution status=200 duration_ms=21
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=21
+INFO     web_monitor:logging_config.py:86 ENRICH ok=10 failed=0 not_attempted=10
+INFO     web_monitor:logging_config.py:70 NORMALIZE records=20
+INFO     web_monitor:logging_config.py:96 VALIDATE valid=20 invalid=0
+INFO     web_monitor:logging_config.py:101 STORE new=20 existing=0 changed=0
+INFO     web_monitor:logging_config.py:106 END source_id=iit_bombay_hss_seminars duration_ms=377
+INFO     web_monitor:logging_config.py:137 RUN_END run_id=9918cc54ac854cdab3210ad22b714ac9 source=iit_bombay_hss_seminars status=success duration_ms=386 new=20 existing=0 changed=0 failed=0 error=""
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-26T13:45:12Z next_due_at=2026-09-27T13:45:12Z due=true
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=814f80f3c4694d089a02c73aba323bf6 source=iit_bombay_hss_seminars
+INFO     web_monitor:logging_config.py:49 START source_id=iit_bombay_hss_seminars
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminars-and-talks status=200 duration_ms=1
+INFO     web_monitor:pagination.py:107 Page 1 yielded 10 items
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminars-and-talks?page=1 status=200 duration_ms=25
+INFO     web_monitor:pagination.py:107 Page 2 yielded 10 items
+INFO     web_monitor:logging_config.py:75 PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+INFO     web_monitor:logging_config.py:65 PARSE records=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=18
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=1
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/embodied-translation status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=1
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/rortys-revolution status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53027/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=2
+INFO     web_monitor:logging_config.py:86 ENRICH ok=10 failed=0 not_attempted=10
+INFO     web_monitor:logging_config.py:70 NORMALIZE records=20
+INFO     web_monitor:logging_config.py:96 VALIDATE valid=20 invalid=0
+ERROR    web_monitor:logging_config.py:117 FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:53027/events/seminars-and-talks stage=store error_type=IntegrityError message="audit injected failure"
+ERROR    web_monitor:logging_config.py:137 RUN_END run_id=814f80f3c4694d089a02c73aba323bf6 source=iit_bombay_hss_seminars status=failed duration_ms=270 new=0 existing=0 changed=0 failed=0 error="IntegrityError: audit injected failure"
+____________ test_18_failure_mid_storage_rolls_back[insert_midway] ____________
+------------------------------ Captured log call ------------------------------
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=never next_due_at=now due=true
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=e5e39d0254bc420cb21868b0575e77eb source=iit_bombay_hss_seminars
+INFO     web_monitor:logging_config.py:49 START source_id=iit_bombay_hss_seminars
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminars-and-talks status=200 duration_ms=16
+INFO     web_monitor:pagination.py:107 Page 1 yielded 10 items
+INFO     web_monitor:logging_config.py:75 PAGINATE pages_crawled=1 stop_reason=max_pages_reached
+INFO     web_monitor:logging_config.py:65 PARSE records=10
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=12
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=23
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/embodied-translation status=200 duration_ms=26
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=18
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/rortys-revolution status=200 duration_ms=22
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=2
+INFO     web_monitor:logging_config.py:86 ENRICH ok=10 failed=0 not_attempted=0
+INFO     web_monitor:logging_config.py:70 NORMALIZE records=10
+INFO     web_monitor:logging_config.py:96 VALIDATE valid=10 invalid=0
+INFO     web_monitor:logging_config.py:101 STORE new=10 existing=0 changed=0
+INFO     web_monitor:logging_config.py:106 END source_id=iit_bombay_hss_seminars duration_ms=308
+INFO     web_monitor:logging_config.py:137 RUN_END run_id=e5e39d0254bc420cb21868b0575e77eb source=iit_bombay_hss_seminars status=success duration_ms=316 new=10 existing=0 changed=0 failed=0 error=""
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-26T13:45:13Z next_due_at=2026-09-27T13:45:13Z due=true
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=14acc9992187405b8428dc531c1e84f6 source=iit_bombay_hss_seminars
+INFO     web_monitor:logging_config.py:49 START source_id=iit_bombay_hss_seminars
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminars-and-talks status=200 duration_ms=2
+INFO     web_monitor:pagination.py:107 Page 1 yielded 10 items
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminars-and-talks?page=1 status=200 duration_ms=26
+INFO     web_monitor:pagination.py:107 Page 2 yielded 10 items
+INFO     web_monitor:logging_config.py:75 PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+INFO     web_monitor:logging_config.py:65 PARSE records=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=19
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/embodied-translation status=200 duration_ms=21
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=21
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=22
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=22
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/rortys-revolution status=200 duration_ms=22
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53054/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=2
+INFO     web_monitor:logging_config.py:86 ENRICH ok=10 failed=0 not_attempted=10
+INFO     web_monitor:logging_config.py:70 NORMALIZE records=20
+INFO     web_monitor:logging_config.py:96 VALIDATE valid=20 invalid=0
+ERROR    web_monitor:logging_config.py:117 FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:53054/events/seminars-and-talks stage=store error_type=IntegrityError message="audit injected failure"
+ERROR    web_monitor:logging_config.py:137 RUN_END run_id=14acc9992187405b8428dc531c1e84f6 source=iit_bombay_hss_seminars status=failed duration_ms=358 new=0 existing=0 changed=0 failed=0 error="IntegrityError: audit injected failure"
+___________________ test_19_schedule_change_via_config_only ___________________
+------------------------------ Captured log call ------------------------------
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=never next_due_at=now due=true
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=b9beead203e9446b83297543798d0cb1 source=iit_bombay_hss_seminars
+INFO     web_monitor:logging_config.py:49 START source_id=iit_bombay_hss_seminars
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminars-and-talks status=200 duration_ms=2
+INFO     web_monitor:pagination.py:107 Page 1 yielded 10 items
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminars-and-talks?page=1 status=200 duration_ms=4
+INFO     web_monitor:pagination.py:107 Page 2 yielded 10 items
+INFO     web_monitor:logging_config.py:75 PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+INFO     web_monitor:logging_config.py:65 PARSE records=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=26
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/embodied-translation status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/rortys-revolution status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=2
+INFO     web_monitor:logging_config.py:86 ENRICH ok=10 failed=0 not_attempted=10
+INFO     web_monitor:logging_config.py:70 NORMALIZE records=20
+INFO     web_monitor:logging_config.py:96 VALIDATE valid=20 invalid=0
+INFO     web_monitor:logging_config.py:101 STORE new=20 existing=0 changed=0
+INFO     web_monitor:logging_config.py:106 END source_id=iit_bombay_hss_seminars duration_ms=257
+INFO     web_monitor:logging_config.py:137 RUN_END run_id=b9beead203e9446b83297543798d0cb1 source=iit_bombay_hss_seminars status=success duration_ms=265 new=20 existing=0 changed=0 failed=0 error=""
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-26T13:45:15Z next_due_at=2026-09-27T13:45:15Z due=false
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=0.02 last_started_at=2026-09-26T13:45:15Z next_due_at=2026-09-26T13:45:16Z due=true
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=78252f3d73d64b7d81c7099b23cdc8e5 source=iit_bombay_hss_seminars
+INFO     web_monitor:logging_config.py:49 START source_id=iit_bombay_hss_seminars
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminars-and-talks status=200 duration_ms=2
+INFO     web_monitor:pagination.py:107 Page 1 yielded 10 items
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminars-and-talks?page=1 status=200 duration_ms=2
+INFO     web_monitor:pagination.py:107 Page 2 yielded 10 items
+INFO     web_monitor:logging_config.py:75 PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+INFO     web_monitor:logging_config.py:65 PARSE records=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=22
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/embodied-translation status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/rortys-revolution status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53080/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=2
+INFO     web_monitor:logging_config.py:86 ENRICH ok=10 failed=0 not_attempted=10
+INFO     web_monitor:logging_config.py:70 NORMALIZE records=20
+INFO     web_monitor:logging_config.py:96 VALIDATE valid=20 invalid=0
+INFO     web_monitor:logging_config.py:101 STORE new=0 existing=20 changed=0
+INFO     web_monitor:logging_config.py:106 END source_id=iit_bombay_hss_seminars duration_ms=306
+INFO     web_monitor:logging_config.py:137 RUN_END run_id=78252f3d73d64b7d81c7099b23cdc8e5 source=iit_bombay_hss_seminars status=success duration_ms=314 new=0 existing=20 changed=0 failed=0 error=""
+_________________ test_20_two_sources_do_not_block_each_other _________________
+------------------------------ Captured log call ------------------------------
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=never next_due_at=now due=true
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=24b9145dd0794941b855c06c87c8cb7e source=iit_bombay_hss_seminars
+INFO     web_monitor:logging_config.py:49 START source_id=iit_bombay_hss_seminars
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53112/events/seminars-and-talks status=200 duration_ms=2
+INFO     web_monitor:pagination.py:107 Page 1 yielded 10 items
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53112/events/seminars-and-talks?page=1 status=200 duration_ms=20
+INFO     web_monitor:pagination.py:107 Page 2 yielded 10 items
+INFO     web_monitor:logging_config.py:75 PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+INFO     web_monitor:logging_config.py:65 PARSE records=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53112/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=17
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53112/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=3
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53112/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53112/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53112/events/seminar-talk/embodied-translation status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53112/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=3
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53112/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=12
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53112/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=3
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53112/events/seminar-talk/rortys-revolution status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53112/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=18
+INFO     web_monitor:logging_config.py:86 ENRICH ok=10 failed=0 not_attempted=10
+INFO     web_monitor:logging_config.py:70 NORMALIZE records=20
+INFO     web_monitor:logging_config.py:96 VALIDATE valid=20 invalid=0
+INFO     web_monitor:logging_config.py:101 STORE new=20 existing=0 changed=0
+INFO     web_monitor:logging_config.py:106 END source_id=iit_bombay_hss_seminars duration_ms=310
+INFO     web_monitor:logging_config.py:137 RUN_END run_id=24b9145dd0794941b855c06c87c8cb7e source=iit_bombay_hss_seminars status=success duration_ms=319 new=20 existing=0 changed=0 failed=0 error=""
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=audit_second_source interval_minutes=1440 last_started_at=never next_due_at=now due=true
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=b04977e7fd5d478c8cf6aa01f3c119d0 source=audit_second_source
+INFO     web_monitor:logging_config.py:49 START source_id=audit_second_source
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminars-and-talks status=200 duration_ms=3
+INFO     web_monitor:pagination.py:107 Page 1 yielded 10 items
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminars-and-talks?page=1 status=200 duration_ms=21
+INFO     web_monitor:pagination.py:107 Page 2 yielded 10 items
+INFO     web_monitor:logging_config.py:75 PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+INFO     web_monitor:logging_config.py:65 PARSE records=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=3
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=24
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=22
+INFO     web_monitor:logging_config.py:86 ENRICH ok=3 failed=0 not_attempted=17
+INFO     web_monitor:logging_config.py:70 NORMALIZE records=20
+INFO     web_monitor:logging_config.py:96 VALIDATE valid=20 invalid=0
+INFO     web_monitor:logging_config.py:101 STORE new=20 existing=0 changed=0
+INFO     web_monitor:logging_config.py:106 END source_id=audit_second_source duration_ms=192
+INFO     web_monitor:logging_config.py:137 RUN_END run_id=b04977e7fd5d478c8cf6aa01f3c119d0 source=audit_second_source status=success duration_ms=200 new=20 existing=0 changed=0 failed=0 error=""
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-26T13:45:17Z next_due_at=2026-09-27T13:45:17Z due=true
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=35ad8eec1f6e4bc9ac4b9a94159ef690 source=iit_bombay_hss_seminars
+INFO     web_monitor:logging_config.py:49 START source_id=iit_bombay_hss_seminars
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53112/events/seminars-and-talks status=500 duration_ms=2
+ERROR    web_monitor:logging_config.py:117 FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:53112/events/seminars-and-talks stage=fetch error_type=FetchError message="HTTP 500 Internal Server Error for url: http://127.0.0.1:53112/events/seminars-and-talks"
+ERROR    web_monitor:logging_config.py:137 RUN_END run_id=35ad8eec1f6e4bc9ac4b9a94159ef690 source=iit_bombay_hss_seminars status=failed duration_ms=24 new=0 existing=0 changed=0 failed=0 error="FetchError: HTTP 500 Internal Server Error for url: http://127.0.0.1:53112/events/seminars-and-talks"
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=audit_second_source interval_minutes=1440 last_started_at=2026-09-26T13:45:18Z next_due_at=2026-09-27T13:45:18Z due=true
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=22b09e2aa53e4b30b6af0c3b5110fccc source=audit_second_source
+INFO     web_monitor:logging_config.py:49 START source_id=audit_second_source
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminars-and-talks status=200 duration_ms=2
+INFO     web_monitor:pagination.py:107 Page 1 yielded 10 items
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminars-and-talks?page=1 status=200 duration_ms=2
+INFO     web_monitor:pagination.py:107 Page 2 yielded 10 items
+INFO     web_monitor:logging_config.py:75 PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+INFO     web_monitor:logging_config.py:65 PARSE records=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=2
+INFO     web_monitor:logging_config.py:86 ENRICH ok=3 failed=0 not_attempted=17
+INFO     web_monitor:logging_config.py:70 NORMALIZE records=20
+INFO     web_monitor:logging_config.py:96 VALIDATE valid=20 invalid=0
+INFO     web_monitor:logging_config.py:101 STORE new=0 existing=20 changed=0
+INFO     web_monitor:logging_config.py:106 END source_id=audit_second_source duration_ms=134
+INFO     web_monitor:logging_config.py:137 RUN_END run_id=22b09e2aa53e4b30b6af0c3b5110fccc source=audit_second_source status=success duration_ms=141 new=0 existing=20 changed=0 failed=0 error=""
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-26T13:45:18Z next_due_at=2026-09-27T13:45:18Z due=true
+INFO     web_monitor:logging_config.py:144 RUN_SKIPPED source=iit_bombay_hss_seminars reason=already_running holder=pid:19764@2026-09-26T13:45:18Z
+INFO     web_monitor:logging_config.py:126 SCHEDULE source=audit_second_source interval_minutes=1440 last_started_at=2026-09-26T13:45:18Z next_due_at=2026-09-27T13:45:18Z due=true
+INFO     web_monitor:logging_config.py:131 RUN_START run_id=456f264a9be2442a95992f157b3d059b source=audit_second_source
+INFO     web_monitor:logging_config.py:49 START source_id=audit_second_source
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminars-and-talks status=200 duration_ms=2
+INFO     web_monitor:pagination.py:107 Page 1 yielded 10 items
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminars-and-talks?page=1 status=200 duration_ms=2
+INFO     web_monitor:pagination.py:107 Page 2 yielded 10 items
+INFO     web_monitor:logging_config.py:75 PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+INFO     web_monitor:logging_config.py:65 PARSE records=20
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=3
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=2
+INFO     web_monitor.fetcher:logging_config.py:54 FETCH url=http://127.0.0.1:53113/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=2
+INFO     web_monitor:logging_config.py:86 ENRICH ok=3 failed=0 not_attempted=17
+INFO     web_monitor:logging_config.py:70 NORMALIZE records=20
+INFO     web_monitor:logging_config.py:96 VALIDATE valid=20 invalid=0
+INFO     web_monitor:logging_config.py:101 STORE new=0 existing=20 changed=0
+INFO     web_monitor:logging_config.py:106 END source_id=audit_second_source duration_ms=154
+INFO     web_monitor:logging_config.py:137 RUN_END run_id=456f264a9be2442a95992f157b3d059b source=audit_second_source status=success duration_ms=161 new=0 existing=20 changed=0 failed=0 error=""
+=========================== short test summary info ===========================
+PASSED audit_week2/tests/test_scheduler_behaviour.py::test_16_concurrent_runs_same_source
+PASSED audit_week2/tests/test_scheduler_behaviour.py::test_17_stale_lock[dead_pid]
+PASSED audit_week2/tests/test_scheduler_behaviour.py::test_17_stale_lock[old_timestamp_live_pid]
+PASSED audit_week2/tests/test_scheduler_behaviour.py::test_17_stale_lock[corrupt_json_old_mtime]
+PASSED audit_week2/tests/test_scheduler_behaviour.py::test_17_stale_lock[other_host_fresh]
+PASSED audit_week2/tests/test_scheduler_behaviour.py::test_18_failure_mid_storage_rolls_back[update_midway]
+PASSED audit_week2/tests/test_scheduler_behaviour.py::test_18_failure_mid_storage_rolls_back[insert_midway]
+PASSED audit_week2/tests/test_scheduler_behaviour.py::test_19_schedule_change_via_config_only
+PASSED audit_week2/tests/test_scheduler_behaviour.py::test_20_two_sources_do_not_block_each_other
+PASSED audit_week2/tests/test_scheduler_behaviour.py::test_21_crawl_frequency_numbers
+FAILED audit_week2/tests/test_scheduler_behaviour.py::test_17_stale_lock[unparseable_started_at]
+1 failed, 10 passed in 17.02s

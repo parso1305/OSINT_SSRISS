@@ -1,0 +1,158 @@
+
+===== run 1 (db=C:\Users\parth\AppData\Local\Temp\tmpnnguypnd\fixtures_run.db) =====
+2026-09-26 12:08:36 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
+2026-09-26 12:08:36 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminars-and-talks status=200 duration_ms=14
+2026-09-26 12:08:36 [INFO] logger=web_monitor Page 1 yielded 10 items
+2026-09-26 12:08:36 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminars-and-talks?page=1 status=200 duration_ms=2
+2026-09-26 12:08:36 [INFO] logger=web_monitor Page 2 yielded 10 items
+2026-09-26 12:08:36 [INFO] logger=web_monitor PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+2026-09-26 12:08:36 [INFO] logger=web_monitor PARSE records=20
+2026-09-26 12:08:36 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=2
+2026-09-26 12:08:36 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=24
+2026-09-26 12:08:36 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=23
+2026-09-26 12:08:36 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=2
+2026-09-26 12:08:36 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/embodied-translation status=200 duration_ms=2
+2026-09-26 12:08:36 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=19
+2026-09-26 12:08:36 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=20
+2026-09-26 12:08:36 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=21
+2026-09-26 12:08:36 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/rortys-revolution status=200 duration_ms=2
+2026-09-26 12:08:37 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=21
+2026-09-26 12:08:37 [INFO] logger=web_monitor ENRICH ok=10 failed=0 not_attempted=10
+2026-09-26 12:08:37 [INFO] logger=web_monitor NORMALIZE records=20
+2026-09-26 12:08:37 [INFO] logger=web_monitor VALIDATE valid=20 invalid=0
+2026-09-26 12:08:37 [INFO] logger=web_monitor STORE new=20 existing=0 changed=0
+2026-09-26 12:08:37 [INFO] logger=web_monitor END source_id=iit_bombay_hss_seminars duration_ms=555
+summary: pages=2 stop=max_pages_reached detail={'ok': 10, 'failed': 0, 'not_attempted': 10} counts={'new': 20, 'existing': 0, 'changed': 0} validated=20 valid=20 rejected=0
+
+===== run 2 (db=C:\Users\parth\AppData\Local\Temp\tmpnnguypnd\fixtures_run.db) =====
+2026-09-26 12:08:37 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
+2026-09-26 12:08:37 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminars-and-talks status=200 duration_ms=16
+2026-09-26 12:08:37 [INFO] logger=web_monitor Page 1 yielded 10 items
+2026-09-26 12:08:37 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminars-and-talks?page=1 status=200 duration_ms=22
+2026-09-26 12:08:37 [INFO] logger=web_monitor Page 2 yielded 10 items
+2026-09-26 12:08:37 [INFO] logger=web_monitor PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+2026-09-26 12:08:37 [INFO] logger=web_monitor PARSE records=20
+2026-09-26 12:08:37 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=24
+2026-09-26 12:08:37 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=2
+2026-09-26 12:08:37 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=2
+2026-09-26 12:08:37 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/experiential-self-and-mitigation-epistemic-injustice status=200 duration_ms=2
+2026-09-26 12:08:37 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/embodied-translation status=200 duration_ms=2
+2026-09-26 12:08:37 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/gramsci-and-south-asia-dialogue-subalterns status=200 duration_ms=2
+2026-09-26 12:08:37 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/translating-untranslatability-environmental-justice-and-sacredness-spivaks status=200 duration_ms=2
+2026-09-26 12:08:37 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/prayers-and-curses-utterance-forms-political-speech-and-literary-performance status=200 duration_ms=18
+2026-09-26 12:08:37 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/rortys-revolution status=200 duration_ms=23
+2026-09-26 12:08:37 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:56130/events/seminar-talk/those-four-years-history-19th-century-chinese-migration-nilgiris status=200 duration_ms=18
+2026-09-26 12:08:37 [INFO] logger=web_monitor ENRICH ok=10 failed=0 not_attempted=10
+2026-09-26 12:08:37 [INFO] logger=web_monitor NORMALIZE records=20
+2026-09-26 12:08:37 [INFO] logger=web_monitor VALIDATE valid=20 invalid=0
+2026-09-26 12:08:37 [INFO] logger=web_monitor STORE new=0 existing=20 changed=0
+2026-09-26 12:08:37 [INFO] logger=web_monitor END source_id=iit_bombay_hss_seminars duration_ms=512
+summary: pages=2 stop=max_pages_reached detail={'ok': 10, 'failed': 0, 'not_attempted': 10} counts={'new': 0, 'existing': 20, 'changed': 0} validated=20 valid=20 rejected=0
+{
+ "content_type": "event",
+ "title": "The A&N Islands – At the tri-junction of fragility and vulnerability",
+ "starts_at": "2025-09-25T10:00:00Z",
+ "ends_at": "2025-09-25T11:00:00Z",
+ "timezone": "Asia/Kolkata",
+ "speakers": [
+  {
+   "name": "Pankaj Sekhsaria",
+   "affiliation": null
+  }
+ ],
+ "venue": "LT 101",
+ "is_online": null,
+ "event_type": "Seminar / Talk",
+ "organizer": "Department of Humanities and Social Sciences",
+ "description": "The Andaman and Nicobar Islands constitute an unique system in the Indian context that is also one of the least understood. The islands have no parallels on multiple grounds – geological, ecological and socio-cultural – and put together these form a unit that is complex and needs special attention and care. The islands are extremely rich from an ecological point of view – rich tropical forests, a diverse coastline comprising beaches, rocky coasts and mangroves and oceans that are thriving with coral reefs and marine life. The islands are home at the same time to a number of indigenous communities who have been here for thousands of years but are today among the most marginalised and vulnerable. Importantly, the islands are located in Seismic Zone V, the most seismically active zone on the planet. Earthquakes here are a regular occurrence and the 9.3 Richter scale earthquake that caused the giant tsunami of December 2004 had its epicenter not very far from the Nicobar islands. The presentation will dwell on these three distinctly different but complexly inter-related aspects of these islands to argue for a larger and a more holistic understanding of the place. It will present a range of examples of how recent developmental interventions in the islands - for infrastructure development, defence installations and tourism promotion - are wilfully ignoring the dynamic and sensitive social, ecological and geological realities of this remote island chain and increasing manifold the vulnerability of the islands and its human and non-human residents.",
+ "item_url": "http://127.0.0.1:56130/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability",
+ "source_id": "iit_bombay_hss_seminars",
+ "institution": "IIT Bombay",
+ "listing_fetched_at": "2026-09-26T06:38:37Z",
+ "detail_fetched_at": "2026-09-26T06:38:37Z",
+ "detail_fetch_status": "ok",
+ "detail_http_status": 200,
+ "detail_error": null,
+ "extras": {
+  "node_id": "2809",
+  "detail_canonical_url": "https://www.hss.iitb.ac.in/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability",
+  "date_raw": "25th Sep 2025",
+  "time_raw": "15:30 PM",
+  "raw_href": "/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability",
+  "raw_text": "25 Sep 2025 Seminar / Talk The A&N Islands – At the tri-junction of fragility and vulnerability 25th Sep 2025 15:30 PM LT 101",
+  "discovered_on_url": "http://127.0.0.1:56130/events/seminars-and-talks",
+  "discovered_on_page": 1
+ }
+}
+{
+ "content_type": "event",
+ "title": "Tracing the Success of Indian Democracy to Success in Nation-Building",
+ "starts_at": "2025-09-17T09:30:00Z",
+ "ends_at": "2025-09-17T11:30:00Z",
+ "timezone": "Asia/Kolkata",
+ "speakers": [
+  {
+   "name": "Salvatore Babones",
+   "affiliation": "University of Sydney"
+  }
+ ],
+ "venue": "Online Seminar",
+ "is_online": true,
+ "event_type": "Seminar / Talk",
+ "organizer": "Department of Humanities and Social Sciences",
+ "description": "Why did democracy take root and thrive in India when it struggled to survive in every other poor, post-colonial society? Conventional accounts of democracy unequivocally proclaim \"no middle class, no democracy.\" India was born as a very poor country with a miniscule middle class, yet its democracy has never faltered — not even under the strain of the 1975-1977 Emergency. Salvatore Babones argues that Western political science has misunderstood the robustness of Indian democracy because it has failed to see that poor people can build a strong civil society even in the absence of a large middle class. Basing his analyses on the theories of Emile Durkheim, he takes a sociological approach to the study of Indian democracy in which nation-building takes priority over institution-building. In his view, Indian democracy succeeded because India's colonial-era nation-builders laid foundations that were strong enough to support Indian democracy through the many challenges of its formative years.",
+ "item_url": "http://127.0.0.1:56130/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+ "source_id": "iit_bombay_hss_seminars",
+ "institution": "IIT Bombay",
+ "listing_fetched_at": "2026-09-26T06:38:37Z",
+ "detail_fetched_at": "2026-09-26T06:38:37Z",
+ "detail_fetch_status": "ok",
+ "detail_http_status": 200,
+ "detail_error": null,
+ "extras": {
+  "node_id": "2807",
+  "detail_canonical_url": "https://www.hss.iitb.ac.in/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+  "date_raw": "17th Sep 2025",
+  "time_raw": "15:00 PM",
+  "raw_href": "/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+  "raw_text": "17 Sep 2025 Seminar / Talk Tracing the Success of Indian Democracy to Success in Nation-Building 17th Sep 2025 15:00 PM Online Seminar",
+  "discovered_on_url": "http://127.0.0.1:56130/events/seminars-and-talks",
+  "discovered_on_page": 1
+ }
+}
+{
+ "content_type": "event",
+ "title": "Echoes of Translation: Audibility and Relationality in Indian Jewish Women’s Songs (OUP, forthcoming 2026)",
+ "starts_at": "2025-08-22T10:00:00Z",
+ "ends_at": "2025-08-22T12:30:00Z",
+ "timezone": "Asia/Kolkata",
+ "speakers": [
+  {
+   "name": "Anna C. Schultz",
+   "affiliation": null
+  }
+ ],
+ "venue": "HSS Seminar Room, Department of HSS",
+ "is_online": null,
+ "event_type": "Seminar / Talk",
+ "organizer": "Department of Humanities and Social Sciences",
+ "description": "The Bene Israel are a Jewish community from western India who, over centuries, developed a distinctive identity in relation to other Jewish and non-Jewish communities, translating their sounds, words, and practices to have uniquely Marathi Jewish meanings. Some men sing Marathi Jewish songs, but over the past half century, women have assumed the important cultural role of stewarding these songs for the future. As author Anna C. Schultz demonstrates, the Bene Israel women are translators who creatively mediate the worlds around them through song; while they may not always be visible, they are audible, and this book amplifies their relational soundings. Schultz explores sonic translation among the Bene Israel through the metaphor of the echo: a resonant, transformative, relational phenomenon. The voices of Bene Israel women today, like Ovid’s Echo, resonate empathically with loved ones they have survived, and, faintly, with those they never knew. Singing this repertoire teaches singers and listeners not only how to be Jewish, but how to be Bene Israel. It also fosters sociality, providing a medium through which women echo one another, sharing cultural expertise while securing affective ties. But women also echo with one another, that is, they collectively and audibly translate sacred texts as embodied experience in the here and now. Women’s repertories and practices were shaped in a richly diverse context, coloured by interlinguistic translation between Hebrew, Marathi, Hindi, and English, as well as by other forms of cultural translation: translations from Cochin and Baghdadi Jewish to Bene Israel practice, Christian and Hindu religious discourse to Jewish religious discourse, from one ritual context to another, from men to women, from the written page to embodied performance, and from the past to the present.",
+ "item_url": "http://127.0.0.1:56130/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup",
+ "source_id": "iit_bombay_hss_seminars",
+ "institution": "IIT Bombay",
+ "listing_fetched_at": "2026-09-26T06:38:37Z",
+ "detail_fetched_at": "2026-09-26T06:38:37Z",
+ "detail_fetch_status": "ok",
+ "detail_http_status": 200,
+ "detail_error": null,
+ "extras": {
+  "node_id": "2704",
+  "detail_canonical_url": "https://www.hss.iitb.ac.in/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup",
+  "date_raw": "22nd Aug 2025",
+  "time_raw": "15:30 PM",
+  "raw_href": "/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup",
+  "raw_text": "22 Aug 2025 Seminar / Talk Echoes of Translation: Audibility and Relationality in Indian Jewish Women’s Songs (OUP, forthcoming 2026) 22nd Aug 2025 15:30 PM HSS Seminar Room, Department of HSS",
+  "discovered_on_url": "http://127.0.0.1:56130/events/seminars-and-talks",
+  "discovered_on_page": 1
+ }
+}

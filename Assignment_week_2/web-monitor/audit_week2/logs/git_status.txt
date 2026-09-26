@@ -1,0 +1,103 @@
+$ git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	renamed:    Assignment_week_2/web-monitor/sources/iit_bombay.py -> Assignment_week_2/web-monitor/sources/iit_bombay_legacy.py
+	deleted:    Assignment_week_2/web-monitor/src/fetch.py
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   Assignment_week_2/web-monitor/README.md
+	modified:   Assignment_week_2/web-monitor/sources/__init__.py
+	modified:   Assignment_week_2/web-monitor/sources/__pycache__/__init__.cpython-313.pyc
+	modified:   Assignment_week_2/web-monitor/sources/__pycache__/iit_bombay.cpython-313.pyc
+	modified:   Assignment_week_2/web-monitor/sources/iit_bombay_legacy.py
+	modified:   Assignment_week_2/web-monitor/src/__init__.py
+	modified:   Assignment_week_2/web-monitor/src/__pycache__/__init__.cpython-313.pyc
+	deleted:    Assignment_week_2/web-monitor/src/__pycache__/fetch.cpython-313.pyc
+	modified:   Assignment_week_2/web-monitor/src/__pycache__/logging_config.cpython-313.pyc
+	modified:   Assignment_week_2/web-monitor/src/__pycache__/runner.cpython-313.pyc
+	modified:   Assignment_week_2/web-monitor/src/__pycache__/schema.cpython-313.pyc
+	modified:   Assignment_week_2/web-monitor/src/__pycache__/storage.cpython-313.pyc
+	modified:   Assignment_week_2/web-monitor/src/__pycache__/urls.cpython-313.pyc
+	modified:   Assignment_week_2/web-monitor/src/logging_config.py
+	modified:   Assignment_week_2/web-monitor/src/runner.py
+	modified:   Assignment_week_2/web-monitor/src/schema.py
+	modified:   Assignment_week_2/web-monitor/src/storage.py
+	modified:   Assignment_week_2/web-monitor/src/urls.py
+	modified:   Assignment_week_2/web-monitor/tests/__pycache__/test_iit_bombay.cpython-313-pytest-9.0.1.pyc
+	modified:   Assignment_week_2/web-monitor/tests/test_iit_bombay.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	Assignment/04_fetch/__pycache__/test_parser.cpython-313-pytest-9.0.1.pyc
+	Assignment_week_2/web-monitor/assignments/03_patterns/
+	Assignment_week_2/web-monitor/assignments/04_pagination/
+	Assignment_week_2/web-monitor/assignments/05_enrichment/
+	Assignment_week_2/web-monitor/assignments/06_schema/
+	Assignment_week_2/web-monitor/assignments/07_template/
+	Assignment_week_2/web-monitor/assignments/08_schedule/
+	Assignment_week_2/web-monitor/audit_week2/
+	Assignment_week_2/web-monitor/config/
+	Assignment_week_2/web-monitor/data/checkpoint5_404.db
+	Assignment_week_2/web-monitor/data/events.db
+	Assignment_week_2/web-monitor/data/local_fixture_demo.db
+	Assignment_week_2/web-monitor/fixtures/iit_bombay/page_1.html
+	Assignment_week_2/web-monitor/fixtures/iit_bombay/page_2.html
+	Assignment_week_2/web-monitor/fixtures/iit_bombay/page_3.html
+	Assignment_week_2/web-monitor/fixtures/iit_bombay_hss/
+	Assignment_week_2/web-monitor/logs/
+	Assignment_week_2/web-monitor/scripts/
+	Assignment_week_2/web-monitor/sources/__pycache__/iit_bombay_legacy.cpython-313.pyc
+	Assignment_week_2/web-monitor/sources/iit_bombay.py
+	Assignment_week_2/web-monitor/src/__pycache__/config.cpython-313.pyc
+	Assignment_week_2/web-monitor/src/__pycache__/enrich.cpython-313.pyc
+	Assignment_week_2/web-monitor/src/__pycache__/fetcher.cpython-313.pyc
+	Assignment_week_2/web-monitor/src/__pycache__/pagination.cpython-313.pyc
+	Assignment_week_2/web-monitor/src/__pycache__/scheduler.cpython-313.pyc
+	Assignment_week_2/web-monitor/src/config.py
+	Assignment_week_2/web-monitor/src/enrich.py
+	Assignment_week_2/web-monitor/src/fetcher.py
+	Assignment_week_2/web-monitor/src/pagination.py
+	Assignment_week_2/web-monitor/src/scheduler.py
+	Assignment_week_2/web-monitor/tests/__pycache__/test_adapter_iit_bombay.cpython-313-pytest-9.0.1.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_adapter_iit_bombay.cpython-313.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_architecture.cpython-313-pytest-9.0.1.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_architecture.cpython-313.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_canonicalization.cpython-313-pytest-9.0.1.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_canonicalization.cpython-313.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_enrichment.cpython-313-pytest-9.0.1.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_enrichment.cpython-313.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_generic_source.cpython-313-pytest-9.0.1.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_generic_source.cpython-313.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_iit_bombay.cpython-313.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_pagination.cpython-313-pytest-9.0.1.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_pagination.cpython-313.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_runner.cpython-313-pytest-9.0.1.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_runner.cpython-313.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_scheduler.cpython-313-pytest-9.0.1.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_scheduler.cpython-313.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_url_resolution.cpython-313-pytest-9.0.1.pyc
+	Assignment_week_2/web-monitor/tests/__pycache__/test_url_resolution.cpython-313.pyc
+	Assignment_week_2/web-monitor/tests/test_adapter_iit_bombay.py
+	Assignment_week_2/web-monitor/tests/test_architecture.py
+	Assignment_week_2/web-monitor/tests/test_canonicalization.py
+	Assignment_week_2/web-monitor/tests/test_enrichment.py
+	Assignment_week_2/web-monitor/tests/test_generic_source.py
+	Assignment_week_2/web-monitor/tests/test_pagination.py
+	Assignment_week_2/web-monitor/tests/test_runner.py
+	Assignment_week_2/web-monitor/tests/test_scheduler.py
+	Assignment_week_2/web-monitor/tests/test_url_resolution.py
+	assignments/
+	open_db.bat
+	open_db.ps1
+
+
+$ git log --oneline -30
+5e5d290 Merge branch 'master' of https://github.com/parso1305/OSINT_SSRISS
+369c90f week_2: add web-monitor and logging logic
+e0e187c Enhance DOM_map.md with formatted code blocks
+566ba9c Initial commit: OSINT SSRISS project

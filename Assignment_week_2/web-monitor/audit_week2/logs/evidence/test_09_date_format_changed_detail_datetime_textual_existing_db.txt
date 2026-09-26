@@ -1,0 +1,8 @@
+counts={'new': 0, 'existing': 0, 'changed': 10} detail={'ok': 10, 'failed': 0, 'not_attempted': 0} invalid=0
+baseline (before format change): starts_at=2025-09-25T10:00:00Z ends_at=2025-09-25T11:00:00Z
+after format change:            starts_at=2025-09-25T10:00:00Z ends_at=None
+first invalid: []
+--- WARNING/ERROR lines ---
+(none)
+2026-09-26 19:24:58 [INFO] logger=web_monitor VALIDATE valid=10 invalid=0
+2026-09-26 19:24:58 [INFO] logger=web_monitor STORE new=0 existing=0 changed=10

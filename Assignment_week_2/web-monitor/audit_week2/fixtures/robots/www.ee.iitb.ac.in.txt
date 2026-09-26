@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://www.ee.iitb.ac.in/sitemap-index.xml

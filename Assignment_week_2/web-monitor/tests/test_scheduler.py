@@ -1,0 +1,206 @@
+"""Scheduler: locking, stale-lock recovery, run records, rollback, repeat runs, schedule changes.
+
+Real local HTTP (scripts/fixture_site.py) and real SQLite; no mocks.
+"""
+
+import hashlib
+import io
+import json
+import logging
+import os
+import socket
+import sqlite3
+import subprocess
+import sys
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+import pytest
+
+from scripts.fixture_site import FixtureSite
+from src.config import DEFAULT_CONFIG_PATH
+from src.logging_config import KeyValueFormatter
+from src.scheduler import SourceLock, pid_alive, run_once, run_scheduled
+from src.config import load_source_configs
+from src.storage import count_records, list_runs, start_run, store_records
+
+SOURCE = "local_fixture"
+TS = "%Y-%m-%dT%H:%M:%SZ"
+
+
+@pytest.fixture
+def log_stream():
+    stream = io.StringIO()
+    handler = logging.StreamHandler(stream)
+    handler.setFormatter(KeyValueFormatter())
+    logger = logging.getLogger("web_monitor")
+    logger.addHandler(handler)
+    logger.setLevel(logging.DEBUG)
+    yield stream
+    logger.removeHandler(handler)
+
+
+def write_config(tmp_path: Path, site: FixtureSite, **overrides) -> Path:
+    """The real local_fixture entry, pointed at this test's server."""
+    entries = json.loads(DEFAULT_CONFIG_PATH.read_text(encoding="utf-8"))["sources"]
+    entry = dict(next(e for e in entries if e["source_id"] == SOURCE),
+                 listing_url=site.listing_url, request_delay_s=0, **overrides)
+    path = tmp_path / "sources.json"
+    path.write_text(json.dumps({"sources": [entry]}), encoding="utf-8")
+    return path
+
+
+def records_checksum(db: str) -> str:
+    with sqlite3.connect(db) as conn:
+        rows = conn.execute("SELECT * FROM records ORDER BY item_url").fetchall()
+    return hashlib.sha256(json.dumps(rows, ensure_ascii=False).encode()).hexdigest()
+
+
+def dead_pid() -> int:
+    proc = subprocess.Popen([sys.executable, "-c", "pass"])
+    proc.wait()
+    return proc.pid
+
+
+def write_lock(lock_dir: Path, pid: int, started_at: datetime) -> Path:
+    lock_dir.mkdir(parents=True, exist_ok=True)
+    path = lock_dir / f"{SOURCE}.lock"
+    path.write_text(json.dumps({"pid": pid, "host": socket.gethostname(), "started_at": started_at.strftime(TS),
+                                "source_id": SOURCE}), encoding="utf-8")
+    return path
+
+
+# -- pid check -------------------------------------------------------------------------
+
+def test_pid_alive_is_safe_and_correct():
+    assert pid_alive(os.getpid())   # would terminate this process if it used os.kill(pid, 0) on Windows
+    assert not pid_alive(dead_pid())
+
+
+# -- overlap ---------------------------------------------------------------------------
+
+def test_held_lock_skips_run_and_records_it(tmp_path, log_stream):
+    db, locks = str(tmp_path / "s.db"), tmp_path / "locks"
+    with FixtureSite() as site:
+        config = load_source_configs(write_config(tmp_path, site))[SOURCE]
+        holder = SourceLock(SOURCE, locks, 1800, logging.getLogger("web_monitor"))
+        assert holder.acquire()
+        try:
+            result = run_scheduled(config, db, locks, logging.getLogger("web_monitor"))
+        finally:
+            holder.release()
+        assert site.requests == []  # the runner never started
+    assert result["status"] == "skipped"
+    assert f"RUN_SKIPPED source={SOURCE} reason=already_running" in log_stream.getvalue()
+    assert [(r["status"], r["error"]) for r in list_runs(db)] == [("skipped", "already_running")]
+    assert not (locks / f"{SOURCE}.lock").exists()
+
+
+def test_stale_lock_from_dead_process_is_recovered(tmp_path, log_stream):
+    db, locks = str(tmp_path / "s.db"), tmp_path / "locks"
+    pid = dead_pid()
+    write_lock(locks, pid, datetime.now(timezone.utc))
+    crashed_run = start_run(db, SOURCE)  # the dead process left a 'running' row
+    with FixtureSite() as site:
+        config = load_source_configs(write_config(tmp_path, site))[SOURCE]
+        result = run_scheduled(config, db, locks, logging.getLogger("web_monitor"))
+    assert result["status"] == "success"
+    assert f"STALE_LOCK source={SOURCE}" in log_stream.getvalue() and f"process_dead(pid={pid})" in log_stream.getvalue()
+    runs = {r["run_id"]: r for r in list_runs(db)}
+    assert runs[crashed_run]["status"] == "failed" and runs[crashed_run]["error"].startswith("abandoned")
+    assert not list(locks.iterdir())
+
+
+def test_stale_lock_older_than_max_age_is_recovered(tmp_path, log_stream):
+    db, locks = str(tmp_path / "s.db"), tmp_path / "locks"
+    write_lock(locks, os.getpid(), datetime.now(timezone.utc) - timedelta(hours=3))  # live pid, too old
+    with FixtureSite() as site:
+        config = load_source_configs(write_config(tmp_path, site))[SOURCE]   # lock_max_age_minutes = 30
+        result = run_scheduled(config, db, locks, logging.getLogger("web_monitor"))
+    assert result["status"] == "success"
+    assert "reason=max_age_exceeded" in log_stream.getvalue()
+
+
+# -- duplicates / scheduling ---------------------------------------------------------------
+
+def test_repeat_scheduled_runs_create_no_duplicates(tmp_path, log_stream):
+    db, locks = str(tmp_path / "s.db"), tmp_path / "locks"
+    with FixtureSite() as site:
+        config_path = write_config(tmp_path, site)
+        first = run_once(config_path, db, locks, source_ids=[SOURCE], force=True)
+        second = run_once(config_path, db, locks, source_ids=[SOURCE], force=True)
+    assert first[0]["counts"]["new"] == 20
+    assert second[0]["counts"] == {"new": 0, "existing": 20, "changed": 0}
+    assert count_records(db) == 20
+    assert [r["status"] for r in list_runs(db)] == ["success", "success"]
+    assert log_stream.getvalue().count("RUN_START") == 2 and log_stream.getvalue().count("RUN_END") == 2
+
+
+def test_not_due_until_interval_and_interval_change_is_picked_up(tmp_path, log_stream):
+    db, locks = str(tmp_path / "s.db"), tmp_path / "locks"
+    with FixtureSite() as site:
+        config_path = write_config(tmp_path, site, interval_minutes=60)
+        assert len(run_once(config_path, db, locks, source_ids=[SOURCE])) == 1        # never run -> due
+        with sqlite3.connect(db) as conn:                                              # pretend it ran 10 min ago
+            ten_min_ago = (datetime.now(timezone.utc) - timedelta(minutes=10)).strftime(TS)
+            conn.execute("UPDATE runs SET started_at = ?", (ten_min_ago,))
+        assert run_once(config_path, db, locks, source_ids=[SOURCE]) == []             # 60 min interval: not due
+        config_path = write_config(tmp_path, site, interval_minutes=5)                 # config-only change
+        assert len(run_once(config_path, db, locks, source_ids=[SOURCE])) == 1        # 5 min interval: due
+    log = log_stream.getvalue()
+    assert "interval_minutes=60" in log and "due=false" in log and "interval_minutes=5 " in log
+
+
+# -- atomicity -------------------------------------------------------------------------------
+
+def test_store_records_rolls_back_the_whole_batch():
+    import tempfile
+    db = str(Path(tempfile.mkdtemp()) / "a.db")
+    good = {"item_url": "https://x.org/a", "source_id": "s", "institution": "I", "content_type": "event",
+            "title": "A", "starts_at": "2025-01-01T00:00:00Z", "detail_fetch_status": "not_attempted"}
+    with pytest.raises(ValueError):
+        store_records(db, [good, dict(good, item_url=None)])  # 2nd record fails after the 1st was written
+    assert count_records(db) == 0
+
+
+def test_failed_run_mid_storage_leaves_data_untouched_and_is_recorded(tmp_path, log_stream):
+    db, locks = str(tmp_path / "s.db"), tmp_path / "locks"
+    with FixtureSite() as site:
+        config_path = write_config(tmp_path, site)
+        run_once(config_path, db, locks, source_ids=[SOURCE], force=True)
+        before = records_checksum(db)
+        with sqlite3.connect(db) as conn:  # real SQLite failure partway through the batch
+            conn.execute("CREATE TRIGGER fail_mid BEFORE UPDATE ON records WHEN NEW.item_url LIKE '%rortys-revolution' "
+                         "BEGIN SELECT RAISE(ABORT, 'injected storage failure'); END")
+        result = run_once(config_path, db, locks, source_ids=[SOURCE], force=True)[0]
+    assert result["status"] == "failed" and "injected storage failure" in result["error"]
+    assert records_checksum(db) == before            # every earlier UPDATE of this run was rolled back
+    assert [r["status"] for r in list_runs(db)] == ["success", "failed"]
+    assert "status=failed" in log_stream.getvalue()
+
+
+def test_failed_listing_fetch_is_recorded_and_changes_nothing(tmp_path):
+    db, locks = str(tmp_path / "s.db"), tmp_path / "locks"
+    with FixtureSite() as site:
+        config_path = write_config(tmp_path, site)
+        run_once(config_path, db, locks, source_ids=[SOURCE], force=True)
+        before = records_checksum(db)
+        site.drop_paths.add("/events/seminars-and-talks")   # connection dropped mid-response
+        result = run_once(config_path, db, locks, source_ids=[SOURCE], force=True)[0]
+    assert result["status"] == "failed" and "FetchError" in result["error"]
+    assert records_checksum(db) == before
+
+
+def test_daily_interval_does_not_drift_behind_hourly_trigger():
+    """Last run started 06:00:05; the next day's 06:00:00 trigger must find it due (not 07:00)."""
+    from src.scheduler import due_grace, next_due
+    config = load_source_configs()["iit_bombay_hss_seminars"]          # interval_minutes = 1440
+    last = datetime(2026, 9, 26, 6, 0, 5, tzinfo=timezone.utc)
+    trigger = datetime(2026, 9, 27, 6, 0, 0, tzinfo=timezone.utc)
+    due_at = next_due(config, last.strftime(TS))
+    assert trigger < due_at and trigger >= due_at - due_grace(config)
+    assert due_grace(load_source_configs()["local_fixture"]).total_seconds() <= 0.1 * 60 * 3
