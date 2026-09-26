@@ -6,8 +6,11 @@ Knows only source_ids and config (config/sources.json): no adapters, selectors o
   python -m src.scheduler          loop: check every --tick-s seconds, run what is due
 
 Per source:
-  * due        = never run, or interval_minutes elapsed since the last non-skipped run (runs table),
-                 minus a small grace (min(120 s, 10%)) so an hourly trigger does not drift;
+  * due        = never run; or, since the last non-skipped run (runs table):
+                   after a success      interval_minutes elapsed            (next_due_reason=interval_after_success)
+                   after n failures     min(retry_minutes * 2**(n-1),        (next_due_reason=retry_after_failure,
+                                            interval_minutes) elapsed         retry_after_unfinished_run)
+                 minus a small grace (min(120 s, 10% of the wait)) so an hourly trigger does not drift;
                  config is re-read every cycle, so an interval change applies without a restart
   * overlap    = atomic lock file locks/<source_id>.lock (os.open O_CREAT|O_EXCL) holding pid + start
                  time; a held lock -> RUN_SKIPPED, recorded as a 'skipped' run
@@ -38,7 +41,7 @@ from src.logging_config import (
     setup_logger, log_schedule, log_run_start, log_run_end, log_run_skipped, log_stale_lock,
 )
 from src.runner import run_source, DEFAULT_DB_PATH
-from src.storage import start_run, finish_run, abandon_running_runs, last_run_started_at
+from src.storage import start_run, finish_run, abandon_running_runs, run_history
 
 DEFAULT_LOCK_DIR = PROJECT_ROOT / "locks"
 DEFAULT_TICK_S = 60.0
@@ -141,20 +144,43 @@ class SourceLock:
             stale.unlink(missing_ok=True)
 
 
-def due_grace(config: SourceConfig) -> timedelta:
-    """Slack so a run started a few seconds after an hourly trigger is due at the next day's same trigger
-    instead of drifting one tick later every day: min(120 s, 10% of the interval)."""
+def wait_minutes(config: SourceConfig, consecutive_failures: int = 0) -> Optional[float]:
+    """How long after the last run's start the source is due again. None = no interval configured.
+
+    After a success: interval_minutes. After n consecutive failures: retry_minutes doubled per extra failure
+    (60, 120, 240, ...), never longer than interval_minutes.
+    """
     if config.interval_minutes is None:
+        return None
+    if consecutive_failures <= 0:
+        return config.interval_minutes
+    return min(config.retry_minutes * 2 ** (consecutive_failures - 1), config.interval_minutes)
+
+
+def due_grace(config: SourceConfig, wait: Optional[float] = None) -> timedelta:
+    """Slack so a run started a few seconds after an hourly trigger is due at the matching later trigger
+    instead of drifting one tick later each time: min(120 s, 10% of the wait (default: the interval))."""
+    wait = config.interval_minutes if wait is None else wait
+    if wait is None:
         return timedelta(0)
-    return timedelta(seconds=min(120.0, config.interval_minutes * 60 * 0.10))
+    return timedelta(seconds=min(120.0, wait * 60 * 0.10))
 
 
-def next_due(config: SourceConfig, last_started_at: Optional[str]) -> Optional[datetime]:
-    """None = due now (never run). Otherwise last start + interval."""
-    if not last_started_at or config.interval_minutes is None:
+def next_due(config: SourceConfig, last_started_at: Optional[str], consecutive_failures: int = 0) -> Optional[datetime]:
+    """None = due now (never run, or no interval). Otherwise last start + wait_minutes(...)."""
+    wait = wait_minutes(config, consecutive_failures)
+    if not last_started_at or wait is None:
         return None
     last = datetime.strptime(last_started_at, _TS).replace(tzinfo=timezone.utc)
-    return last + timedelta(minutes=config.interval_minutes)
+    return last + timedelta(minutes=wait)
+
+
+def due_reason(history: dict) -> str:
+    if history["last_started_at"] is None:
+        return "never_run"
+    if history["consecutive_failures"] == 0:
+        return "interval_after_success"
+    return "retry_after_unfinished_run" if history["last_status"] == "running" else "retry_after_failure"
 
 
 def run_scheduled(config: SourceConfig, db_path: str, lock_dir: Path, logger: logging.Logger) -> dict:
@@ -206,11 +232,15 @@ def run_once(config_path: Path = DEFAULT_CONFIG_PATH, db_path: str = str(DEFAULT
 
     results = []
     for config in selected:
-        last = last_run_started_at(db_path, config.source_id)
-        due_at = next_due(config, last)
-        due = force or due_at is None or _now() >= due_at - due_grace(config)
-        log_schedule(logger, config.source_id, config.interval_minutes, last,
-                     due_at.strftime(_TS) if due_at else None, due)
+        history = run_history(db_path, config.source_id)
+        failures = history["consecutive_failures"]
+        wait = wait_minutes(config, failures)
+        due_at = next_due(config, history["last_started_at"], failures)
+        due = force or due_at is None or _now() >= due_at - due_grace(config, wait)
+        log_schedule(logger, config.source_id, config.interval_minutes, history["last_started_at"],
+                     due_at.strftime(_TS) if due_at else None, due, last_status=history["last_status"],
+                     consecutive_failures=failures, wait_minutes=wait,
+                     reason="forced" if force else due_reason(history))
         if due:
             results.append(run_scheduled(config, db_path, lock_dir, logger))
     return results

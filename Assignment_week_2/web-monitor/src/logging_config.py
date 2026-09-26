@@ -131,10 +131,15 @@ def log_failure(logger: logging.Logger, source_id: str, url: str, stage: str, er
 # -- scheduler ------------------------------------------------------------------
 
 def log_schedule(logger: logging.Logger, source_id: str, interval_minutes: Optional[float],
-                 last_started_at: Optional[str], next_due_at: Optional[str], due: bool) -> None:
-    """Logs the scheduling decision for one source in one cycle."""
-    logger.info("SCHEDULE source=%s interval_minutes=%s last_started_at=%s next_due_at=%s due=%s",
-                source_id, interval_minutes, last_started_at or "never", next_due_at or "now", str(due).lower())
+                 last_started_at: Optional[str], next_due_at: Optional[str], due: bool,
+                 last_status: Optional[str] = None, consecutive_failures: int = 0,
+                 wait_minutes: Optional[float] = None, reason: str = "") -> None:
+    """Logs the scheduling decision for one source in one cycle, including why it is (not) due."""
+    logger.info("SCHEDULE source=%s interval_minutes=%s last_started_at=%s last_status=%s consecutive_failures=%d "
+                "wait_minutes=%s next_due_at=%s next_due_reason=%s due=%s",
+                source_id, interval_minutes, last_started_at or "never", last_status or "none", consecutive_failures,
+                f"{wait_minutes:g}" if wait_minutes is not None else "none", next_due_at or "now", reason or "none",
+                str(due).lower())
 
 
 def log_run_start(logger: logging.Logger, run_id: str, source_id: str) -> None:

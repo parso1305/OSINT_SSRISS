@@ -204,3 +204,86 @@ def test_daily_interval_does_not_drift_behind_hourly_trigger():
     due_at = next_due(config, last.strftime(TS))
     assert trigger < due_at and trigger >= due_at - due_grace(config)
     assert due_grace(load_source_configs()["local_fixture"]).total_seconds() <= 0.1 * 60 * 3
+
+
+# -- retry after failure (audit X1) ------------------------------------------------------------------------
+
+def shift_runs(db: str, minutes_ago: float) -> None:
+    """Pretend every recorded run started minutes_ago (keeping their order)."""
+    with sqlite3.connect(db) as conn:
+        rows = conn.execute("SELECT run_id FROM runs ORDER BY started_at, rowid").fetchall()
+        for i, (run_id,) in enumerate(rows):
+            started = datetime.now(timezone.utc) - timedelta(minutes=minutes_ago + (len(rows) - 1 - i))
+            conn.execute("UPDATE runs SET started_at = ? WHERE run_id = ?", (started.strftime(TS), run_id))
+    conn.close()
+
+
+def schedule_line(log: str) -> str:
+    return [line for line in log.splitlines() if "SCHEDULE" in line][-1]
+
+
+def test_wait_after_failures_backs_off_and_is_capped_at_the_interval():
+    from src.scheduler import wait_minutes
+    config = load_source_configs()["iit_bombay_hss_seminars"]        # interval 1440, retry_minutes default 60
+    assert config.retry_minutes == 60
+    assert [wait_minutes(config, n) for n in range(0, 8)] == [1440, 60, 120, 240, 480, 960, 1440, 1440]
+
+
+def test_failed_run_is_retried_after_retry_minutes_then_success_uses_the_interval(tmp_path, log_stream):
+    db, locks = str(tmp_path / "s.db"), tmp_path / "locks"
+    with FixtureSite(fail_paths=["/events/seminars-and-talks"]) as site:
+        config_path = write_config(tmp_path, site, interval_minutes=1440)
+        assert run_once(config_path, db, locks, source_ids=[SOURCE])[0]["status"] == "failed"   # never run -> due
+
+        shift_runs(db, 50)                                                       # 50 min after the failure
+        assert run_once(config_path, db, locks, source_ids=[SOURCE]) == []
+        line = schedule_line(log_stream.getvalue())
+        assert "last_status=failed consecutive_failures=1 wait_minutes=60 " in line
+        assert "next_due_reason=retry_after_failure due=false" in line
+
+        site.fail_paths.clear()                                                  # site recovers
+        shift_runs(db, 60)                                                       # next hourly trigger
+        assert run_once(config_path, db, locks, source_ids=[SOURCE])[0]["status"] == "success"
+        assert "next_due_reason=retry_after_failure due=true" in schedule_line(log_stream.getvalue())
+
+        shift_runs(db, 60)                                                       # an hour after the success
+        assert run_once(config_path, db, locks, source_ids=[SOURCE]) == []
+        line = schedule_line(log_stream.getvalue())
+    assert "last_status=success consecutive_failures=0 wait_minutes=1440 " in line
+    assert "next_due_reason=interval_after_success due=false" in line
+    assert [r["status"] for r in list_runs(db)] == ["failed", "success"]
+
+
+def test_repeated_failures_back_off(tmp_path, log_stream):
+    db, locks = str(tmp_path / "s.db"), tmp_path / "locks"
+    with FixtureSite(fail_paths=["/events/seminars-and-talks"]) as site:
+        config_path = write_config(tmp_path, site, interval_minutes=1440)
+        for _ in range(3):                                                       # 3 consecutive failures
+            run_once(config_path, db, locks, source_ids=[SOURCE], force=True)
+        shift_runs(db, 200)                                                      # 3rd failure: wait 240 min
+        assert run_once(config_path, db, locks, source_ids=[SOURCE]) == []
+        assert "consecutive_failures=3 wait_minutes=240 " in schedule_line(log_stream.getvalue())
+        shift_runs(db, 240)
+        assert len(run_once(config_path, db, locks, source_ids=[SOURCE])) == 1
+    assert "next_due_reason=retry_after_failure due=true" in schedule_line(log_stream.getvalue())
+    assert [r["status"] for r in list_runs(db)] == ["failed"] * 4
+
+
+def test_retry_still_respects_the_overlap_lock(tmp_path, log_stream):
+    from src.storage import run_history
+    db, locks = str(tmp_path / "s.db"), tmp_path / "locks"
+    with FixtureSite(fail_paths=["/events/seminars-and-talks"]) as site:
+        config_path = write_config(tmp_path, site, interval_minutes=1440)
+        run_once(config_path, db, locks, source_ids=[SOURCE])                   # fails
+        shift_runs(db, 61)                                                       # retry is due ...
+        holder = SourceLock(SOURCE, locks, 1800, logging.getLogger("web_monitor"))
+        assert holder.acquire()                                                  # ... but another run holds the lock
+        try:
+            result = run_once(config_path, db, locks, source_ids=[SOURCE])
+        finally:
+            holder.release()
+        requests_during_lock = len(site.requests)
+    assert [r["status"] for r in result] == ["skipped"]
+    assert f"RUN_SKIPPED source={SOURCE} reason=already_running" in log_stream.getvalue()
+    assert requests_during_lock == 2                                             # only the first run's robots + listing
+    assert run_history(db, SOURCE)["consecutive_failures"] == 1                  # a skip does not reset the backoff

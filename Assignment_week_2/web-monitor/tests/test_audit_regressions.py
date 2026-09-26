@@ -174,3 +174,22 @@ def test_case09_listing_and_detail_dates_unparseable_rejects_new_and_keeps_store
     assert records_checksum(db) == before
     assert get_record(db, first["records"][0]["item_url"])["starts_at"] == first["records"][0]["starts_at"]
     assert "PARSE_WARNING" in log_stream.getvalue() and "VALIDATION_FAILURE" in log_stream.getvalue()
+
+
+# -- audit X1: a failed run was not retried until a full interval (24 h) had passed ------------------------
+
+def test_caseX1_failed_run_is_retried_on_the_next_hourly_trigger(tmp_path, log_stream):
+    db, locks = str(tmp_path / "x1.db"), tmp_path / "locks"
+    with FixtureSite(drop_paths=[LISTING_PATH]) as site:                  # listing connection dropped mid-response
+        config = write_config(tmp_path, site)                              # real entry: interval_minutes 1440
+        first = run_once(config, db, locks, source_ids=[SOURCE_ID], logger=LOG)
+        site.drop_paths.clear()                                            # site recovers
+        conn = sqlite3.connect(db)                                         # the next hourly trigger, 60 min later
+        with conn:
+            conn.execute("UPDATE runs SET started_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-60 minutes')")
+        conn.close()
+        second = run_once(config, db, locks, source_ids=[SOURCE_ID], logger=LOG)
+    assert [r["status"] for r in first] == ["failed"]
+    assert [r["status"] for r in second] == ["success"]                    # was: not due until +24 h
+    schedule = [line for line in log_stream.getvalue().splitlines() if "SCHEDULE" in line]
+    assert "wait_minutes=60 " in schedule[-1] and "next_due_reason=retry_after_failure due=true" in schedule[-1]

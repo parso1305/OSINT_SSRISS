@@ -33,7 +33,9 @@ class SourceConfig:
     detail_limit: int = 0
     request_delay_s: float = 1.0
     timeout_s: float = 10.0
-    interval_minutes: Optional[float] = None  # scheduler: run when this long since the last run
+    interval_minutes: Optional[float] = None  # scheduler: run when this long since the last successful run
+    retry_minutes: float = 60.0               # scheduler: first retry after a failed run; doubles per consecutive
+                                              # failure, capped at interval_minutes
     lock_max_age_minutes: float = 120.0       # scheduler: older locks are stale
     allow_empty_listing: bool = False         # False: HTTP 200 with 0 parsed items fails the run
     ca_bundle: Optional[str] = None           # PEM file for TLS verification (relative to the project root);
@@ -54,6 +56,8 @@ class SourceConfig:
             raise ValueError(f"{self.source_id}: timeout_s must be > 0")
         if self.interval_minutes is not None and self.interval_minutes <= 0:
             raise ValueError(f"{self.source_id}: interval_minutes must be > 0")
+        if self.retry_minutes <= 0:
+            raise ValueError(f"{self.source_id}: retry_minutes must be > 0")
         if self.lock_max_age_minutes <= 0:
             raise ValueError(f"{self.source_id}: lock_max_age_minutes must be > 0")
 

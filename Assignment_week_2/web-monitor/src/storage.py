@@ -3,7 +3,7 @@
 Shared-schema API (runner):   init_records_table, store_records (one transaction per run), get_record,
                               count_records, content_hash
 Run records (scheduler):      init_runs_table, start_run, finish_run, abandon_running_runs,
-                              last_run_started_at, list_runs
+                              run_history, list_runs
 Legacy API (Sections 1-4A):   init_db, store_item/store_all, get_item_by_url, count_items (table `items`)
 """
 
@@ -382,13 +382,25 @@ def abandon_running_runs(db_path: str, source_id: str, reason: str) -> int:
         return cursor.rowcount
 
 
-def last_run_started_at(db_path: str, source_id: str) -> Optional[str]:
-    """started_at of the latest non-skipped run (success, failed or running), or None."""
+def run_history(db_path: str, source_id: str) -> dict:
+    """
+    What the scheduler needs to decide when a source is next due:
+      last_started_at / last_status   latest non-skipped run (None if the source never ran)
+      consecutive_failures            runs that did not succeed ('failed', or 'running' = unfinished)
+                                      since the last 'success'; skipped runs are ignored
+    """
     init_runs_table(db_path)
     with sqlite3.connect(db_path) as conn:
-        row = conn.execute("SELECT MAX(started_at) FROM runs WHERE source_id = ? AND status != 'skipped'",
-                           (source_id,)).fetchone()
-        return row[0] if row else None
+        rows = conn.execute("SELECT started_at, status FROM runs WHERE source_id = ? AND status != 'skipped' "
+                            "ORDER BY started_at DESC, rowid DESC", (source_id,)).fetchall()
+    conn.close()
+    failures = 0
+    for _, status in rows:
+        if status == "success":
+            break
+        failures += 1
+    return {"last_started_at": rows[0][0] if rows else None, "last_status": rows[0][1] if rows else None,
+            "consecutive_failures": failures}
 
 
 def list_runs(db_path: str, source_id: Optional[str] = None) -> list[dict]:
