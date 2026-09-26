@@ -180,3 +180,27 @@ the tracked files still carry uncommitted Assignment 7 changes. Hence the hash m
 * **The HSS robots.txt is unverified.** The live demo is deferred until the server answers.
 * `locks/`, `logs/` and `data/` are runtime directories. There's no `.gitignore` in the repo yet, so
   they currently show as untracked.
+
+## Update 2026-09-27: retry after a failed run (Week 2 audit, case X1)
+
+The design above measured "due" from the last run of **any** status. So one failed run (a listing timeout on a host
+§1 already calls often unreachable) blocked the next attempt for the full `interval_minutes` (24 h). Effective
+detection latency after one bad hour became 48 h.
+
+Now the scheduler reads the run history (`storage.run_history`) and waits:
+
+| Last non-skipped run | Wait before the next run | SCHEDULE `next_due_reason` |
+|---|---|---|
+| none | due now | `never_run` |
+| success | `interval_minutes` (1440) | `interval_after_success` |
+| n consecutive failures | `min(retry_minutes * 2**(n-1), interval_minutes)`: 60, 120, 240, 480, 960, then 1440 | `retry_after_failure` (`retry_after_unfinished_run` if the last run never finished) |
+
+`retry_minutes` is a per-source config key (default 60). With the hourly Task Scheduler trigger, a failed run is
+retried at the next trigger. A host that stays down costs 6 attempts in the first ~31 h, then one a day. Skipped
+runs (lock held) are ignored, so they neither count as a failure nor reset the backoff; the overlap lock is
+unchanged. Every SCHEDULE line now shows `last_status`, `consecutive_failures`, `wait_minutes` and
+`next_due_reason`. Tests: `tests/test_scheduler.py` (retry, backoff, cap, lock) and
+`tests/test_audit_regressions.py::test_caseX1_…`.
+
+A listing that parses to 0 items is also a failed run now (`EmptyListingError`), so it gets the same retry
+schedule and exit code 1.

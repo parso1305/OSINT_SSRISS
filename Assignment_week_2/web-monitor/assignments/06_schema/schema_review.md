@@ -1,5 +1,14 @@
 # Schema Review by Inspection: HSS Seminars (Assignment 6)
 
+> **Status (2026-09-27).** Sections (a)-(g) describe the data and storage **as of Assignment 6** (tables `items` +
+> `item_enrichment`). The Assignment 7 refactor implemented the proposal, so several defects described below are no
+> longer live: the shared-schema `records` table (`src/storage.py`) persists `source_id`, `institution`, `timezone`
+> and `listing_fetched_at`; `speakers` is a list of `{name, affiliation}` with honorifics stripped; description
+> labels are removed; `content_hash` covers content fields only (no `raw_text`, no provenance); a failed detail
+> fetch carries stored content forward (the check 7 overwrite-on-failure defect is fixed), and so does a value the
+> adapter cannot parse (Week 2 audit, case 9). Timestamps are UTC `Z`. Section (h) adds what a second,
+> non-Drupal source taught us. Read (a)-(g) as the evidence behind the design, not as a description of the current code.
+
 ## Data inspected
 
 The 10 records in `data/events.db`, table `item_enrichment` (+ the matching `items` rows), exactly as
@@ -59,9 +68,11 @@ column: `NormalizedItem.source_name` is set but never persisted), `institution`,
 
 * **How it's produced:** the listing's raw href (`raw_href`, root-relative on 10/10) goes through
   `resolve_item_url(href, page_url)` in `src/urls.py`, the single `urljoin` call site
-  (Section 4). That function lowercases scheme and host, strips default ports, collapses slashes, drops
-  trailing slashes, tracking/session params and non-route fragments. The result is the
-  `items.url TEXT UNIQUE NOT NULL` key (`src/storage.py:21`) and the `item_enrichment.url` PRIMARY KEY.
+  (Section 4). That function lowercases scheme and host, strips default ports, and drops tracking/session
+  params and non-route fragments. (At the time it also collapsed and stripped slashes; since 2026-09-27 the path is
+  kept as given, see `assignments/04_pagination/url_canonicalization_notes.md`.) The result was the
+  `items.url TEXT UNIQUE NOT NULL` key and the `item_enrichment.url` PRIMARY KEY; today it is `records.item_url`
+  (PRIMARY KEY).
   Differently formatted hrefs for one item therefore land on one row
   (`tests/test_url_resolution.py::test_storage_dedups_on_canonical_url_not_raw_href`).
 * **Why the merge never takes it from the detail page:** `merge_listing_and_detail`

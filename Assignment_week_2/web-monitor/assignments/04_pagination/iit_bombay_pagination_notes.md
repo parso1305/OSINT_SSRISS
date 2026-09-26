@@ -47,10 +47,16 @@ In the live HTML response, Drupal renders a semantic navigation landmark at the 
 
 ## 2. Next Page Discovery in Real HTML
 
-`get_next_page_url(html, current_url)` extracts the next page using standard CSS selectors evaluated in priority order:
-1. **Primary Priority**: `a[rel~='next']` (Matches `<a href="?page=1" title="Go to next page" rel="next" class="page-link">`, `fixtures/iit_bombay_hss/live_page_1.html:739`).
-2. **Fallback Priority**: `.pager__item--next a`, `li.next a`, `a.pager-link-next`.
-3. **Anchor Text Matching**: Searches inside `.pager a` or `.pagination a` for text containing `"Next"` or `"›"`.
+`get_next_page_url(html, current_url, selector)` (`src/pagination.py`) returns the first element matching **one**
+CSS selector: the adapter's `NEXT_PAGE_SELECTOR`, or the HTML-standard default `a[rel~='next'], link[rel~='next']`.
+For HSS the adapter sets `a[rel~='next']`, which matches
+`<a href="?page=1" title="Go to next page" rel="next" class="page-link">` (`fixtures/iit_bombay_hss/live_page_1.html:739`).
+
+There are **no** fallback selectors and no anchor-text matching. (An earlier draft of this note listed
+`.pager__item--next a`, `li.next a`, `a.pager-link-next` and a search for "Next"/"›"; that code was removed in the
+Assignment 7 refactor, because CMS-specific pager classes do not belong in the generic layer.) If the pager
+markup changes, pagination stops after page 1 with `stop_reason=no_next_page` (brittle assumption #14 in
+`assignments/07_template/iit_bombay_adapter_notes.md`).
 
 The extracted relative `href` (e.g., `?page=1`) is resolved against the current page URL using `resolve_item_url()` (`src/urls.py`):
 
@@ -88,12 +94,13 @@ Each extracted item record retains the exact listing page URL where it was first
 In paginated systems, new items published during crawl execution can shift item positions across page boundaries, causing an item from Page 1 to appear again on Page 2.
 
 ### Ingestion Pipeline Deduplication Strategy
-1. **Canonical Key Resolution**: Before database storage, all item URLs pass through `resolve_item_url()` to normalize hostname casing, strip default ports, collapse redundant slashes, and strip fragment anchors or UTM parameters (rules and real examples: [`url_canonicalization_notes.md`](url_canonicalization_notes.md)).
-2. **Database Primary Constraint**: The SQLite schema enforces `url TEXT UNIQUE NOT NULL` (`src/storage.py:21`); `url` holds the canonical `item_url`.
-3. **Idempotent Storage (`store_all`)**:
+1. **Canonical Key Resolution**: Before database storage, all item URLs pass through `resolve_item_url()` to normalize scheme/hostname casing, strip default ports, and strip fragment anchors or UTM parameters. The path is kept as given (rules and real examples: [`url_canonicalization_notes.md`](url_canonicalization_notes.md)).
+2. **Database Primary Constraint**: `item_url` is the `PRIMARY KEY` of the shared-schema `records` table (`src/storage.py`, `init_records_table`). (The Section 1-4A legacy `items` table used `url TEXT UNIQUE NOT NULL`.)
+3. **Idempotent Storage (`store_records`, one transaction per run)**:
    * If an `item_url` does not exist in SQLite $\rightarrow$ Inserted as `new` record with `first_seen_at = now()`.
-   * If an `item_url` exists with identical content $\rightarrow$ Tagged as `existing`, updating only `last_seen_at = now()`.
-   * If an `item_url` exists with modified fields $\rightarrow$ Tagged as `changed`, updating content fields and `last_seen_at`.
+   * If an `item_url` exists with identical content (`content_hash` over content fields only) $\rightarrow$ Tagged as `existing`, updating provenance and `last_seen_at = now()`.
+   * If an `item_url` exists with modified content $\rightarrow$ Tagged as `changed`, updating content fields and `last_seen_at`.
+   * A failed detail fetch, or a value the adapter could not parse, never counts as a change: stored content is kept.
 
 ---
 
@@ -103,7 +110,7 @@ In paginated systems, new items published during crawl execution can shift item 
 | :--- | :--- | :--- |
 | **Incremental Monitoring (Hourly Cron)** | **$2 - 3$ Pages** | Departmental event feeds publish at most 1–3 new events per week. Inspecting the top 20–30 items is sufficient to detect newly published announcements while minimizing bandwidth and server load. |
 | **Initial Historical Backfill** | **$10 - 15$ Pages** | Captures recent historical archives (100–150 past events) up to 1–2 academic years without putting excessive load on university servers. |
-| **Safety Guards** | `empty_listing`, `cycle_detected`, `domain_mismatch` | Built-in circuit breakers halt crawling immediately if a page returns 0 cards, if a loop is detected, or if a next link escapes to an external domain. |
+| **Safety Guards** | `empty_listing`, `cycle_detected`, `domain_mismatch`, `repeated_items` | Built-in circuit breakers halt crawling if a page returns 0 cards, if a loop is detected, if a next link escapes to an external domain, or if a page repeats only already-seen items. If **page 1** returns 0 cards the whole run fails (`EmptyListingError`) unless the source sets `allow_empty_listing: true`. |
 
 ---
 

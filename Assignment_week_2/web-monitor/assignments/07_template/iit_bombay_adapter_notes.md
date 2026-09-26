@@ -6,6 +6,10 @@ the saved live HTML in `fixtures/iit_bombay_hss/` (fetched 2026-09-25/26). The l
 unreachable during this assignment, so every run here is a fixture run over real local HTTP
 (`scripts/fixture_site.py`).
 
+> **Updated 2026-09-27 after the Week 2 audit** (`assignments/week2_audit/`). Two factual errors are corrected
+> (config table: `interval_minutes`, not a cron `schedule`; brittle #6: the fallback did not keep `ends_at`
+> correct). Rows #2, #16 and #17 are updated for the fixes, and §6 adds two findings from other sites.
+
 ## 0. Inventory before the refactor (Step 1)
 
 | Module | Function / object | Class | Hidden source assumption found |
@@ -32,7 +36,8 @@ unreachable during this assignment, so every run here is a fixture run over real
 - The HSS code moved into `sources/iit_bombay.py`.
 - `src/fetch.py` is replaced by `src/fetcher.py`.
 - `src/config.py` is new; there was no config loader before.
-- Config is JSON (`config/sources.json`): PyYAML is installed, but no requirements file declares it.
+- Config is JSON (`config/sources.json`): PyYAML is installed, but no requirements file declared it at the time
+  (`requirements.txt` now pins the direct dependencies; PyYAML is not one).
 
 ## 1. What's generic
 
@@ -77,7 +82,11 @@ enforces this with the pattern `iitb|iit bombay|hss|humanities|drupal|node--|fie
 | `supports_detail` / `detail_limit` | true / 10 |
 | `request_delay_s` | 1.5 |
 | `timeout_s` | 10 |
-| `schedule` | `0 6 * * *` (cron, for Assignment 8) |
+| `interval_minutes` | 1440 (Assignment 8: due daily; the scheduler is triggered hourly) |
+| `retry_minutes` | not set, default 60 (after a failed run: 60, 120, 240 … min, capped at the interval) |
+| `lock_max_age_minutes` | 60 |
+| `ca_bundle` | `certs/iitb_ca_bundle.pem` (HSS omits an intermediate certificate; README, TLS section) |
+| `allow_empty_listing` | not set, default false (0 parsed items fails the run) |
 
 Adding a source takes one adapter file plus one config entry.
 `tests/test_generic_source.py` runs an unrelated source through `run_source` with nothing else added.
@@ -102,11 +111,11 @@ The config caps it at `max_pages: 2`. The fixture run stopped with `stop_reason=
 | # | What we assume | How it breaks | Loud or silent | How we'd detect it |
 |---|---|---|---|---|
 | 1 | Listing container `.view-seminars-and-talks .view-content` | Views block renamed or theme change | **Loud**: `StructuralError`, listing `FAILURE stage=parse`, run aborts | FAILURE line |
-| 2 | Cards are `.event-card-wrapper` inside the container | Card class renamed while the container stays | **Silent**: 0 items | **Guard implemented:** `WARNING … Listing returned HTTP 200 but parsed 0 items` (`test_zero_items_guard_warns`) |
+| 2 | Cards are `.event-card-wrapper` inside the container | Card class renamed while the container stays | **Loud** since the audit fix: 0 items → `FAILURE … error_type=EmptyListingError`, run `failed`, exit code 1, nothing stored. (Before: only a WARNING, and the run was recorded `success`.) | `tests/test_audit_regressions.py::test_case08_…` |
 | 3 | Card rows identified by `i.icon-calendar` / `icon-time` / `icon-marker` | Icon set changes | **Silent** for enriched items (`starts_at` still comes from detail); **loud** for `not_attempted` items: no `starts_at`, so `VALIDATION_FAILURE` and the record isn't stored | `VALIDATE invalid=N` > 0 |
 | 4 | Detail wrapper `article.node--type-events` | Content type or theme renamed | **Loud per item**: `StructuralError`, one `DETAIL_FAILURE` per item, run continues | `ENRICH failed=` ≈ `detail_limit` |
 | 5 | Detail fields `.field--name-field-event-{speaker,date,end-date,location,type}` | A single field renamed inside an intact article | **Silent**: that field becomes None, the listing value is kept, speakers empty | not guarded; proposal: warn when an `ok` detail yields no speaker or no `starts_at` |
-| 6 | `field-event-date` `<time datetime>` is UTC with `Z` (10/10 observed; IST display = UTC + 5:30 checked on 3) | Drupal emits an offset: handled. Emits a naive time: becomes None, falls back to listing time | **Silent but still correct** via the fallback; wrong only if both change | `test_normalize_dates_utc_and_listing_fallback_agrees_with_detail` (fixtures); no runtime cross-check yet |
+| 6 | `field-event-date` `<time datetime>` is UTC with `Z` (10/10 observed; IST display = UTC + 5:30 checked on 3) | Drupal emits an offset: handled. Emits a naive or textual value: unparseable | **Corrected:** this row used to say "silent but still correct via the fallback". Only `starts_at` has a listing fallback: the audit (case 9) showed `ends_at` silently erased on 10/10 stored rows, all flagged `changed`, with no log line. **Now loud and non-destructive:** `PARSE_WARNING field=… raw="…"` per value, `starts_at` from the listing, stored `ends_at` kept, `changed=0` | `PARSE_WARNING` lines; `tests/test_audit_regressions.py::test_case09_…` |
 | 7 | Listing `time_raw` is a 24-hour clock with a stray `PM` (`15:30 PM` 10/10) | Site switches to 12-hour **without** AM/PM | **Silent**: `starts_at` 12 h off for non-enriched items | runtime listing-vs-detail comparison (not implemented) |
 | 8 | `<title>` ends with exactly ` \| Humanities and Social Sciences` | Site renames itself | **Silent**: suffix left in every title, and **every** record flips to `changed` once (noisy but visible) | STORE `changed` ≈ total; titles containing ` \| ` |
 | 9 | `<title>` is reliable; `field-event-title` is not (editor-typed; wrong on the Echoes page) | `<title>` becomes generic (e.g. "Events") | **Silent**: identical titles | duplicate-title count across items |
@@ -116,8 +125,8 @@ The config caps it at `max_pages: 2`. The fixture run stopped with `stop_reason=
 | 13 | Description label is `Abstract:` or `Description:` (7 + 1 of 10) | `Summary:` or `Talk abstract:` | **Silent**, cosmetic | none |
 | 14 | Next page is `a[rel~='next']` | Pager markup changes | **Silent**: `stop_reason=no_next_page` after page 1, fewer items | a full page (10 items) with no next link and `max_pages` > 1 could warn (not implemented) |
 | 15 | Item URLs (Drupal path aliases) are stable | Aliases regenerated | **Silent-ish**: every item becomes `new` under a new key, old rows go stale | STORE `new` ≈ total on a routine run |
-| 16 | robots.txt allows `/events/…` and sets no large Crawl-delay | Disallow added, or the server is down | **Loud**: `FETCH_ERROR … robots.txt`, run aborts | FETCH_ERROR line. **Not verified live** (server unreachable) |
-| 17 | This machine can't verify the site's certificate chain (Phase 1) | Fetcher retries with `verify=False` and logs a WARNING | Loud (WARNING), but weakens TLS for this host | WARNING line |
+| 16 | robots.txt allows `/events/…` and sets no large Crawl-delay | Disallow added, or the server is down | **Loud**: `FETCH_ERROR url=…/robots.txt error_type=…`, run aborts; the scheduler retries after 60 min, backing off | FETCH_ERROR line. Verified live 2026-09-26: `/robots.txt` HTTP 200 |
+| 17 | The server sends only its leaf certificate and omits *GlobalSign RSA OV SSL CA 2018* (diagnosed live 2026-09-26 with `openssl s_client -showcerts`) | The intermediate is renewed or the server is fixed | **Loud**: `FETCH_ERROR … error_type=SSLError`, run fails. Verification is never switched off (the old `verify=False` retry is removed); `ca_bundle` adds exactly the missing intermediate | FETCH_ERROR line; re-check before the intermediate expires (2028-11-21) |
 
 ## 5. Size of `sources/iit_bombay.py`
 
@@ -127,3 +136,45 @@ one normalizer and 6 small private helpers.
 Judgment: **short enough.** Almost all of it is selectors and cleaning rules this site genuinely
 needs. There's no I/O, retry, logging setup or storage, and the architecture test fails the build if
 any of that appears.
+
+## 6. Findings from other sites (Week 2 audit, 2026-09-26)
+
+### ME department: `<time datetime="…Z">` is IST wall-clock time, not UTC
+
+A second IIT Bombay department (Mechanical Engineering, `https://www.me.iitb.ac.in/events`, also Drupal 9) marks up
+event times the same way HSS does, but the `Z` there is false. The values are the IST wall-clock time with a `Z`
+appended:
+
+| Event (ME listing, `assignments/week2_audit/fixtures/me_iitb/listing.html`) | Time stated in the title | `datetime` attribute | True UTC |
+|---|---|---|---|
+| "Seminar by Dr. Maciej Mazur (RMIT University) – 26th Sept, 4:00–5:30 PM" | 4:00 PM IST | `2025-09-26T16:00:00Z` | `10:30:00Z` |
+| "Seminar on Machine learning augmented massively parallel flow solvers \| Fri 26 Sep @ 2:15 pm" | 2:15 pm IST | `2025-09-26T14:15:00Z` | `08:45:00Z` |
+
+In 9 of the 10 ME listing items that state a time, the `datetime` hour equals the IST hour; in none does it equal the
+UTC hour. HSS's `_to_utc` trusts `Z`. That is correct for HSS, where the display-vs-attribute offset of +5:30 was
+verified on 3 pages (audit case 4), but it would store every ME event **5 h 30 min late**, silently.
+
+Why it matters: the brittleness is **per department, not per CMS**. Two sites of the same institution, on the same
+Drupal version and with the same `node--type-events` content type, disagree about what `Z` means. So:
+
+* The rule "the `datetime` attribute is UTC" lives in the adapter, never in `src/`. That is where it is today, and it
+  must stay there: an ME adapter has to treat the value as naive IST (the audit's sandbox `me_iitb.py` does).
+* `validate_record` can only check the *format*. A consistent 5 h 30 min shift is undetectable generically.
+* The detection that works is a per-source cross-check between a visible time and the attribute (the HSS test
+  `test_normalize_dates_utc_and_listing_fallback_agrees_with_detail` does this on fixtures). A new department
+  adapter should get the same test before it goes live.
+* The same unchecked assumption would re-appear if the HSS adapter were reused for ME with a config-only change. The
+  audit tried this, and it fails loudly anyway (`StructuralError`: different listing view), so there is no silent
+  path today.
+
+### `talks.cam.ac.uk`: not used, because its robots.txt opts out of AI crawlers
+
+`https://talks.cam.ac.uk/robots.txt` (saved as `assignments/week2_audit/fixtures/robots/talks.cam.ac.uk.txt`) blocks
+`/` for 22 named agents, including `ClaudeBot`, `anthropic-ai`, `GPTBot`, `CCBot` and `Google-Extended`. Its
+`User-agent: *` group only disallows edit/admin paths and `/show/archive/`, with `Crawl-delay: 10`.
+
+Our User-Agent (`NaaravanceAcademicMonitor`) is in none of the named groups. The Fetcher's robots check would
+therefore **allow** the crawl, by the letter of the rules. We still don't crawl it. The named list shows the site's
+intent to keep AI-built or AI-assisted data collection out, and this pipeline is both. Following the letter while
+ignoring a clearly stated intent is not the politeness standard this project claims. Decision: rejected as a
+candidate source. If it is ever needed, ask the site (the talks.cam team) for permission first.

@@ -38,7 +38,9 @@ Then, in Task Scheduler → the task → Properties (settings `schtasks /Create`
 * If `python` isn't on the task account's PATH, set a user environment variable
   `WEB_MONITOR_PYTHON` to the full path of `python.exe`.
 
-Run history: `runs` table in `data/events.db`; per-source locks: `locks/<source_id>.lock`.
+Run history: `runs` table in the scheduler's database (`--db`, default `data/events.db`); per-source locks:
+`locks/<source_id>.lock`. Note: the `data/events.db` in this working copy predates the scheduler and holds only the
+legacy Section 1-5 tables; the scheduler creates `records` and `runs` there on its first run.
 Change a schedule by editing `interval_minutes` in `config/sources.json`. It's re-read every cycle,
 so no restart and no code change is needed.
 
