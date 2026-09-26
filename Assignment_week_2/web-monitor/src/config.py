@@ -35,6 +35,7 @@ class SourceConfig:
     timeout_s: float = 10.0
     interval_minutes: Optional[float] = None  # scheduler: run when this long since the last run
     lock_max_age_minutes: float = 120.0       # scheduler: older locks are stale
+    allow_empty_listing: bool = False         # False: HTTP 200 with 0 parsed items fails the run
     ca_bundle: Optional[str] = None           # PEM file for TLS verification (relative to the project root);
                                               # None = default trust store. Verification is never disabled.
 

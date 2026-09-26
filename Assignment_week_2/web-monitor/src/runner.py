@@ -31,6 +31,10 @@ from src.logging_config import (
 DEFAULT_DB_PATH = PROJECT_ROOT / "data" / "events.db"
 
 
+class EmptyListingError(RuntimeError):
+    """The listing was fetched but parsed to 0 items: most likely a silent layout change."""
+
+
 def run_source(
     config: SourceConfig,
     db_path: Optional[str] = None,
@@ -68,8 +72,13 @@ def run_source(
     items = listing["items"]
     log_parse(logger, records_count=len(items))
     if not items:
-        log_warning_item(logger, source_id=config.source_id, url=config.listing_url, stage="parse",
-                         message="Listing returned HTTP 200 but parsed 0 items: possible silent layout change")
+        message = "Listing returned HTTP 200 but parsed 0 items: possible silent layout change"
+        if not config.allow_empty_listing:
+            # Fail before anything is stored: existing records stay exactly as they are.
+            error = EmptyListingError(f"{message} (set allow_empty_listing to accept this)")
+            log_failure(logger, source_id=config.source_id, url=config.listing_url, stage="parse", error=error)
+            raise error
+        log_warning_item(logger, source_id=config.source_id, url=config.listing_url, stage="parse", message=message)
 
     # 3. DETAIL ENRICHMENT (optional)
     if config.supports_detail and config.detail_limit > 0:

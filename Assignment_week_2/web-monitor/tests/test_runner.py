@@ -23,7 +23,7 @@ from scripts.fixture_site import FixtureSite, FIXTURES, LISTING_PATH
 from src.config import load_source_configs, SourceConfig
 from src.fetcher import Fetcher, FetchError
 from src.logging_config import KeyValueFormatter
-from src.runner import run_source
+from src.runner import EmptyListingError, run_source
 from src.schema import validate_record, CONTENT_FIELDS
 from src.storage import content_hash, count_records, get_record
 
@@ -207,15 +207,19 @@ def test_page1_failure_aborts_run(tmp_path, log_stream):
     assert "stage=fetch error_type=FetchError" in log_stream.getvalue()
 
 
-def test_zero_items_guard_warns(tmp_path, log_stream):
+def test_zero_items_fails_the_run_unless_allowed(tmp_path, log_stream):
     soup = BeautifulSoup((FIXTURES / "listing_2026-09-26.html").read_text(encoding="utf-8"), "html.parser")
     for card in soup.select(".event-card-wrapper"):
         card.decompose()
     with FixtureSite(overrides={LISTING_PATH: str(soup)}) as site:
-        result = run_source(site_config(site), db_path=str(tmp_path / "p.db"))
-    assert result["counts"] == {"new": 0, "existing": 0, "changed": 0}
-    assert "WARNING source_id=iit_bombay_hss_seminars" in log_stream.getvalue()
-    assert "parsed 0 items" in log_stream.getvalue()
+        with pytest.raises(EmptyListingError):
+            run_source(site_config(site), db_path=str(tmp_path / "p.db"))
+        failed_log = log_stream.getvalue()
+        allowed = run_source(site_config(site, allow_empty_listing=True), db_path=str(tmp_path / "p.db"))
+    assert f"[ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url={site.listing_url} stage=parse " \
+           "error_type=EmptyListingError" in failed_log
+    assert allowed["counts"] == {"new": 0, "existing": 0, "changed": 0}
+    assert "[WARNING] logger=web_monitor WARNING source_id=iit_bombay_hss_seminars" in log_stream.getvalue()
 
 
 # -- fetcher politeness -------------------------------------------------------------------------
