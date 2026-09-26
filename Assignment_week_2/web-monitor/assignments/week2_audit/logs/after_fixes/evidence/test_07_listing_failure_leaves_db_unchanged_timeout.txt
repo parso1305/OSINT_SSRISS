@@ -1,0 +1,12 @@
+records before: sha256=f99b76cafb9e0e6e rows=20
+records after:  sha256=f99b76cafb9e0e6e rows=20
+scheduler result: {'run_id': '9608dab9acc44b10846a7e4ea14d58bf', 'source_id': 'iit_bombay_hss_seminars', 'status': 'failed', 'error': "FetchError: ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=53042): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:53042/events/seminars-and-talks"}
+runs table: [('success', None), ('failed', "FetchError: ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=53042): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:53042/events/seminars-and-talks")]
+--- log of the failing run ---
+2026-09-27 01:49:50 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-26T20:19:49Z last_status=success consecutive_failures=0 wait_minutes=1440 next_due_at=2026-09-27T20:19:49Z next_due_reason=forced due=true
+2026-09-27 01:49:50 [INFO] logger=web_monitor RUN_START run_id=9608dab9acc44b10846a7e4ea14d58bf source=iit_bombay_hss_seminars
+2026-09-27 01:49:50 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
+2026-09-27 01:49:51 [WARNING] logger=web_monitor.fetcher FETCH_ERROR url=http://127.0.0.1:53042/events/seminars-and-talks status=none error_type=ReadTimeout message="ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=53042): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:53042/events/seminars-and-talks"
+2026-09-27 01:49:51 [ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:53042/events/seminars-and-talks stage=fetch error_type=FetchError message="ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=53042): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:53042/events/seminars-and-talks"
+2026-09-27 01:49:51 [ERROR] logger=web_monitor RUN_END run_id=9608dab9acc44b10846a7e4ea14d58bf source=iit_bombay_hss_seminars status=failed duration_ms=1068 new=0 existing=0 changed=0 failed=0 error="FetchError: ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=53042): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:53042/events/seminars-and-talks"
+

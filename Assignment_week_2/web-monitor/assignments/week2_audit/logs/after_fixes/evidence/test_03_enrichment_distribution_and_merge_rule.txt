@@ -1,0 +1,43 @@
+detail_fetch_status distribution:
+{
+ "ok": 10,
+ "failed": 0,
+ "not_attempted": 10
+}
+stored rows by detail_fetch_status:
+{
+ "not_attempted": 10,
+ "ok": 10
+}
+crafted listing:
+{
+ "item_url": "https://example.org/e/1",
+ "title": "Listing title",
+ "venue": "Room A",
+ "description": "listing description",
+ "category": "Seminar"
+}
+crafted detail:
+{
+ "item_url": "https://elsewhere.example/other",
+ "title": "Detail title | Humanities and Social Sciences",
+ "venue": "",
+ "description": null,
+ "speaker": "Dr Jane Roe",
+ "event_type": "Talk",
+ "detail_fetch_status": "forged-by-detail"
+}
+merged:
+{
+ "item_url": "https://example.org/e/1",
+ "title": "Detail title | Humanities and Social Sciences",
+ "venue": "Room A",
+ "description": "listing description",
+ "category": "Seminar",
+ "speaker": "Dr Jane Roe",
+ "event_type": "Talk"
+}
+<title>: 'Echoes of Translation: Audibility and Relationality in Indian Jewish Women’s Songs (OUP, forthcoming 2026) | Humanities and Social Sciences'
+field-event-title: 'Event Title Echoes of Translation: Echoes of Translation:Audibility and Relationality in Indian Jewish Women’s Songs (OUP, forthcoming 2026)'
+parse_detail title: 'Echoes of Translation: Audibility and Relationality in Indian Jewish Women’s Songs (OUP, forthcoming 2026) | Humanities and Social Sciences'
+normalize title: 'Echoes of Translation: Audibility and Relationality in Indian Jewish Women’s Songs (OUP, forthcoming 2026)'

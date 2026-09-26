@@ -1,0 +1,4 @@
+run1: status=ok venue='LT 101' desc='The Andaman and Nicobar Islands constitute an uniq'
+run2: counts={'new': 0, 'existing': 9, 'changed': 1} status=failed venue='LT-101, HSS Building' desc='The Andaman and Nicobar Islands constitute an uniq'
+content fields that differ run1 -> run2: ['venue']
+content_hash equal: False

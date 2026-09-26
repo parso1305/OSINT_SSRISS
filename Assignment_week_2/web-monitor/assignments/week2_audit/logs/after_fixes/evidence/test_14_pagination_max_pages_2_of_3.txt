@@ -1,0 +1,6 @@
+config: {'max_pages': 2}
+pages_crawled=2 stop_reason=max_pages_reached counts={'new': 20, 'existing': 0, 'changed': 0}
+listing GETs: ['/events/seminars-and-talks', '/events/seminars-and-talks?page=1']
+2026-09-27 01:50:05 [INFO] logger=web_monitor Page 1 yielded 10 items
+2026-09-27 01:50:05 [INFO] logger=web_monitor Page 2 yielded 10 items
+2026-09-27 01:50:05 [INFO] logger=web_monitor PAGINATE pages_crawled=2 stop_reason=max_pages_reached

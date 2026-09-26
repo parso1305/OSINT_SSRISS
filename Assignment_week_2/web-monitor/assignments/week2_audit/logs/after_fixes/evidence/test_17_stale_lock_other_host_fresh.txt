@@ -1,0 +1,5 @@
+lock content: {"pid": 4242, "host": "some-other-machine", "started_at": "2026-09-26T20:20:19Z"}
+crashed: None
+result: [{'run_id': 'f9009c8dbe5742a5a50459c765cdb0e3', 'source_id': 'iit_bombay_hss_seminars', 'status': 'skipped'}]
+runs: [('skipped', 'already_running')]
+2026-09-27 01:50:19 [INFO] logger=web_monitor RUN_SKIPPED source=iit_bombay_hss_seminars reason=already_running holder=pid:4242@2026-09-26T20:20:19Z

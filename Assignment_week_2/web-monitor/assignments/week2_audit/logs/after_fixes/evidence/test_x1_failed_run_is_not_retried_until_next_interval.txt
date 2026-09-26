@@ -1,0 +1,7 @@
+cycle 1: ['failed']
+cycle 2 (site healthy again): ran=0
+runs: [('failed', 'FetchError: HTTP 503 Service Unavailable for url: http://127.0.0.1:52821/events/seminars-and-talks')]
+[
+ "2026-09-27 01:49:37 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=never last_status=none consecutive_failures=0 wait_minutes=1440 next_due_at=now next_due_reason=never_run due=true",
+ "2026-09-27 01:49:37 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-26T20:19:37Z last_status=failed consecutive_failures=1 wait_minutes=60 next_due_at=2026-09-26T21:19:37Z next_due_reason=retry_after_failure due=false"
+]
