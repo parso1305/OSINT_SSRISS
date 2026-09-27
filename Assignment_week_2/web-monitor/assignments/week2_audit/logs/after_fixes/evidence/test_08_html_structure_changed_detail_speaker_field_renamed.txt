@@ -1,10 +1,10 @@
-scheduler result: {'run_id': '24d4489672be4ab8b976ac138001e386', 'source_id': 'iit_bombay_hss_seminars', 'status': 'success', 'counts': {'new': 20, 'existing': 0, 'changed': 0}}
+scheduler result: {'run_id': 'da442c93108d4cd7ab58c60878a512e6', 'source_id': 'iit_bombay_hss_seminars', 'status': 'success', 'counts': {'new': 20, 'existing': 0, 'changed': 0}}
 runs: [('success', 20, 0, None)]
 rows stored: 20
 speakers on ok-enriched rows: [[], [], [], [], [], [], [], [], [], []]
 --- WARNING/ERROR/summary lines ---
-2026-09-27 01:49:54 [INFO] logger=web_monitor PARSE records=20
-2026-09-27 01:49:54 [INFO] logger=web_monitor ENRICH ok=10 failed=0 not_attempted=10
-2026-09-27 01:49:54 [INFO] logger=web_monitor VALIDATE valid=20 invalid=0
-2026-09-27 01:49:54 [INFO] logger=web_monitor STORE new=20 existing=0 changed=0
-2026-09-27 01:49:54 [INFO] logger=web_monitor RUN_END run_id=24d4489672be4ab8b976ac138001e386 source=iit_bombay_hss_seminars status=success duration_ms=371 new=20 existing=0 changed=0 failed=0 error=""
+2026-09-27 12:10:11 [INFO] logger=web_monitor PARSE records=20
+2026-09-27 12:10:12 [INFO] logger=web_monitor ENRICH ok=10 failed=0 not_attempted=10
+2026-09-27 12:10:12 [INFO] logger=web_monitor VALIDATE valid=20 invalid=0
+2026-09-27 12:10:12 [INFO] logger=web_monitor STORE new=20 existing=0 changed=0
+2026-09-27 12:10:12 [INFO] logger=web_monitor RUN_END run_id=da442c93108d4cd7ab58c60878a512e6 source=iit_bombay_hss_seminars status=success duration_ms=531 new=20 existing=0 changed=0 failed=0 error=""

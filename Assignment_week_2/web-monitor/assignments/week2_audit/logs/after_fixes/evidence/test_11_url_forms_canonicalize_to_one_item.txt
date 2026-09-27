@@ -1,10 +1,10 @@
 href variant -> item_url:
-  '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability'                         -> http://127.0.0.1:53160/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
-  'seminar-talk/islands-tri-junction-fragility-and-vulnerability'                                 -> http://127.0.0.1:53160/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
-  '//127.0.0.1:53160/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability/'       -> http://127.0.0.1:53160/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability/
-  '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability?utm_source=newsletter&fbclid=abc123' -> http://127.0.0.1:53160/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
-  '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability#abstract'                -> http://127.0.0.1:53160/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
-  'HTTP://127.0.0.1:53160/events//seminar-talk/islands-tri-junction-fragility-and-vulnerability/' -> http://127.0.0.1:53160/events//seminar-talk/islands-tri-junction-fragility-and-vulnerability/
+  '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability'                         -> http://127.0.0.1:50659/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
+  'seminar-talk/islands-tri-junction-fragility-and-vulnerability'                                 -> http://127.0.0.1:50659/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
+  '//127.0.0.1:50659/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability/'       -> http://127.0.0.1:50659/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability/
+  '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability?utm_source=newsletter&fbclid=abc123' -> http://127.0.0.1:50659/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
+  '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability#abstract'                -> http://127.0.0.1:50659/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability
+  'HTTP://127.0.0.1:50659/events//seminar-talk/islands-tri-junction-fragility-and-vulnerability/' -> http://127.0.0.1:50659/events//seminar-talk/islands-tri-junction-fragility-and-vulnerability/
 runner counts={'new': 3, 'existing': 3, 'changed': 0} detail={'ok': 4, 'failed': 2, 'not_attempted': 0}
 rows stored=3
 detail GETs issued for this one item: 5 ['/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability', '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability', '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability/', '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability', '/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability']

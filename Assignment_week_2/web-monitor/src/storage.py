@@ -11,11 +11,27 @@ import sqlite3
 import uuid
 import hashlib
 import json
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Literal, Optional, Union
+from typing import Any, Iterable, Iterator, Literal, Optional, Union
 
 from src.schema import CONTENT_FIELDS, IDENTIFIER_FIELDS, PROVENANCE_FIELDS
+
+
+@contextmanager
+def _connect(db_path: str) -> Iterator[sqlite3.Connection]:
+    """Opens a connection, commits (or rolls back on error) and always closes it.
+
+    sqlite3's own `with sqlite3.connect(...)` only manages the transaction; it never closes the connection
+    (open handles keep the file locked on Windows and raise ResourceWarning).
+    """
+    conn = sqlite3.connect(db_path)
+    try:
+        with conn:
+            yield conn
+    finally:
+        conn.close()
 
 
 def init_db(db_path: str) -> None:
@@ -24,7 +40,7 @@ def init_db(db_path: str) -> None:
     if str(parent) not in ("", "."):
         parent.mkdir(parents=True, exist_ok=True)
 
-    with sqlite3.connect(db_path) as conn:
+    with _connect(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS items (
@@ -60,7 +76,7 @@ def compute_content_hash(item: Union[dict, Any]) -> str:
 
 def get_item_by_url(db_path: str, url: str) -> Optional[dict]:
     """Fetches an existing item by canonical URL."""
-    with sqlite3.connect(db_path) as conn:
+    with _connect(db_path) as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM items WHERE url = ?", (url,))
@@ -87,7 +103,7 @@ def store_item(db_path: str, item: Union[dict, Any]) -> Literal["new", "existing
 
     existing = get_item_by_url(db_path, url)
 
-    with sqlite3.connect(db_path) as conn:
+    with _connect(db_path) as conn:
         cursor = conn.cursor()
         if not existing:
             cursor.execute("""
@@ -159,7 +175,7 @@ def store_all(db_path: str, items: list[Union[dict, Any]]) -> dict[str, int]:
 
 def count_items(db_path: str) -> int:
     """Returns the total number of items stored in the database."""
-    with sqlite3.connect(db_path) as conn:
+    with _connect(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM items")
         return cursor.fetchone()[0]
@@ -195,7 +211,7 @@ def init_records_table(db_path: str) -> None:
         + (" PRIMARY KEY" if c == "item_url" else "")
         for c in _RECORD_COLUMNS
     )
-    with sqlite3.connect(db_path) as conn:
+    with _connect(db_path) as conn:
         conn.execute(f"""
             CREATE TABLE IF NOT EXISTS records (
                 {columns},
@@ -219,14 +235,14 @@ def _decode_row(row: sqlite3.Row) -> dict:
 
 def get_record(db_path: str, item_url: str) -> Optional[dict]:
     """Returns the stored record for a canonical item_url, or None."""
-    with sqlite3.connect(db_path) as conn:
+    with _connect(db_path) as conn:
         conn.row_factory = sqlite3.Row
         row = conn.execute("SELECT * FROM records WHERE item_url = ?", (item_url,)).fetchone()
         return _decode_row(row) if row else None
 
 
 def count_records(db_path: str, source_id: Optional[str] = None) -> int:
-    with sqlite3.connect(db_path) as conn:
+    with _connect(db_path) as conn:
         if source_id:
             return conn.execute("SELECT COUNT(*) FROM records WHERE source_id = ?", (source_id,)).fetchone()[0]
         return conn.execute("SELECT COUNT(*) FROM records").fetchone()[0]
@@ -329,7 +345,7 @@ def init_runs_table(db_path: str) -> None:
     parent = Path(db_path).parent
     if str(parent) not in ("", "."):
         parent.mkdir(parents=True, exist_ok=True)
-    with sqlite3.connect(db_path) as conn:
+    with _connect(db_path) as conn:
         conn.execute(f"""
             CREATE TABLE IF NOT EXISTS runs (
                 run_id TEXT PRIMARY KEY,
@@ -352,7 +368,7 @@ def start_run(db_path: str, source_id: str, status: str = "running", error: Opti
     init_runs_table(db_path)
     run_id = uuid.uuid4().hex
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    with sqlite3.connect(db_path) as conn:
+    with _connect(db_path) as conn:
         conn.execute("INSERT INTO runs (run_id, source_id, started_at, finished_at, status, error) VALUES (?, ?, ?, ?, ?, ?)",
                      (run_id, source_id, now_iso, now_iso if status == "skipped" else None, status, error))
         conn.commit()
@@ -363,7 +379,7 @@ def finish_run(db_path: str, run_id: str, status: str, counts: Optional[dict] = 
                failed_count: int = 0, error: Optional[str] = None) -> None:
     counts = counts or {}
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    with sqlite3.connect(db_path) as conn:
+    with _connect(db_path) as conn:
         conn.execute("""UPDATE runs SET finished_at = ?, status = ?, new_count = ?, existing_count = ?,
                         changed_count = ?, failed_count = ?, error = ? WHERE run_id = ?""",
                      (now_iso, status, counts.get("new"), counts.get("existing"), counts.get("changed"),
@@ -375,7 +391,7 @@ def abandon_running_runs(db_path: str, source_id: str, reason: str) -> int:
     """Marks 'running' rows of a source as failed (their process died without finishing)."""
     init_runs_table(db_path)
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    with sqlite3.connect(db_path) as conn:
+    with _connect(db_path) as conn:
         cursor = conn.execute("UPDATE runs SET status = 'failed', finished_at = ?, error = ? "
                               "WHERE source_id = ? AND status = 'running'", (now_iso, reason, source_id))
         conn.commit()
@@ -390,10 +406,9 @@ def run_history(db_path: str, source_id: str) -> dict:
                                       since the last 'success'; skipped runs are ignored
     """
     init_runs_table(db_path)
-    with sqlite3.connect(db_path) as conn:
+    with _connect(db_path) as conn:
         rows = conn.execute("SELECT started_at, status FROM runs WHERE source_id = ? AND status != 'skipped' "
                             "ORDER BY started_at DESC, rowid DESC", (source_id,)).fetchall()
-    conn.close()
     failures = 0
     for _, status in rows:
         if status == "success":
@@ -405,7 +420,7 @@ def run_history(db_path: str, source_id: str) -> dict:
 
 def list_runs(db_path: str, source_id: Optional[str] = None) -> list[dict]:
     init_runs_table(db_path)
-    with sqlite3.connect(db_path) as conn:
+    with _connect(db_path) as conn:
         conn.row_factory = sqlite3.Row
         query, args = "SELECT * FROM runs", ()
         if source_id:

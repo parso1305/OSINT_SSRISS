@@ -1,6 +1,6 @@
 counts={'new': 10, 'existing': 0, 'changed': 0} invalid=[]
 {
- "item_url": "http://127.0.0.1:53147/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability",
+ "item_url": "http://127.0.0.1:50645/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability",
  "source_id": "iit_bombay_hss_seminars",
  "institution": "IIT Bombay",
  "content_type": "event",
@@ -14,8 +14,8 @@ counts={'new': 10, 'existing': 0, 'changed': 0} invalid=[]
  "event_type": "Seminar / Talk",
  "organizer": "Department of Humanities and Social Sciences",
  "description": "The Andaman and Nicobar Islands constitute an unique system in the Indian context that is also one of the least understood. The islands have no parallels on multiple grounds – geological, ecological and socio-cultural – and put together these form a unit that is complex and needs special attention and care. The islands are extremely rich from an ecological point of view – rich tropical forests, a diverse coastline comprising beaches, rocky coasts and mangroves and oceans that are thriving with coral reefs and marine life. The islands are home at the same time to a number of indigenous communities who have been here for thousands of years but are today among the most marginalised and vulnerable. Importantly, the islands are located in Seismic Zone V, the most seismically active zone on the planet. Earthquakes here are a regular occurrence and the 9.3 Richter scale earthquake that caused the giant tsunami of December 2004 had its epicenter not very far from the Nicobar islands. The presentation will dwell on these three distinctly different but complexly inter-related aspects of these islands to argue for a larger and a more holistic understanding of the place. It will present a range of examples of how recent developmental interventions in the islands - for infrastructure development, defence installations and tourism promotion - are wilfully ignoring the dynamic and sensitive social, ecological and geological realities of this remote island chain and increasing manifold the vulnerability of the islands and its human and non-human residents.",
- "listing_fetched_at": "2026-09-26T20:19:57Z",
- "detail_fetched_at": "2026-09-26T20:19:57Z",
+ "listing_fetched_at": "2026-09-27T06:40:16Z",
+ "detail_fetched_at": "2026-09-27T06:40:16Z",
  "detail_fetch_status": "ok",
  "detail_http_status": 200,
  "detail_error": null,
@@ -23,14 +23,14 @@ counts={'new': 10, 'existing': 0, 'changed': 0} invalid=[]
   "date_raw": "25th Sep 2025",
   "detail_canonical_url": "https://www.hss.iitb.ac.in/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability",
   "discovered_on_page": 1,
-  "discovered_on_url": "http://127.0.0.1:53147/events/seminars-and-talks",
+  "discovered_on_url": "http://127.0.0.1:50645/events/seminars-and-talks",
   "node_id": "2809",
   "raw_href": "/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability",
   "raw_text": "25 Sep 2025 Seminar / Talk The A&N Islands – At the tri-junction of fragility and vulnerability 25th Sep 2025 15:30 PM",
   "time_raw": "15:30 PM"
  },
  "content_hash": "5f6ae5171b63fe9d356eff772beb1414c3a7201e6cedd13d21850aacfd63c4ae",
- "first_seen_at": "2026-09-26T20:19:58Z",
- "last_seen_at": "2026-09-26T20:19:58Z"
+ "first_seen_at": "2026-09-27T06:40:16Z",
+ "last_seen_at": "2026-09-27T06:40:16Z"
 }
 validate_record: []

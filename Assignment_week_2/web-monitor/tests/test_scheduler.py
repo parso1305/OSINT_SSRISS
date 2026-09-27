@@ -10,6 +10,7 @@ import logging
 import os
 import socket
 import sqlite3
+from contextlib import closing
 import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
@@ -55,7 +56,7 @@ def write_config(tmp_path: Path, site: FixtureSite, **overrides) -> Path:
 
 
 def records_checksum(db: str) -> str:
-    with sqlite3.connect(db) as conn:
+    with closing(sqlite3.connect(db)) as conn, conn:
         rows = conn.execute("SELECT * FROM records ORDER BY item_url").fetchall()
     return hashlib.sha256(json.dumps(rows, ensure_ascii=False).encode()).hexdigest()
 
@@ -145,7 +146,7 @@ def test_not_due_until_interval_and_interval_change_is_picked_up(tmp_path, log_s
     with FixtureSite() as site:
         config_path = write_config(tmp_path, site, interval_minutes=60)
         assert len(run_once(config_path, db, locks, source_ids=[SOURCE])) == 1        # never run -> due
-        with sqlite3.connect(db) as conn:                                              # pretend it ran 10 min ago
+        with closing(sqlite3.connect(db)) as conn, conn:                                              # pretend it ran 10 min ago
             ten_min_ago = (datetime.now(timezone.utc) - timedelta(minutes=10)).strftime(TS)
             conn.execute("UPDATE runs SET started_at = ?", (ten_min_ago,))
         assert run_once(config_path, db, locks, source_ids=[SOURCE]) == []             # 60 min interval: not due
@@ -173,7 +174,7 @@ def test_failed_run_mid_storage_leaves_data_untouched_and_is_recorded(tmp_path, 
         config_path = write_config(tmp_path, site)
         run_once(config_path, db, locks, source_ids=[SOURCE], force=True)
         before = records_checksum(db)
-        with sqlite3.connect(db) as conn:  # real SQLite failure partway through the batch
+        with closing(sqlite3.connect(db)) as conn, conn:  # real SQLite failure partway through the batch
             conn.execute("CREATE TRIGGER fail_mid BEFORE UPDATE ON records WHEN NEW.item_url LIKE '%rortys-revolution' "
                          "BEGIN SELECT RAISE(ABORT, 'injected storage failure'); END")
         result = run_once(config_path, db, locks, source_ids=[SOURCE], force=True)[0]
@@ -210,12 +211,11 @@ def test_daily_interval_does_not_drift_behind_hourly_trigger():
 
 def shift_runs(db: str, minutes_ago: float) -> None:
     """Pretend every recorded run started minutes_ago (keeping their order)."""
-    with sqlite3.connect(db) as conn:
+    with closing(sqlite3.connect(db)) as conn, conn:
         rows = conn.execute("SELECT run_id FROM runs ORDER BY started_at, rowid").fetchall()
         for i, (run_id,) in enumerate(rows):
             started = datetime.now(timezone.utc) - timedelta(minutes=minutes_ago + (len(rows) - 1 - i))
             conn.execute("UPDATE runs SET started_at = ? WHERE run_id = ?", (started.strftime(TS), run_id))
-    conn.close()
 
 
 def schedule_line(log: str) -> str:

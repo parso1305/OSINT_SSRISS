@@ -1,4 +1,4 @@
 config: {'supports_pagination': False}
 pages_crawled=1 stop_reason=max_pages_reached counts={'new': 10, 'existing': 0, 'changed': 0}
 listing GETs: ['/events/seminars-and-talks']
-2026-09-27 01:50:07 [INFO] logger=web_monitor Page 1 yielded 10 items
+2026-09-27 12:10:26 [INFO] logger=web_monitor Page 1 yielded 10 items

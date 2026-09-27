@@ -1,7 +1,7 @@
 cycle 1 (both due): [('iit_bombay_hss_seminars', 'success'), ('audit_second_source', 'success')]
 cycle 2 (A listing 500): [('iit_bombay_hss_seminars', 'failed'), ('audit_second_source', 'success')]
 cycle 3 (A lock held): [('iit_bombay_hss_seminars', 'skipped'), ('audit_second_source', 'success')]
-concurrent processes: B exit=0 after 0.5s, A exit=0 after 2.7s
-2026-09-27 01:50:29 [INFO] logger=web_monitor RUN_END run_id=186c33f3a9d0451096178dd3d6351fce source=iit_bombay_hss_seminars status=success duration_ms=2376 new=0 existing=20 changed=0 failed=0 error=""
-2026-09-27 01:50:27 [INFO] logger=web_monitor RUN_END run_id=b620f509905743bb96b716af727851c0 source=audit_second_source status=success duration_ms=213 new=0 existing=20 changed=0 failed=0 error=""
+concurrent processes: B exit=0 after 0.6s, A exit=0 after 2.7s
+2026-09-27 12:10:49 [INFO] logger=web_monitor RUN_END run_id=91803ba29d1a4a7bba3fd867b2689252 source=iit_bombay_hss_seminars status=success duration_ms=2322 new=0 existing=20 changed=0 failed=0 error=""
+2026-09-27 12:10:47 [INFO] logger=web_monitor RUN_END run_id=b3d03c163570451ab9909bf35fe66f87 source=audit_second_source status=success duration_ms=234 new=0 existing=20 changed=0 failed=0 error=""
 records per source: iit_bombay_hss_seminars=20 audit_second_source=20
