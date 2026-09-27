@@ -1,0 +1,4 @@
+# Python bytecode and caches, anywhere in the repo (web-monitor has its own .gitignore for runtime state)
+__pycache__/
+*.pyc
+.pytest_cache/
