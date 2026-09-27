@@ -21,28 +21,28 @@ Fixes were applied on 2026-09-27, one commit per fix, and the full test suite wa
 | S3.1 recon future-dated item "unverified" | `be26dc4` | verified on live `/events` 2026-09-26 20:12Z: `11th Nov 2026`, `JALVIHAR CONFERENCE HALL` (`recon_events_2026-09-27.html:372-395`) |
 | *found during the fixes*: an invalid `listing_url` (e.g. `http://`) was never fetched yet failed with a misleading "HTTP 200 … parsed 0 items" message | config validation: `SourceConfig` rejects a `listing_url` that is not an absolute http(s) URL, naming the `source_id` | `tests/test_runner.py::test_config_rejects_listing_url_that_is_not_absolute_http`; `assignments/01_logging/failure_examples.md` Case 1 |
 | **m8** `with sqlite3.connect()` never closes: 157 `ResourceWarning`s in the audit (257 in the grown suite) | `storage._connect()`: commit/rollback **and** close on every call; tests close their own connections | `pytest -W always::ResourceWarning`: main suite 257 → **0**, audit suite → **0** |
+| **m1 / case 17** a lock whose `started_at` is not `…Z` raised `ValueError` out of `run_once` (the whole cycle aborted) | unreadable timestamp → `LOCK_WARNING`, the lock file's age decides (as for a missing timestamp); a live holder with a fresh file is still respected (skip, never overlap) | `tests/test_scheduler.py::test_lock_with_unreadable_started_at_never_crashes_the_cycle` (3 cases); audit `test_17[unparseable_started_at]` passes after correcting its expectation (it expected a live, fresh lock to be removed; see the comment in the test) |
 | **A8.3** optional live demo DEFERRED (HSS unreachable during the audit) | live demo 2026-09-27 (HSS reachable again) | `assignments/08_schedule/live_demo.log`: run 1 `new=20`, run 2 `new=0 existing=20 changed=0`, both `success`; runs table in `assignments/08_schedule/schedule_notes.md` → **PASS** |
 | ME fake-UTC `<time>` (§8.2) and talks.cam.ac.uk robots.txt (§8.1) | `be26dc4` documented as findings (adapter-level; no generic change is correct) | `assignments/07_template/iit_bombay_adapter_notes.md` §6 |
 
-## Still open (not in the fix list)
+## Known limitations (assessed 2026-09-27, not fixed)
 
-These audit tests are marked `xfail(strict=True)` with the reason. If one starts passing, pytest reports `XPASS` as a failure,
-so a fix cannot go unnoticed.
+Each has an audit test marked `xfail(strict=True)` with the reason. If one starts passing, pytest reports `XPASS` as a
+failure, so a fix cannot go unnoticed.
 
-| Audit problem | Audit test |
-|---|---|
-| **M5 / X2** `item_url` alone is the `records` key: two sources listing one URL overwrite each other (`changed=10` every cycle) | `test_extra_edges.py::test_x2_two_sources_listing_the_same_item` |
-| **m1 / case 17** a lock with a non-`Z` `started_at` raises out of `run_once` (whole cycle aborts) | `test_scheduler_behaviour.py::test_17_stale_lock[unparseable_started_at]` |
-| **m2 / case 12** failed detail fetch + listing value differing from the stored detail value → overwritten, `changed=1` | `test_pipeline_behaviour.py::test_12_failed_refetch_is_not_a_change[listing_disagrees_with_detail]` |
-| **m11 / case 8** a renamed detail field silently yields `None` (no warning) | `test_pipeline_behaviour.py::test_08_html_structure_changed[detail_speaker_field_renamed]` |
-| m3, m6, m7, m9, m12, m13, m15, m17 | not covered by a failing test; see the report §10 |
+| Audit problem | Why not fixed now (effort, risk) | Proposed fix | Audit test |
+|---|---|---|---|
+| **M5 / X2** `item_url` alone is the `records` key: two sources listing one URL overwrite each other (`changed=10` every cycle) | Larger, risky: the primary key changes, so existing `records` tables must be migrated, and cross-source dedup needs a decision. Not triggered by the current config (one live source). | Key on `(source_id, item_url)`, or keep `item_url` global and move per-source fields to a `record_sources` link table | `test_extra_edges.py::test_x2_…` |
+| **m2 / case 12** failed detail fetch + listing value differing from the stored detail value → overwritten, `changed=1` | Medium: storage must know which stored fields came from a detail page. After one failed run the stored status is `failed`, so status alone can't tell; keeping all stored values would hide real listing changes for items beyond `detail_limit`. | Record per-field provenance (or adapter-declared `DETAIL_FIELDS` + a stored "last enriched" marker) and keep stored detail-sourced fields on a failed fetch | `test_pipeline_behaviour.py::test_12_…[listing_disagrees_with_detail]` |
+| **m11 / case 8** a renamed detail field silently yields `None` (no warning) | Medium: a per-page warning would be noisy (a page may legitimately lack a speaker). The useful signal is run-level. | Adapter declares `EXPECTED_DETAIL_FIELDS`; the runner warns when a field is empty on all ok detail pages of a run (N ≥ 3) | `test_pipeline_behaviour.py::test_08_…[detail_speaker_field_renamed]` |
+| m3, m6, m7, m9, m12, m13, m15, m17 (minor) | see the report §10; none causes data loss | report §10 | not covered by a failing test |
 
 ## Running the audit
 
 From the project root (`Assignment_week_2/web-monitor`):
 
 ```
-python -m pytest assignments/week2_audit/tests -v              # 42 passed, 6 xfailed (2026-09-27)
+python -m pytest assignments/week2_audit/tests -v
 python assignments/week2_audit/scripts/run_generalization.py   # ME + CMI sandbox on fixtures, real scheduler
 ```
 

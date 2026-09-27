@@ -77,8 +77,7 @@ def test_16_concurrent_runs_same_source(tmp_path, evidence):
 
 
 @pytest.mark.parametrize("kind", ["dead_pid", "old_timestamp_live_pid", "corrupt_json_old_mtime",
-                                  pytest.param("unparseable_started_at", marks=open_problem(
-                                      "m1", "a lock with a non-Z started_at raises ValueError out of run_once")),
+                                  "unparseable_started_at",
                                   "other_host_fresh"])
 def test_17_stale_lock(tmp_path, log_stream, evidence, kind):
     db, locks = str(tmp_path / "t17.db"), tmp_path / "locks"
@@ -109,6 +108,11 @@ def test_17_stale_lock(tmp_path, log_stream, evidence, kind):
     assert crashed is None, "a malformed lock must not crash the scheduler cycle"
     if kind == "other_host_fresh":
         assert result[0]["status"] == "skipped"
+    elif kind == "unparseable_started_at":
+        # Corrected 2026-09-27 (m1 fix): the audit expected STALE_LOCK + success here, but this lock names a LIVE pid
+        # on this host and the file is fresh, so it cannot be proven stale; removing it could overlap a real run.
+        # Fixed behaviour: no crash, a LOCK_WARNING, the file age decides, and the run is skipped.
+        assert result[0]["status"] == "skipped" and "LOCK_WARNING" in log_stream.getvalue()
     else:
         assert "STALE_LOCK" in log_stream.getvalue() and result[0]["status"] == "success"
 

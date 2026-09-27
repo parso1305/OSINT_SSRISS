@@ -1,7 +1,7 @@
 detail_status={'ok': 9, 'failed': 1, 'not_attempted': 10} counts={'new': 20, 'existing': 0, 'changed': 0}
 stored record for the failing item:
 {
- "item_url": "http://127.0.0.1:50467/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+ "item_url": "http://127.0.0.1:57369/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
  "source_id": "iit_bombay_hss_seminars",
  "institution": "IIT Bombay",
  "content_type": "event",
@@ -15,25 +15,25 @@ stored record for the failing item:
  "event_type": "Seminar / Talk",
  "organizer": "Department of Humanities and Social Sciences",
  "description": null,
- "listing_fetched_at": "2026-09-27T06:40:01Z",
- "detail_fetched_at": "2026-09-27T06:40:02Z",
+ "listing_fetched_at": "2026-09-27T06:43:31Z",
+ "detail_fetched_at": "2026-09-27T06:43:31Z",
  "detail_fetch_status": "failed",
  "detail_http_status": 500,
- "detail_error": "FetchError: HTTP 500 Internal Server Error for url: http://127.0.0.1:50467/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+ "detail_error": "FetchError: HTTP 500 Internal Server Error for url: http://127.0.0.1:57369/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
  "extras": {
   "date_raw": "17th Sep 2025",
   "discovered_on_page": 1,
-  "discovered_on_url": "http://127.0.0.1:50467/events/seminars-and-talks",
+  "discovered_on_url": "http://127.0.0.1:57369/events/seminars-and-talks",
   "raw_href": "/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
   "raw_text": "17 Sep 2025 Seminar / Talk Tracing the Success of Indian Democracy to Success in Nation-Building 17th Sep 2025 15:00 PM Online Seminar",
   "time_raw": "15:00 PM"
  },
  "content_hash": "08e9dca3fdab762e92a7142d57c53b0f3ec2bed410b8c32433633f9f240fa939",
- "first_seen_at": "2026-09-27T06:40:02Z",
- "last_seen_at": "2026-09-27T06:40:02Z"
+ "first_seen_at": "2026-09-27T06:43:32Z",
+ "last_seen_at": "2026-09-27T06:43:32Z"
 }
 --- relevant log lines ---
-2026-09-27 12:10:02 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:50467/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=500 duration_ms=7
-2026-09-27 12:10:02 [WARNING] logger=web_monitor.detail DETAIL_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:50467/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=500 error_type=FetchError message="HTTP 500 Internal Server Error for url: http://127.0.0.1:50467/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"
-2026-09-27 12:10:02 [INFO] logger=web_monitor ENRICH ok=9 failed=1 not_attempted=10
-detail_http_status=500 detail_error='FetchError: HTTP 500 Internal Server Error for url: http://127.0.0.1:50467/events/seminar-talk/tracing-success-indian-democracy-success-nation-building'
+2026-09-27 12:13:31 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:57369/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=500 duration_ms=2
+2026-09-27 12:13:31 [WARNING] logger=web_monitor.detail DETAIL_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:57369/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=500 error_type=FetchError message="HTTP 500 Internal Server Error for url: http://127.0.0.1:57369/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"
+2026-09-27 12:13:32 [INFO] logger=web_monitor ENRICH ok=9 failed=1 not_attempted=10
+detail_http_status=500 detail_error='FetchError: HTTP 500 Internal Server Error for url: http://127.0.0.1:57369/events/seminar-talk/tracing-success-indian-democracy-success-nation-building'

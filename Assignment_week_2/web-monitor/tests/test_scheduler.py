@@ -287,3 +287,26 @@ def test_retry_still_respects_the_overlap_lock(tmp_path, log_stream):
     assert f"RUN_SKIPPED source={SOURCE} reason=already_running" in log_stream.getvalue()
     assert requests_during_lock == 2                                             # only the first run's robots + listing
     assert run_history(db, SOURCE)["consecutive_failures"] == 1                  # a skip does not reset the backoff
+
+
+# -- malformed lock timestamp (audit m1 / case 17) -----------------------------------------------------------
+
+@pytest.mark.parametrize("pid_state, lock_age_h, expected", [
+    ("dead", 0, "success"),     # dead holder: stale by process check
+    ("live", 3, "success"),     # live pid but the file is older than lock_max_age: stale by file age
+    ("live", 0, "skipped"),     # live pid, fresh file: cannot prove it is stale -> skip, never overlap
+])
+def test_lock_with_unreadable_started_at_never_crashes_the_cycle(tmp_path, log_stream, pid_state, lock_age_h, expected):
+    db, locks = str(tmp_path / "s.db"), tmp_path / "locks"
+    locks.mkdir()
+    lock = locks / f"{SOURCE}.lock"
+    lock.write_text(json.dumps({"pid": dead_pid() if pid_state == "dead" else os.getpid(), "host": socket.gethostname(),
+                                "started_at": "2026-09-26 06:00", "source_id": SOURCE}), encoding="utf-8")
+    old = datetime.now().timestamp() - lock_age_h * 3600
+    os.utime(lock, (old, old))
+    with FixtureSite() as site:
+        result = run_once(write_config(tmp_path, site), db, locks, source_ids=[SOURCE], force=True)   # must not raise
+    assert [r["status"] for r in result] == [expected]
+    log = log_stream.getvalue()
+    assert "LOCK_WARNING" in log and "started_at='2026-09-26 06:00' unreadable" in log
+    assert ("STALE_LOCK" in log) == (expected == "success")

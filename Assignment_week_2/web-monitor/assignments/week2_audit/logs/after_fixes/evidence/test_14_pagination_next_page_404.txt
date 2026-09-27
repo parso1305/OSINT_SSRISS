@@ -1,8 +1,8 @@
 config: {'max_pages': 5}
 pages_crawled=3 stop_reason=fetch_failed counts={'new': 30, 'existing': 0, 'changed': 0}
 listing GETs: ['/events/seminars-and-talks', '/events/seminars-and-talks?page=1', '/events/seminars-and-talks?page=2', '/events/seminars-and-talks?page=3']
-2026-09-27 12:10:27 [INFO] logger=web_monitor Page 1 yielded 10 items
-2026-09-27 12:10:27 [INFO] logger=web_monitor Page 2 yielded 10 items
-2026-09-27 12:10:27 [INFO] logger=web_monitor Page 3 yielded 10 items
-2026-09-27 12:10:27 [ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:50804/events/seminars-and-talks?page=3 stage=fetch error_type=FetchError message="HTTP 404 Not Found for url: http://127.0.0.1:50804/events/seminars-and-talks?page=3"
-2026-09-27 12:10:27 [INFO] logger=web_monitor PAGINATE pages_crawled=3 stop_reason=fetch_failed
+2026-09-27 12:13:55 [INFO] logger=web_monitor Page 1 yielded 10 items
+2026-09-27 12:13:55 [INFO] logger=web_monitor Page 2 yielded 10 items
+2026-09-27 12:13:55 [INFO] logger=web_monitor Page 3 yielded 10 items
+2026-09-27 12:13:55 [ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:57705/events/seminars-and-talks?page=3 stage=fetch error_type=FetchError message="HTTP 404 Not Found for url: http://127.0.0.1:57705/events/seminars-and-talks?page=3"
+2026-09-27 12:13:55 [INFO] logger=web_monitor PAGINATE pages_crawled=3 stop_reason=fetch_failed

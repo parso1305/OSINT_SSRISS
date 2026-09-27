@@ -1,7 +1,7 @@
 config: {'max_pages': 3}
 pages_crawled=2 stop_reason=repeated_items counts={'new': 10, 'existing': 10, 'changed': 0}
 listing GETs: ['/events/seminars-and-talks', '/events/seminars-and-talks?page=1']
-2026-09-27 12:10:26 [INFO] logger=web_monitor Page 1 yielded 10 items
-2026-09-27 12:10:26 [INFO] logger=web_monitor Page 2 yielded 10 items
-2026-09-27 12:10:26 [WARNING] logger=web_monitor Page 2 repeats only already-seen items. Halting.
-2026-09-27 12:10:26 [INFO] logger=web_monitor PAGINATE pages_crawled=2 stop_reason=repeated_items
+2026-09-27 12:13:54 [INFO] logger=web_monitor Page 1 yielded 10 items
+2026-09-27 12:13:54 [INFO] logger=web_monitor Page 2 yielded 10 items
+2026-09-27 12:13:54 [WARNING] logger=web_monitor Page 2 repeats only already-seen items. Halting.
+2026-09-27 12:13:54 [INFO] logger=web_monitor PAGINATE pages_crawled=2 stop_reason=repeated_items

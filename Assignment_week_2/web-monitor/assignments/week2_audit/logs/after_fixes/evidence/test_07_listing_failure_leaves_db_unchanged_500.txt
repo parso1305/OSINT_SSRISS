@@ -1,12 +1,12 @@
-records before: sha256=0967cc8b652c5eac rows=20
-records after:  sha256=0967cc8b652c5eac rows=20
-scheduler result: {'run_id': 'a42241fe5d474c2485d56a8c6381ab12', 'source_id': 'iit_bombay_hss_seminars', 'status': 'failed', 'error': 'FetchError: HTTP 500 Internal Server Error for url: http://127.0.0.1:50528/events/seminars-and-talks'}
-runs table: [('success', None), ('failed', 'FetchError: HTTP 500 Internal Server Error for url: http://127.0.0.1:50528/events/seminars-and-talks')]
+records before: sha256=81c73af35d6a2d6f rows=20
+records after:  sha256=81c73af35d6a2d6f rows=20
+scheduler result: {'run_id': '9b350db5a16d459b8d663f94cc881e17', 'source_id': 'iit_bombay_hss_seminars', 'status': 'failed', 'error': 'FetchError: HTTP 500 Internal Server Error for url: http://127.0.0.1:57433/events/seminars-and-talks'}
+runs table: [('success', None), ('failed', 'FetchError: HTTP 500 Internal Server Error for url: http://127.0.0.1:57433/events/seminars-and-talks')]
 --- log of the failing run ---
-2026-09-27 12:10:06 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-27T06:40:06Z last_status=success consecutive_failures=0 wait_minutes=1440 next_due_at=2026-09-28T06:40:06Z next_due_reason=forced due=true
-2026-09-27 12:10:06 [INFO] logger=web_monitor RUN_START run_id=a42241fe5d474c2485d56a8c6381ab12 source=iit_bombay_hss_seminars
-2026-09-27 12:10:06 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
-2026-09-27 12:10:06 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:50528/events/seminars-and-talks status=500 duration_ms=1
-2026-09-27 12:10:06 [ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:50528/events/seminars-and-talks stage=fetch error_type=FetchError message="HTTP 500 Internal Server Error for url: http://127.0.0.1:50528/events/seminars-and-talks"
-2026-09-27 12:10:06 [ERROR] logger=web_monitor RUN_END run_id=a42241fe5d474c2485d56a8c6381ab12 source=iit_bombay_hss_seminars status=failed duration_ms=13 new=0 existing=0 changed=0 failed=0 error="FetchError: HTTP 500 Internal Server Error for url: http://127.0.0.1:50528/events/seminars-and-talks"
+2026-09-27 12:13:36 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-27T06:43:36Z last_status=success consecutive_failures=0 wait_minutes=1440 next_due_at=2026-09-28T06:43:36Z next_due_reason=forced due=true
+2026-09-27 12:13:36 [INFO] logger=web_monitor RUN_START run_id=9b350db5a16d459b8d663f94cc881e17 source=iit_bombay_hss_seminars
+2026-09-27 12:13:36 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
+2026-09-27 12:13:36 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:57433/events/seminars-and-talks status=500 duration_ms=16
+2026-09-27 12:13:36 [ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:57433/events/seminars-and-talks stage=fetch error_type=FetchError message="HTTP 500 Internal Server Error for url: http://127.0.0.1:57433/events/seminars-and-talks"
+2026-09-27 12:13:36 [ERROR] logger=web_monitor RUN_END run_id=9b350db5a16d459b8d663f94cc881e17 source=iit_bombay_hss_seminars status=failed duration_ms=37 new=0 existing=0 changed=0 failed=0 error="FetchError: HTTP 500 Internal Server Error for url: http://127.0.0.1:57433/events/seminars-and-talks"
 

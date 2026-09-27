@@ -1,12 +1,12 @@
-records before: sha256=417c6ad9c92496ba rows=20
-records after:  sha256=417c6ad9c92496ba rows=20
-scheduler result: {'run_id': 'e89bade5cc1a4bf2b9b958e802412476', 'source_id': 'iit_bombay_hss_seminars', 'status': 'failed', 'error': 'FetchError: HTTP 404 Not Found for url: http://127.0.0.1:50512/events/seminars-and-talks'}
-runs table: [('success', None), ('failed', 'FetchError: HTTP 404 Not Found for url: http://127.0.0.1:50512/events/seminars-and-talks')]
+records before: sha256=dfbc39973a6e1647 rows=20
+records after:  sha256=dfbc39973a6e1647 rows=20
+scheduler result: {'run_id': '9a5b8be297b94e3db312864ecce043cc', 'source_id': 'iit_bombay_hss_seminars', 'status': 'failed', 'error': 'FetchError: HTTP 404 Not Found for url: http://127.0.0.1:57417/events/seminars-and-talks'}
+runs table: [('success', None), ('failed', 'FetchError: HTTP 404 Not Found for url: http://127.0.0.1:57417/events/seminars-and-talks')]
 --- log of the failing run ---
-2026-09-27 12:10:05 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-27T06:40:05Z last_status=success consecutive_failures=0 wait_minutes=1440 next_due_at=2026-09-28T06:40:05Z next_due_reason=forced due=true
-2026-09-27 12:10:05 [INFO] logger=web_monitor RUN_START run_id=e89bade5cc1a4bf2b9b958e802412476 source=iit_bombay_hss_seminars
-2026-09-27 12:10:05 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
-2026-09-27 12:10:05 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:50512/events/seminars-and-talks status=404 duration_ms=3
-2026-09-27 12:10:05 [ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:50512/events/seminars-and-talks stage=fetch error_type=FetchError message="HTTP 404 Not Found for url: http://127.0.0.1:50512/events/seminars-and-talks"
-2026-09-27 12:10:05 [ERROR] logger=web_monitor RUN_END run_id=e89bade5cc1a4bf2b9b958e802412476 source=iit_bombay_hss_seminars status=failed duration_ms=17 new=0 existing=0 changed=0 failed=0 error="FetchError: HTTP 404 Not Found for url: http://127.0.0.1:50512/events/seminars-and-talks"
+2026-09-27 12:13:35 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-27T06:43:35Z last_status=success consecutive_failures=0 wait_minutes=1440 next_due_at=2026-09-28T06:43:35Z next_due_reason=forced due=true
+2026-09-27 12:13:35 [INFO] logger=web_monitor RUN_START run_id=9a5b8be297b94e3db312864ecce043cc source=iit_bombay_hss_seminars
+2026-09-27 12:13:35 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
+2026-09-27 12:13:35 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:57417/events/seminars-and-talks status=404 duration_ms=2
+2026-09-27 12:13:35 [ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:57417/events/seminars-and-talks stage=fetch error_type=FetchError message="HTTP 404 Not Found for url: http://127.0.0.1:57417/events/seminars-and-talks"
+2026-09-27 12:13:35 [ERROR] logger=web_monitor RUN_END run_id=9a5b8be297b94e3db312864ecce043cc source=iit_bombay_hss_seminars status=failed duration_ms=32 new=0 existing=0 changed=0 failed=0 error="FetchError: HTTP 404 Not Found for url: http://127.0.0.1:57417/events/seminars-and-talks"
 

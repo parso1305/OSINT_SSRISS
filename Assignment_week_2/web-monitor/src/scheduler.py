@@ -99,9 +99,13 @@ class SourceLock:
 
     def _stale_reason(self, info: dict) -> Optional[str]:
         started = info.get("started_at")
-        if started:
+        try:
             age_s = (_now() - datetime.strptime(started, _TS).replace(tzinfo=timezone.utc)).total_seconds()
-        else:
+        except (TypeError, ValueError):
+            # Missing or unreadable timestamp: judge by the lock file's age instead (never crash the cycle).
+            if started:
+                self.logger.warning("LOCK_WARNING source=%s path=%s started_at=%r unreadable; using file mtime",
+                                    self.source_id, self.path.name, started)
             age_s = time.time() - self.path.stat().st_mtime
         if age_s > self.max_age_s:
             return f"max_age_exceeded(age_s={int(age_s)},max_s={int(self.max_age_s)})"
