@@ -1,6 +1,6 @@
 lock content: (removed)
 crashed: None
-result: [{'run_id': '66ab1eaa05814ba0a4c794bf4ad2bdd2', 'source_id': 'iit_bombay_hss_seminars', 'status': 'success', 'counts': {'new': 20, 'existing': 0, 'changed': 0}}]
+result: [{'run_id': '90d7ce87b7dc4ceda1bcfa1b74624fb3', 'source_id': 'iit_bombay_hss_seminars', 'status': 'success', 'counts': {'new': 20, 'existing': 0, 'changed': 0}}]
 runs: [('success', None)]
-2026-09-27 12:14:03 [WARNING] logger=web_monitor STALE_LOCK source=iit_bombay_hss_seminars holder=pid:18908@2026-09-27T06:44:03Z reason=process_dead(pid=18908) action=removed
-2026-09-27 12:14:03 [INFO] logger=web_monitor RUN_END run_id=66ab1eaa05814ba0a4c794bf4ad2bdd2 source=iit_bombay_hss_seminars status=success duration_ms=387 new=20 existing=0 changed=0 failed=0 error=""
+2026-09-27 12:16:35 [WARNING] logger=web_monitor STALE_LOCK source=iit_bombay_hss_seminars holder=pid:20596@2026-09-27T06:46:35Z reason=process_dead(pid=20596) action=removed
+2026-09-27 12:16:35 [INFO] logger=web_monitor RUN_END run_id=90d7ce87b7dc4ceda1bcfa1b74624fb3 source=iit_bombay_hss_seminars status=success duration_ms=436 new=20 existing=0 changed=0 failed=0 error=""

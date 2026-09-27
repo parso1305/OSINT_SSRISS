@@ -65,11 +65,6 @@ def open_problem(ref: str, why: str):
     return pytest.mark.xfail(strict=True, reason=f"OPEN audit {ref}: {why} (not in the fix list; see FIXES.md)")
 
 
-def superseded(why: str):
-    """Fixed, but this audit test encodes an expectation the fix deliberately does not meet; see FIXES.md."""
-    return pytest.mark.xfail(strict=True, reason=f"SUPERSEDED: {why}")
-
-
 def site_config(site, **overrides):
     """The REAL iit_bombay_hss_seminars config entry, pointed at the local audit server.
 

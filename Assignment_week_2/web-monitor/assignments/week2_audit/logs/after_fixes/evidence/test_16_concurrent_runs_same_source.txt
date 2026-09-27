@@ -1,11 +1,11 @@
-lock file while A runs: {"pid": 26828, "host": "HP", "started_at": "2026-09-27T06:44:00Z", "source_id": "iit_bombay_hss_seminars"}
+lock file while A runs: {"pid": 19516, "host": "HP", "started_at": "2026-09-27T06:46:32Z", "source_id": "iit_bombay_hss_seminars"}
 --- process A ---
-2026-09-27 12:14:00 [INFO] logger=web_monitor RUN_START run_id=6600e395981f4af1b851605980e17e7f source=iit_bombay_hss_seminars
-2026-09-27 12:14:02 [INFO] logger=web_monitor STORE new=20 existing=0 changed=0
-2026-09-27 12:14:02 [INFO] logger=web_monitor RUN_END run_id=6600e395981f4af1b851605980e17e7f source=iit_bombay_hss_seminars status=success duration_ms=2455 new=20 existing=0 changed=0 failed=0 error=""
+2026-09-27 12:16:32 [INFO] logger=web_monitor RUN_START run_id=6792a4bd6610494297e5440a4bdaa750 source=iit_bombay_hss_seminars
+2026-09-27 12:16:34 [INFO] logger=web_monitor STORE new=20 existing=0 changed=0
+2026-09-27 12:16:34 [INFO] logger=web_monitor RUN_END run_id=6792a4bd6610494297e5440a4bdaa750 source=iit_bombay_hss_seminars status=success duration_ms=2361 new=20 existing=0 changed=0 failed=0 error=""
 --- process B (exit 0) ---
-2026-09-27 12:14:00 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-27T06:44:00Z last_status=running consecutive_failures=1 wait_minutes=60 next_due_at=2026-09-27T07:44:00Z next_due_reason=forced due=true
-2026-09-27 12:14:00 [INFO] logger=web_monitor RUN_SKIPPED source=iit_bombay_hss_seminars reason=already_running holder=pid:26828@2026-09-27T06:44:00Z
-runs table: [('success', None, '2026-09-27T06:44:00Z', '2026-09-27T06:44:02Z'), ('skipped', 'already_running', '2026-09-27T06:44:00Z', '2026-09-27T06:44:00Z')]
+2026-09-27 12:16:32 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-27T06:46:32Z last_status=running consecutive_failures=1 wait_minutes=60 next_due_at=2026-09-27T07:46:32Z next_due_reason=forced due=true
+2026-09-27 12:16:32 [INFO] logger=web_monitor RUN_SKIPPED source=iit_bombay_hss_seminars reason=already_running holder=pid:19516@2026-09-27T06:46:32Z
+runs table: [('success', None, '2026-09-27T06:46:32Z', '2026-09-27T06:46:34Z'), ('skipped', 'already_running', '2026-09-27T06:46:32Z', '2026-09-27T06:46:32Z')]
 records rows: 20
 lock left behind: False

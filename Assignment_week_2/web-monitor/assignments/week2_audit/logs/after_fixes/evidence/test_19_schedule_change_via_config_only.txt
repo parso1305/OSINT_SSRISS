@@ -1,8 +1,8 @@
 cycle 1 (interval 1440, never run): ran=1
 cycle 2 (interval 1440): ran=0
 cycle 3 (temp config edited to interval 0.02 min): ran=1
-2026-09-27 12:14:10 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=never last_status=none consecutive_failures=0 wait_minutes=1440 next_due_at=now next_due_reason=never_run due=true
-2026-09-27 12:14:10 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-27T06:44:10Z last_status=success consecutive_failures=0 wait_minutes=1440 next_due_at=2026-09-28T06:44:10Z next_due_reason=interval_after_success due=false
-2026-09-27 12:14:12 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=0.02 last_started_at=2026-09-27T06:44:10Z last_status=success consecutive_failures=0 wait_minutes=0.02 next_due_at=2026-09-27T06:44:11Z next_due_reason=interval_after_success due=true
+2026-09-27 12:16:42 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=never last_status=none consecutive_failures=0 wait_minutes=1440 next_due_at=now next_due_reason=never_run due=true
+2026-09-27 12:16:42 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-27T06:46:42Z last_status=success consecutive_failures=0 wait_minutes=1440 next_due_at=2026-09-28T06:46:42Z next_due_reason=interval_after_success due=false
+2026-09-27 12:16:43 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=0.02 last_started_at=2026-09-27T06:46:42Z last_status=success consecutive_failures=0 wait_minutes=0.02 next_due_at=2026-09-27T06:46:43Z next_due_reason=interval_after_success due=true
 src/ + sources/ file hashes identical before/after: True (14 files)
 real config/sources.json unchanged: True

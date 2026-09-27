@@ -1,7 +1,7 @@
 detail_status={'ok': 9, 'failed': 1, 'not_attempted': 10} counts={'new': 20, 'existing': 0, 'changed': 0}
 stored record for the failing item:
 {
- "item_url": "http://127.0.0.1:57403/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+ "item_url": "http://127.0.0.1:58909/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
  "source_id": "iit_bombay_hss_seminars",
  "institution": "IIT Bombay",
  "content_type": "event",
@@ -15,25 +15,25 @@ stored record for the failing item:
  "event_type": "Seminar / Talk",
  "organizer": "Department of Humanities and Social Sciences",
  "description": null,
- "listing_fetched_at": "2026-09-27T06:43:34Z",
- "detail_fetched_at": "2026-09-27T06:43:34Z",
+ "listing_fetched_at": "2026-09-27T06:46:07Z",
+ "detail_fetched_at": "2026-09-27T06:46:07Z",
  "detail_fetch_status": "failed",
  "detail_http_status": null,
- "detail_error": "FetchError: ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)) for url: http://127.0.0.1:57403/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+ "detail_error": "FetchError: ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)) for url: http://127.0.0.1:58909/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
  "extras": {
   "date_raw": "17th Sep 2025",
   "discovered_on_page": 1,
-  "discovered_on_url": "http://127.0.0.1:57403/events/seminars-and-talks",
+  "discovered_on_url": "http://127.0.0.1:58909/events/seminars-and-talks",
   "raw_href": "/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
   "raw_text": "17 Sep 2025 Seminar / Talk Tracing the Success of Indian Democracy to Success in Nation-Building 17th Sep 2025 15:00 PM Online Seminar",
   "time_raw": "15:00 PM"
  },
  "content_hash": "08e9dca3fdab762e92a7142d57c53b0f3ec2bed410b8c32433633f9f240fa939",
- "first_seen_at": "2026-09-27T06:43:34Z",
- "last_seen_at": "2026-09-27T06:43:34Z"
+ "first_seen_at": "2026-09-27T06:46:07Z",
+ "last_seen_at": "2026-09-27T06:46:07Z"
 }
 --- relevant log lines ---
-2026-09-27 12:13:34 [WARNING] logger=web_monitor.fetcher FETCH_ERROR url=http://127.0.0.1:57403/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=none error_type=ConnectionError message="ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)) for url: http://127.0.0.1:57403/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"
-2026-09-27 12:13:34 [WARNING] logger=web_monitor.detail DETAIL_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:57403/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=none error_type=FetchError message="ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)) for url: http://127.0.0.1:57403/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"
-2026-09-27 12:13:34 [INFO] logger=web_monitor ENRICH ok=9 failed=1 not_attempted=10
-detail_http_status=None detail_error="FetchError: ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)) for url: http://127.0.0.1:57403/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"
+2026-09-27 12:16:07 [WARNING] logger=web_monitor.fetcher FETCH_ERROR url=http://127.0.0.1:58909/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=none error_type=ConnectionError message="ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)) for url: http://127.0.0.1:58909/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"
+2026-09-27 12:16:07 [WARNING] logger=web_monitor.detail DETAIL_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:58909/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=none error_type=FetchError message="ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)) for url: http://127.0.0.1:58909/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"
+2026-09-27 12:16:07 [INFO] logger=web_monitor ENRICH ok=9 failed=1 not_attempted=10
+detail_http_status=None detail_error="FetchError: ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)) for url: http://127.0.0.1:58909/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"

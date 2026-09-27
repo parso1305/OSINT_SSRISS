@@ -13,7 +13,7 @@ import pytest
 from bs4 import BeautifulSoup
 
 from audit_server import AuditSite, Fault, LISTING_PATH, DETAIL_PREFIX, FIXTURES, listing_html, detail_html
-from conftest import site_config, db_dump, lines, SOURCE_ID, open_problem, superseded
+from conftest import site_config, db_dump, lines, SOURCE_ID, open_problem
 
 from src.enrich import merge_listing_and_detail
 from src.fetcher import FetchError
@@ -311,41 +311,8 @@ def test_10_missing_optional_fields(tmp_path, evidence):
     assert rec["speakers"] == [] and rec["venue"] is None and rec["ends_at"] is None
 
 
-@superseded("URL paths are kept as given since 2026-09-27, so the two forms that differ only by a trailing "
-            "slash / '//' are distinct keys (3 rows, not 1). The other 4 forms still dedupe: "
-            "tests/test_audit_regressions.py::test_case11_href_forms_that_differ_only_in_host_query_or_fragment_are_one_item")
-def test_11_url_forms_canonicalize_to_one_item(tmp_path, evidence):
-    db = str(tmp_path / "t11.db")
-    with AuditSite() as site:
-        host = site.url.split("://", 1)[1]
-        path = DETAIL_PREFIX + ISLANDS
-        variants = [
-            path,                                              # root-relative
-            "seminar-talk/" + ISLANDS,                         # pure relative (from /events/seminars-and-talks)
-            f"//{host}{path}/",                                # protocol-relative + trailing slash
-            f"{path}?utm_source=newsletter&fbclid=abc123",     # tracking query string
-            f"{path}#abstract",                                # fragment
-            f"HTTP://{host.upper()}/events//seminar-talk/{ISLANDS}/",  # upper-case scheme, duplicate slash, trailing slash
-        ]
-        soup = BeautifulSoup(listing_html(), "html.parser")
-        cards = soup.select(".event-card-wrapper")
-        template = str(cards[0])
-        container = soup.select_one(".view-seminars-and-talks .view-content")
-        for card in cards:
-            card.decompose()
-        for href in variants:
-            card = BeautifulSoup(template, "html.parser")
-            card.select_one(".event-name a")["href"] = href
-            container.append(card)
-        site.faults[LISTING_PATH] = Fault(body=str(soup))
-        result = run_source(site_config(site, supports_pagination=False), db_path=db)
-        detail_hits = [p for p in site.paths() if p.startswith(DETAIL_PREFIX)]
-    parsed = iit_bombay.parse_listing(str(soup), site.listing_url)
-    evidence("href variant -> item_url:", *[f"  {v!r:95} -> {i['item_url']}" for v, i in zip(variants, parsed)],
-             f"runner counts={result['counts']} detail={result['detail_status']}",
-             f"rows stored={count_records(db)}", f"detail GETs issued for this one item: {len(detail_hits)} {detail_hits}")
-    assert len({i["item_url"] for i in parsed}) == 1
-    assert count_records(db) == 1
+# Case 11 (six href forms -> one item) was superseded by the path-as-given fix (2026-09-27). Its replacement,
+# matching the intended behaviour, is tests/test_audit_regressions.py::test_case11_href_forms_that_differ_only_in_host_query_or_fragment_are_one_item
 
 
 @pytest.mark.parametrize("kind", ["detail_500", "detail_timeout", "beyond_detail_limit", pytest.param(
