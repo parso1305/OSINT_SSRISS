@@ -25,9 +25,11 @@ def test_checker_catches_missing_files_anchors_and_local_paths(tmp_path):
         "[missing](docs/nope.md) [bad anchor](docs/b.md#nope) [local](C:/Project/x.md)",
         "`[not a link](inside/code.md)`",
         "```", "[also not](fenced.md)", "```",
+        "", "| a | b | c |", "|---|---|---|", "| 1 | `x|y` | 3 |", "| 1 | 2 3 |",
     ]), encoding="utf-8")
     problems = check(tmp_path)
     assert [p.split(": ", 1)[1] for p in problems] == [
+        "table row has 2 cells, its header has 3",
         "missing target: docs/nope.md", "missing anchor #nope in b.md", "absolute local path in link: C:/Project/x.md"]
 
 

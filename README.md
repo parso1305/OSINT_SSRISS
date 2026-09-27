@@ -20,7 +20,7 @@ adapter and a config entry. Every result below links to the test, log or file th
 
 | Week | Folder | What it contains | Status |
 |---|---|---|---|
-| 1 | [`Assignment/`](Assignment) | Exercises: HTTP inspection, IIT Bombay recon, DOM selector map, fetch + parse, normalization + SQLite dedup PASS as exercises, with KNOWN LIMITATIONS listed in [its README](Assignment/README.md) |
+| 1 | [`Assignment/`](Assignment) | Exercises: HTTP inspection, IIT Bombay recon, DOM selector map, fetch + parse, normalization + SQLite dedup | PASS as exercises, with KNOWN LIMITATIONS listed in [its README](Assignment/README.md) |
 | 2 | [`Assignment_week_2/web-monitor/`](Assignment_week_2/web-monitor) | The monitoring system: assignments 1 and 3–8, the audit and its fixes | 56 of 58 benchmark items PASS; 1 DEFERRED, 1 NOT STARTED |
 | — | Assignment 9 | Template swap with a teammate's framework; scheduled next. | NOT STARTED |
 

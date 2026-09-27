@@ -5,7 +5,8 @@ hidden folders. For each [text](target) outside code blocks and inline code:
   - http(s)://, mailto: links are not checked (no network);
   - a relative path must exist (resolved from the Markdown file's folder);
   - a #anchor (same file or other .md file) must match a heading, slugged the way GitHub does.
-Also flags absolute local paths (C:\\..., /Users/...) in links.
+Also flags absolute local paths (C:\\..., /Users/...) in links, and table rows whose cell count differs from their
+table's header row (GitHub renders such a table broken).
 
 Usage:  python scripts/check_links.py [root]
 """
@@ -36,6 +37,29 @@ def github_slug(heading: str) -> str:
     text = text.replace("`", "").replace("*", "").strip().lower()
     text = re.sub(r"[^\w\- ]", "", text)                             # GitHub drops punctuation, keeps _ and -
     return text.replace(" ", "-")
+
+
+def table_cells(row: str) -> int:
+    """Number of cells in a Markdown table row; pipes inside `code` or escaped as \\| don't split cells."""
+    row = INLINE_CODE_RE.sub("code", row.strip()).replace("\\|", "")
+    return len(row.strip("|").split("|"))
+
+
+def table_problems(md: Path) -> list[str]:
+    """Rows whose cell count differs from their table's header row (GitHub renders those tables broken)."""
+    problems, expected, in_fence = [], None, False
+    for n, line in enumerate(md.read_text(encoding="utf-8").splitlines(), 1):
+        if FENCE_RE.match(line):
+            in_fence = not in_fence
+        if in_fence or not line.startswith("|"):
+            expected = None
+            continue
+        cells = table_cells(line)
+        if expected is None:
+            expected = cells
+        elif cells != expected:
+            problems.append(f"{n}: table row has {cells} cells, its header has {expected}")
+    return problems
 
 
 def scan(md: Path) -> tuple[list[tuple[int, str]], set[str]]:
@@ -71,6 +95,7 @@ def check(root: Path) -> list[str]:
     parsed = {p.resolve(): scan(p) for p in files}
     problems = []
     for md in files:
+        problems += [f"{md.relative_to(root).as_posix()}:{p}" for p in table_problems(md)]
         for n, target in parsed[md.resolve()][0]:
             where = f"{md.relative_to(root).as_posix()}:{n}"
             if re.match(r"^(https?:|mailto:)", target, re.IGNORECASE):
