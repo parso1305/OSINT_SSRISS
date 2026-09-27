@@ -11,6 +11,9 @@ fetch listing (robots.txt, delay, timeout, TLS verified) -> adapter.parse_listin
   -> assemble shared-schema record -> validate -> store (one transaction; new / existing / changed)
 ```
 
+**Results:** [`RESULTS.md`](RESULTS.md) has the benchmark (every checklist item → status → evidence), the fresh-clone
+test and coverage numbers, and the known limitations.
+
 ## Setup
 
 Python 3.13 on Windows (the code is plain Python and also runs elsewhere).

@@ -1,0 +1,4 @@
+# Live test, 2026-09-27T06:55:08Z, commit dc039db: real HSS server, TLS verified via ca_bundle
+$ LIVE_TESTS=1 python -m pytest tests/test_enrichment.py::test_live_mistyped_url_is_a_real_404 -v
+tests/test_enrichment.py::test_live_mistyped_url_is_a_real_404 PASSED    [100%]
+============================== 1 passed in 0.77s ==============================

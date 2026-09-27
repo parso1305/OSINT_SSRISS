@@ -1,0 +1,49 @@
+# Fresh-clone verification: 2026-09-27T06:52:28Z, commit dc039db, clone path C:\tmp\wm
+# git clone <repo> C:\tmp\wm; cd Assignment_week_2\web-monitor; python -m venv venv; venv\Scripts\python -m pip install -r requirements.txt
+# Python 3.13.3; pip freeze: beautifulsoup4==4.15.0 certifi==2026.7.22 charset-normalizer==3.5.1 colorama==0.4.6 coverage==7.16.1 idna==3.20 iniconfig==2.3.0 packaging==26.3 pluggy==1.6.0 Pygments==2.21.0 pytest==9.1.1 pytest-cov==7.1.0 requests==2.34.2 soupsieve==2.10 typing_extensions==4.16.0 urllib3==2.8.0 
+
+$ python -m pytest --cov=src --cov=sources --cov-report=term
+============================= test session starts =============================
+platform win32 -- Python 3.13.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\tmp\wm\Assignment_week_2\web-monitor
+configfile: pytest.ini
+testpaths: tests
+plugins: cov-7.1.0
+collected 134 items
+
+tests\test_adapter_iit_bombay.py ...........                             [  8%]
+tests\test_architecture.py .......                                       [ 13%]
+tests\test_audit_regressions.py ..........                               [ 20%]
+tests\test_canonicalization.py .........                                 [ 27%]
+tests\test_docs_links.py ...                                             [ 29%]
+tests\test_enrichment.py .....s                                          [ 34%]
+tests\test_generic_source.py ..                                          [ 35%]
+tests\test_iit_bombay.py ........                                        [ 41%]
+tests\test_pagination.py ..........                                      [ 49%]
+tests\test_runner.py ......................                              [ 65%]
+tests\test_scheduler.py .................                                [ 78%]
+tests\test_tls.py ......                                                 [ 82%]
+tests\test_url_resolution.py .......................                     [100%]
+
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.13.3-final-0 _______________
+
+Name                           Stmts   Miss  Cover
+--------------------------------------------------
+sources\__init__.py                0      0   100%
+sources\iit_bombay.py            117      4    97%
+sources\iit_bombay_legacy.py      67      2    97%
+src\__init__.py                    2      0   100%
+src\config.py                     72      8    89%
+src\enrich.py                     46      0   100%
+src\fetcher.py                   101      3    97%
+src\logging_config.py             66      4    94%
+src\pagination.py                 83      3    96%
+src\runner.py                     91     15    84%
+src\scheduler.py                 196     30    85%
+src\schema.py                    139     21    85%
+src\storage.py                   204      7    97%
+src\urls.py                       45      3    93%
+--------------------------------------------------
+TOTAL                           1229    100    92%
+======================= 133 passed, 1 skipped in 44.50s =======================

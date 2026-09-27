@@ -1,0 +1,4 @@
+# Fresh clone C:\tmp\wm, commit dc039db, 2026-09-27T06:54:19Z
+$ python scripts/check_links.py
+checked 18 Markdown files under wm/: 0 problem(s)
+exit code: 0
