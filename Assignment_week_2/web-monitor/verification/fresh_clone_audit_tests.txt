@@ -1,6 +1,6 @@
-# Fresh clone C:\tmp\wm, commit 63da8f3, 2026-09-27T07:05:51Z
+# Fresh clone C:\tmp\wm, commit ac8f022, 2026-09-27T07:10:34Z
 $ python -m pytest assignments/week2_audit/tests -rx
 XFAIL assignments/week2_audit/tests/test_extra_edges.py::test_x2_two_sources_listing_the_same_item - KNOWN LIMITATION (audit M5): item_url alone is the records key, so two sources listing one URL overwrite each other; see FIXES.md
 XFAIL assignments/week2_audit/tests/test_pipeline_behaviour.py::test_08_html_structure_changed[detail_speaker_field_renamed] - KNOWN LIMITATION (audit m11): a renamed detail field silently yields None, no warning; see FIXES.md
 XFAIL assignments/week2_audit/tests/test_pipeline_behaviour.py::test_12_failed_refetch_is_not_a_change[listing_disagrees_with_detail] - KNOWN LIMITATION (audit m2): on a failed detail fetch a differing listing value overwrites the stored detail value; see FIXES.md
-43 passed, 3 xfailed in 55.58s
+43 passed, 3 xfailed in 56.54s
