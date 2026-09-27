@@ -239,3 +239,12 @@ def test_fetcher_waits_for_robots_crawl_delay():
         start = time.monotonic()
         fetcher.get(site.listing_url + "?page=1")
         assert time.monotonic() - start >= 0.9
+
+
+@pytest.mark.parametrize("bad", ["http://", "www.hss.iitb.ac.in/events", "/events", "ftp://x.org/a", "", "https:///path"])
+def test_config_rejects_listing_url_that_is_not_absolute_http(tmp_path, bad):
+    path = tmp_path / "sources.json"
+    path.write_text(json.dumps({"sources": [{"source_id": "bad_source", "institution": "X", "adapter": "a",
+                                             "listing_url": bad}]}))
+    with pytest.raises(ValueError, match=r"bad_source: listing_url must be an absolute http\(s\) URL"):
+        load_source_configs(path)

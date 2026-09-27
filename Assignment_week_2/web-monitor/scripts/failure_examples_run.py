@@ -16,6 +16,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 import dataclasses
 import io
+import json
 import logging
 import re
 import socket
@@ -63,6 +64,20 @@ def listing_html() -> str:
     return (FIXTURES / "listing_2026-09-26.html").read_text(encoding="utf-8")
 
 
+def invalid_listing_url() -> str:
+    """The config loader rejects the entry before any run starts; the error is what the operator sees."""
+    entry = dict(json.loads((PROJECT_ROOT / "config" / "sources.json").read_text(encoding="utf-8"))["sources"][0],
+                 listing_url="http://")
+    path = Path(tempfile.mkdtemp()) / "sources.json"
+    path.write_text(json.dumps({"sources": [entry]}), encoding="utf-8")
+    try:
+        load_source_configs(path)
+    except ValueError as e:
+        command = "$ python -m src.scheduler --once --config sources.json   # entry with listing_url=http://"
+        return "\n".join([command, f"ValueError: {e}"])
+    raise AssertionError("an invalid listing_url was accepted")
+
+
 def closed_port() -> int:
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0))
@@ -76,8 +91,7 @@ def main() -> None:
         cases.append(("Baseline: successful run", None, capture(
             lambda log: run_source(config(site.listing_url), db_path=db(), logger=log))))
 
-    cases.append(("Case 1: Invalid listing URL", "invalid_url", capture(
-        lambda log: run_source(config("http://"), db_path=db(), logger=log))))
+    cases.append(("Case 1: Invalid listing URL", "invalid_url", invalid_listing_url()))
 
     port = closed_port()
     cases.append(("Case 2: Connection failure", "connection", capture(
@@ -119,11 +133,10 @@ def main() -> None:
 
 NOTES = {
     "invalid_url": (
-        "`parse` (reported)", "`ERROR`, run aborts", "`EmptyListingError`",
-        "`listing_url` is not a usable http(s) URL, so `resolve_item_url` returns `\"\"` and **no request is made**. "
-        "The run fails, which is correct. **The message is misleading**, though: it says \"HTTP 200 … parsed 0 items\" "
-        "for a URL that was never fetched. Suggested fix (not applied: outside the agreed audit-fix list): reject "
-        "such a `listing_url` when the config is loaded."),
+        "config load (before any run)", "error, the scheduler cycle does not start", "`ValueError`",
+        "`listing_url` is not an absolute http(s) URL. `SourceConfig` rejects it when `config/sources.json` is loaded, "
+        "naming the `source_id`, so no request is made and nothing is stored. (Until 2026-09-27 such a URL got as far "
+        "as the runner and failed with a misleading \"HTTP 200 … parsed 0 items\" message.)"),
     "connection": (
         "`fetch`", "`ERROR`, run aborts", "`ConnectionError` (FETCH_ERROR), `FetchError` (FAILURE)",
         "Nothing listens on the port. The first request is robots.txt; RFC 9309 treats an unreachable robots.txt "

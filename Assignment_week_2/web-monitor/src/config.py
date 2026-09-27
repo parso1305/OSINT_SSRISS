@@ -10,6 +10,7 @@ from dataclasses import dataclass, fields
 from pathlib import Path
 from types import ModuleType
 from typing import Any, Optional, Union
+from urllib.parse import urlsplit
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CONFIG_PATH = PROJECT_ROOT / "config" / "sources.json"
@@ -42,6 +43,9 @@ class SourceConfig:
                                               # None = default trust store. Verification is never disabled.
 
     def __post_init__(self) -> None:
+        parts = urlsplit(self.listing_url.strip()) if isinstance(self.listing_url, str) else None
+        if not parts or parts.scheme.lower() not in ("http", "https") or not parts.hostname:
+            raise ValueError(f"{self.source_id}: listing_url must be an absolute http(s) URL, got {self.listing_url!r}")
         if self.ca_bundle:
             path = Path(self.ca_bundle)
             path = path if path.is_absolute() else PROJECT_ROOT / path
