@@ -1,5 +1,5 @@
-lock content: {"pid": 16352, "host": "HP", "started_at": "2026-09-26 06:00"}
+lock content: {"pid": 23944, "host": "HP", "started_at": "2026-09-26 06:00"}
 crashed: None
-result: [{'run_id': '865a60b1693b441fa5ccad13f3bbae10', 'source_id': 'iit_bombay_hss_seminars', 'status': 'skipped'}]
+result: [{'run_id': '9c12bec32786454089d349535c601e85', 'source_id': 'iit_bombay_hss_seminars', 'status': 'skipped'}]
 runs: [('skipped', 'already_running')]
-2026-09-27 12:16:38 [INFO] logger=web_monitor RUN_SKIPPED source=iit_bombay_hss_seminars reason=already_running holder=pid:16352@2026-09-26 06:00
+2026-09-27 12:35:05 [INFO] logger=web_monitor RUN_SKIPPED source=iit_bombay_hss_seminars reason=already_running holder=pid:23944@2026-09-26 06:00

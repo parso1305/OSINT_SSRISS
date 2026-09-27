@@ -13,13 +13,46 @@ This document provides a technical structural analysis of three distinct public 
 
 ---
 
-## Surface Comparison Matrix
+## Surface comparison
 
-| Surface | Listing URL | Record type | Listing→detail? | Pagination? | Archive? | Listing fields | Detail-only fields | HTML/PDF/other | Suitable for template? | Why? |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **EE Department Announcements & Events** | `https://www.ee.iitb.ac.in/info/news/` | Seminars, Admissions, Workshops & Department News | Yes (links to `/info/news/<slug>/` via `.ann-action--main`) | Dynamic filtering by category (`All`, `Events`, `Admissions`, etc.) and temporal scope (`Upcoming`, `Past`) | Yes (`#yearSelect` dropdown and interactive monthly calendar widget) | Date (`Sep 23, 2026`), Category pill (`.ann-chip`), Title, Teaser summary, External link button (`.ann-action--link`) | Full abstract body, Speaker name, Speaker affiliation & bio, Exact venue (`EEG-301, GG Building`), Start time (`5:00 PM`), Breadcrumb trail (`.annd-crumb`) | HTML | Yes | Built with Astro + Tailwind CSS. Uses stable, semantic CSS class names (`.ann-ticker-item`, `.ann-chip`, `.ann-action`), server-rendered static HTML, clean slug-based URL hierarchy, and predictable two-tier listing→detail split. |
-| **HSS Department Events** | `https://www.hss.iitb.ac.in/events` | International Conferences, Symposia, and Academic Lectures | Yes (links to `/events/<category-slug>/<event-slug>`) | On `/events/seminars-and-talks`: yes, Drupal pager with `<a rel="next">` (`live_page_1.html:739`). On `/events` (1 upcoming item on 2026-09-26): no pager rendered | Yes (Archive navigation links by academic year) | Event Category (`.event-category span`: `International Conference / Symposium`), Title (`.event-name a`), Event date / Time / Location (`.event-room-details li`, identified by `i.icon-calendar` / `icon-time` / `icon-marker`: `11th Nov 2026`, `09:00 AM`, `JALVIHAR CONFERENCE HALL`), Poster thumbnail image | Comprehensive event agenda, Speaker bios, Organizing committee remarks, Registration links, Breadcrumbs (`Home -> Events`) | HTML | Yes | Built on Drupal 9/10 with a custom Bootstrap 5 theme. Cards are `.event-card-wrapper` inside a Views block (`.view-events-page` on `/events`, `.view-seminars-and-talks .view-content` on seminars-and-talks), server-rendered, with consistent `article.node--type-events` detail nodes. |
-| **HSS Department News & Announcements** *(Awkward)* | `https://www.hss.iitb.ac.in/news` | Mixed Notices (Ph.D. Shortlists, Convocation Invites, Orientation Notices) | Yes (Two-step traversal: Listing card → Detail node page → Embedded PDF link) | Yes (Drupal view pagination controls) | Yes (Archive menu link) | Title, Publication date (`13th August 2026`), Card thumbnail image | Hosted PDF attachment URL (`/sites/default/files/...pdf`), Formatted publication date (`2026-05-12`), Breadcrumbs | Mixed (HTML detail node serving as a metadata wrapper around attached PDF documents) | No | Heterogeneous payload structure. Unlike standard article feeds, administrative notices and shortlist calls contain zero HTML body paragraphs; the detail page merely houses a direct link to an uploaded `.pdf` file. A standard HTML text-extraction template will yield empty content without dedicated branching logic for binary document downloads. |
+### EE Department Announcements & Events
+
+- **Listing URL**: `https://www.ee.iitb.ac.in/info/news/`
+- **Record type**: Seminars, Admissions, Workshops & Department News
+- **Listing→detail?**: Yes (links to `/info/news/<slug>/` via `.ann-action--main`)
+- **Pagination?**: Dynamic filtering by category (`All`, `Events`, `Admissions`, etc.) and temporal scope (`Upcoming`, `Past`)
+- **Archive?**: Yes (`#yearSelect` dropdown and interactive monthly calendar widget)
+- **Listing fields**: Date (`Sep 23, 2026`), Category pill (`.ann-chip`), Title, Teaser summary, External link button (`.ann-action--link`)
+- **Detail-only fields**: Full abstract body, Speaker name, Speaker affiliation & bio, Exact venue (`EEG-301, GG Building`), Start time (`5:00 PM`), Breadcrumb trail (`.annd-crumb`)
+- **HTML/PDF/other**: HTML
+- **Suitable for template?**: Yes
+- **Why?**: Built with Astro + Tailwind CSS. Uses stable, semantic CSS class names (`.ann-ticker-item`, `.ann-chip`, `.ann-action`), server-rendered static HTML, clean slug-based URL hierarchy, and predictable two-tier listing→detail split.
+
+### HSS Department Events
+
+- **Listing URL**: `https://www.hss.iitb.ac.in/events`
+- **Record type**: International Conferences, Symposia, and Academic Lectures
+- **Listing→detail?**: Yes (links to `/events/<category-slug>/<event-slug>`)
+- **Pagination?**: On `/events/seminars-and-talks`: yes, Drupal pager with `<a rel="next">` (`live_page_1.html:739`). On `/events` (1 upcoming item on 2026-09-26): no pager rendered
+- **Archive?**: Yes (Archive navigation links by academic year)
+- **Listing fields**: Event Category (`.event-category span`: `International Conference / Symposium`), Title (`.event-name a`), Event date / Time / Location (`.event-room-details li`, identified by `i.icon-calendar` / `icon-time` / `icon-marker`: `11th Nov 2026`, `09:00 AM`, `JALVIHAR CONFERENCE HALL`), Poster thumbnail image
+- **Detail-only fields**: Comprehensive event agenda, Speaker bios, Organizing committee remarks, Registration links, Breadcrumbs (`Home -> Events`)
+- **HTML/PDF/other**: HTML
+- **Suitable for template?**: Yes
+- **Why?**: Built on Drupal 9/10 with a custom Bootstrap 5 theme. Cards are `.event-card-wrapper` inside a Views block (`.view-events-page` on `/events`, `.view-seminars-and-talks .view-content` on seminars-and-talks), server-rendered, with consistent `article.node--type-events` detail nodes.
+
+### HSS Department News & Announcements *(Awkward)*
+
+- **Listing URL**: `https://www.hss.iitb.ac.in/news`
+- **Record type**: Mixed Notices (Ph.D. Shortlists, Convocation Invites, Orientation Notices)
+- **Listing→detail?**: Yes (Two-step traversal: Listing card → Detail node page → Embedded PDF link)
+- **Pagination?**: Yes (Drupal view pagination controls)
+- **Archive?**: Yes (Archive menu link)
+- **Listing fields**: Title, Publication date (`13th August 2026`), Card thumbnail image
+- **Detail-only fields**: Hosted PDF attachment URL (`/sites/default/files/...pdf`), Formatted publication date (`2026-05-12`), Breadcrumbs
+- **HTML/PDF/other**: Mixed (HTML detail node serving as a metadata wrapper around attached PDF documents)
+- **Suitable for template?**: No
+- **Why?**: Heterogeneous payload structure. Unlike standard article feeds, administrative notices and shortlist calls contain zero HTML body paragraphs; the detail page merely houses a direct link to an uploaded `.pdf` file. A standard HTML text-extraction template will yield empty content without dedicated branching logic for binary document downloads.
 
 ---
 

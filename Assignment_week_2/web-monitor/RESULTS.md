@@ -19,7 +19,7 @@ that proves it. Back to the [project README](README.md).
 ## Benchmark: 58 items → 56 PASS · 1 DEFERRED · 1 NOT STARTED
 
 The checklist is the one used by the [Week 2 audit](assignments/week2_audit/AUDIT_REPORT.md#2-benchmark-table). At
-audit time it stood at 49 PASS · 4 PARTIAL · 2 FAIL · 2 DEFERRED · 1 NOT STARTED. What changed and why is in
+audit time 49 items passed; 4 were partial, 2 failing, 2 deferred and 1 not started. What changed and why is in
 [`FIXES.md`](assignments/week2_audit/FIXES.md).
 
 ### Tests, logging, recon, URLs and pagination (S0–S4)

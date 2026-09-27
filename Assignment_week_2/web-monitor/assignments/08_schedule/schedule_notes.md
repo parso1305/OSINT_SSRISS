@@ -100,7 +100,7 @@ since the last non-skipped run. Config is re-read every cycle.
 ## 3. Demo outputs (local_fixture, `data/local_fixture_demo.db`)
 
 ### 3.1 Scheduled runs: loop mode, 5 cycles, 20 s tick, interval 1 min (`demo1_2_loop.log`)
-```
+```text
 12:28:06 SCHEDULE source=local_fixture interval_minutes=1 last_started_at=never next_due_at=now due=true
 12:28:06 RUN_START run_id=de22faeb… source=local_fixture
 12:28:07 STORE new=20 existing=0 changed=0
@@ -118,7 +118,7 @@ since the last non-skipped run. Config is re-read every cycle.
 `records` has 20 rows after run 1 and still 20 after run 2 (`new=0 existing=20`). Both runs rows are `success`.
 
 ### 3.3 Overlap: two processes, server slowed to 1 s per request (`demo3_overlap.log`)
-```
+```text
 --- lock file while A runs:
 {"pid": 1812, "host": "HP", "started_at": "2026-09-26T06:59:44Z", "source_id": "local_fixture"}
 A 12:29:44 RUN_START run_id=5c6eec9a… source=local_fixture
@@ -132,7 +132,7 @@ before either has inserted its row.
 
 ### 3.4 A failed run doesn't corrupt data
 The checksum is sha256 over every column of every `records` row, ordered, including `last_seen_at`.
-```
+```text
 (a) listing connection dropped mid-response (fixture_site --drop)
 BEFORE: records=20 sha256=58d05819354f81d7 last_seen_at=[06:59:51Z .. 06:59:51Z]
 FETCH_ERROR … ChunkedEncodingError: Connection broken: IncompleteRead(23000 bytes read, 23000 more expected)
@@ -152,7 +152,7 @@ In (b), the 8 earlier UPDATEs had rewritten `last_seen_at`. The identical checks
 rolled back together.
 
 ### 3.5 Schedule change without touching the parser
-```
+```text
 cycle, interval_minutes=1:  SCHEDULE … interval_minutes=1 last_started_at=07:00:35Z next_due_at=07:01:35Z due=false
 edit config/sources.json:   local_fixture "interval_minutes": 1 -> 3
 cycle, same command:        SCHEDULE … interval_minutes=3 last_started_at=07:00:35Z next_due_at=07:03:35Z due=false

@@ -1,7 +1,7 @@
 detail_status={'ok': 9, 'failed': 1, 'not_attempted': 10} counts={'new': 20, 'existing': 0, 'changed': 0}
 stored record for the failing item:
 {
- "item_url": "http://127.0.0.1:58867/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+ "item_url": "http://127.0.0.1:60007/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
  "source_id": "iit_bombay_hss_seminars",
  "institution": "IIT Bombay",
  "content_type": "event",
@@ -15,24 +15,24 @@ stored record for the failing item:
  "event_type": "Seminar / Talk",
  "organizer": "Department of Humanities and Social Sciences",
  "description": null,
- "listing_fetched_at": "2026-09-27T06:46:03Z",
- "detail_fetched_at": "2026-09-27T06:46:03Z",
+ "listing_fetched_at": "2026-09-27T07:04:29Z",
+ "detail_fetched_at": "2026-09-27T07:04:29Z",
  "detail_fetch_status": "failed",
  "detail_http_status": 404,
- "detail_error": "FetchError: HTTP 404 Not Found for url: http://127.0.0.1:58867/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
+ "detail_error": "FetchError: HTTP 404 Not Found for url: http://127.0.0.1:60007/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
  "extras": {
   "date_raw": "17th Sep 2025",
   "discovered_on_page": 1,
-  "discovered_on_url": "http://127.0.0.1:58867/events/seminars-and-talks",
+  "discovered_on_url": "http://127.0.0.1:60007/events/seminars-and-talks",
   "raw_href": "/events/seminar-talk/tracing-success-indian-democracy-success-nation-building",
   "raw_text": "17 Sep 2025 Seminar / Talk Tracing the Success of Indian Democracy to Success in Nation-Building 17th Sep 2025 15:00 PM Online Seminar",
   "time_raw": "15:00 PM"
  },
  "content_hash": "08e9dca3fdab762e92a7142d57c53b0f3ec2bed410b8c32433633f9f240fa939",
- "first_seen_at": "2026-09-27T06:46:04Z",
- "last_seen_at": "2026-09-27T06:46:04Z"
+ "first_seen_at": "2026-09-27T07:04:29Z",
+ "last_seen_at": "2026-09-27T07:04:29Z"
 }
 --- relevant log lines ---
-2026-09-27 12:16:03 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:58867/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=404 duration_ms=22
-2026-09-27 12:16:03 [WARNING] logger=web_monitor.detail DETAIL_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:58867/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=404 error_type=FetchError message="HTTP 404 Not Found for url: http://127.0.0.1:58867/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"
-2026-09-27 12:16:04 [INFO] logger=web_monitor ENRICH ok=9 failed=1 not_attempted=10
+2026-09-27 12:34:29 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:60007/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=404 duration_ms=3
+2026-09-27 12:34:29 [WARNING] logger=web_monitor.detail DETAIL_FAILURE source_id=iit_bombay_hss_seminars item_url=http://127.0.0.1:60007/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=404 error_type=FetchError message="HTTP 404 Not Found for url: http://127.0.0.1:60007/events/seminar-talk/tracing-success-indian-democracy-success-nation-building"
+2026-09-27 12:34:29 [INFO] logger=web_monitor ENRICH ok=9 failed=1 not_attempted=10

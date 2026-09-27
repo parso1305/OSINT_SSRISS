@@ -24,7 +24,7 @@ GALLERY
 ├── Container → .homepage-gallery
 └── Images → [find]
 ```
-# selector can be used 
+## Selectors that can be used 
 ```text
 Main content -> 	        #content
 Article -> 	                article.node

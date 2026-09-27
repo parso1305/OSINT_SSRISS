@@ -1,6 +1,6 @@
 lock content: (removed)
 crashed: None
-result: [{'run_id': '4a89d72e339a4b4dbf69ab889b898884', 'source_id': 'iit_bombay_hss_seminars', 'status': 'success', 'counts': {'new': 20, 'existing': 0, 'changed': 0}}]
+result: [{'run_id': 'df691eecaf6444269a586d7dbc3f2aab', 'source_id': 'iit_bombay_hss_seminars', 'status': 'success', 'counts': {'new': 20, 'existing': 0, 'changed': 0}}]
 runs: [('success', None)]
-2026-09-27 12:16:36 [WARNING] logger=web_monitor STALE_LOCK source=iit_bombay_hss_seminars holder=pid:16352@2026-09-27T03:46:36Z reason=max_age_exceeded(age_s=10800,max_s=3600) action=removed
-2026-09-27 12:16:36 [INFO] logger=web_monitor RUN_END run_id=4a89d72e339a4b4dbf69ab889b898884 source=iit_bombay_hss_seminars status=success duration_ms=410 new=20 existing=0 changed=0 failed=0 error=""
+2026-09-27 12:35:03 [WARNING] logger=web_monitor STALE_LOCK source=iit_bombay_hss_seminars holder=pid:23944@2026-09-27T04:05:03Z reason=max_age_exceeded(age_s=10800,max_s=3600) action=removed
+2026-09-27 12:35:04 [INFO] logger=web_monitor RUN_END run_id=df691eecaf6444269a586d7dbc3f2aab source=iit_bombay_hss_seminars status=success duration_ms=488 new=20 existing=0 changed=0 failed=0 error=""

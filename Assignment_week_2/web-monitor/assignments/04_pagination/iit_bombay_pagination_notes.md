@@ -60,7 +60,7 @@ markup changes, pagination stops after page 1 with `stop_reason=no_next_page` (b
 
 The extracted relative `href` (e.g., `?page=1`) is resolved against the current page URL using `resolve_item_url()` (`src/urls.py`):
 
-```
+```text
 resolve_item_url("?page=1", "https://www.hss.iitb.ac.in/events/seminars-and-talks")
   -> "https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1"
 ```

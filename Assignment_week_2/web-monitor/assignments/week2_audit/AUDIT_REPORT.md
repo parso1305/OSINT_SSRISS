@@ -2,10 +2,10 @@
 
 > **Moved 2026-09-27.** This audit now lives in `assignments/week2_audit/` (it was `audit_week2/`). Paths below
 > that start with `audit_week2/` refer to this folder. The report text and `logs/evidence/` are unchanged (they
-> describe the code as audited on 2026-09-26). What was fixed since, by which commit and which test: [`FIXES.md`](FIXES.md).
+> describe the code as audited on 2026-09-26); only local absolute paths were shortened to `<repo>\`, and code blocks got language tags. What was fixed since, by which commit and which test: [`FIXES.md`](FIXES.md).
 
 Audit date: 2026-09-26 (UTC 13:30–14:00). Auditor: Claude Code, working in `audit_week2/` only.
-Project root for every relative path below: `C:\Project\OSINT_SSRISS\Assignment_week_2\web-monitor\`.
+Project root for every relative path below: `Assignment_week_2/web-monitor/` of this repository.
 Nothing under `src/`, `sources/`, `config/`, `tests/` or `data/` was modified. The real DBs have the same sha256 before
 and after the audit (`audit_week2/tmp/real_db_sha256_{before,after}.txt`). No file in `src/ sources/ config/ tests/ scripts/
 data/ fixtures/ assignments/` is newer than the first audit file. The one side effect was 13 `.pyc` bytecode caches that
@@ -14,7 +14,7 @@ the audit's early import checks wrote into `tests/__pycache__` and `scripts/__py
 
 **How to reproduce everything in this report** (from the project root):
 
-```
+```bash
 python -m venv audit_week2/venv && audit_week2/venv/Scripts/python -m pip install -r audit_week2/requirements_inferred.txt pytest-cov
 audit_week2/venv/Scripts/python -m pytest tests -v -p no:cacheprovider                  # Part 5
 audit_week2/venv/Scripts/python -m pytest audit_week2/tests -v -p no:cacheprovider      # Part 6 (+2 extra edges)
@@ -39,7 +39,7 @@ Top 5 problems:
 
 ## 2. Benchmark table
 
-Curriculum source: **no Week 2 curriculum file exists in this repo or anywhere under `C:\Project`**. I searched for curriculum/README/assignment definitions. `C:\Project\Web_Scraping` holds only two week-1 scripts. The checklist below is therefore the one given in the audit brief, plus what each assignment folder's own docs state. No "Section 2" artefact exists (`assignments/` jumps 01 → 03), so it is not scored.
+Curriculum source: **no Week 2 curriculum file exists in this repo or anywhere else on the auditor's machine**. I searched for curriculum/README/assignment definitions. `Web_Scraping` (a folder next to this repository on the auditor's machine) holds only two week-1 scripts. The checklist below is therefore the one given in the audit brief, plus what each assignment folder's own docs state. No "Section 2" artefact exists (`assignments/` jumps 01 → 03), so it is not scored.
 
 | # | Section / item | Status | Evidence |
 |---|---|---|---|
@@ -117,7 +117,7 @@ Curriculum source: **no Week 2 curriculum file exists in this repo or anywhere u
 
 ### 3.1 Git
 
-```
+```text
 $ git branch --show-current            -> master   (up to date with origin/master)
 $ git log --oneline -30
 5e5d290 Merge branch 'master' of https://github.com/parso1305/OSINT_SSRISS
@@ -138,7 +138,7 @@ e0e187c Enhance DOM_map.md with formatted code blocks
 
 ### 3.2 Directory tree (venv, `__pycache__`, `.git`, caches excluded)
 
-```
+```text
 OSINT_SSRISS/
 ├── Assignment/                        Week 1 (HTTP, recon, DOM, fetch, normalization): not audited
 │   └── 02_recon/IITB_recon.md         Week 1 recon, cited by schedule_notes.md
@@ -191,7 +191,7 @@ OSINT_SSRISS/
 
 **There is no `requirements.txt` (or pyproject/setup.cfg) anywhere in the repo.** The author's own notes acknowledge it (`iit_bombay_adapter_notes.md` §0: "no requirements file declares it"). Third-party imports across `src/ sources/ scripts/ tests/` are only `requests`, `urllib3` (a requests dependency), `bs4` and `pytest`. I wrote `audit_week2/requirements_inferred.txt` (requests, beautifulsoup4, pytest; unpinned) and:
 
-```
+```bash
 python -m venv audit_week2/venv && pip install -r requirements_inferred.txt   -> OK
 pip freeze: beautifulsoup4==4.15.0 requests==2.34.2 urllib3==2.8.0 pytest==9.1.1 soupsieve==2.10 certifi==2026.7.22 ...
 pytest tests -v   -> 97 passed, 1 skipped in 21.87s
@@ -394,7 +394,7 @@ Generated with `ast` from the source (`audit_week2/logs/api_inventory.md`). "(no
 
 ### 4.3 Data flow of one scheduled run (exact functions)
 
-```
+```text
 python -m src.scheduler --once
  └ scheduler.main → scheduler.run_once(config_path, db, lock_dir, source_ids, force)
     ├ config.load_source_configs(path)                       JSON → {source_id: SourceConfig}; unknown keys rejected
@@ -564,7 +564,7 @@ Run rows are written on separate connections outside this transaction, so a roll
 
 Format (`logging_config.py:17-19`): `YYYY-MM-DD HH:MM:SS [LEVEL] logger=<name> EVENT key=value …`. The timestamp is **local time with no zone marker** (here IST); every DB timestamp is UTC `Z` (problem m9). Examples are real lines from the audit runs:
 
-```
+```text
 START           2026-09-26 19:24:40 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
 FETCH           2026-09-26 19:24:40 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminars-and-talks status=200 duration_ms=2
 FETCH_ERROR     2026-09-26 19:24:48 [WARNING] logger=web_monitor.fetcher FETCH_ERROR url=…/tracing-success-… status=none error_type=FetchError message="ReadTimeout: … (read timeout=1.0) …"
@@ -595,7 +595,7 @@ Inconsistencies: runner lines use `source_id=`, scheduler lines use `source=`; "
 
 Raw output in `audit_week2/logs/separation_greps.txt`.
 
-```
+```text
 $ grep -nE "import requests|sqlite3|basicConfig|addHandler|Session\(|open\(" sources/iit_bombay.py
 exit=1                                   ← no hits (expected none)
 
@@ -827,10 +827,10 @@ Fixtures saved once: `audit_week2/fixtures/me_iitb/listing.html` + 3 detail page
 
 **A.1 Existing suite in the fresh audit venv** (`audit_week2/logs/pytest_fresh_venv.txt`)
 
-```
+```text
 ============================= test session starts =============================
-platform win32 -- Python 3.13.3, pytest-9.1.1, pluggy-1.6.0 -- C:\Project\OSINT_SSRISS\Assignment_week_2\web-monitor\audit_week2\venv\Scripts\python.exe
-rootdir: C:\Project\OSINT_SSRISS\Assignment_week_2\web-monitor
+platform win32 -- Python 3.13.3, pytest-9.1.1, pluggy-1.6.0 -- <repo>\Assignment_week_2\web-monitor\audit_week2\venv\Scripts\python.exe
+rootdir: <repo>\Assignment_week_2\web-monitor
 collecting ... collected 98 items
 
 tests/test_adapter_iit_bombay.py::test_parse_listing_real_pages PASSED   [  1%]
@@ -937,7 +937,7 @@ tests/test_url_resolution.py::test_storage_dedups_ee_trailing_slash_variants PAS
 
 **A.2 Coverage table** (`audit_week2/logs/pytest_coverage.txt`; 97 passed, 1 skipped, 157 ResourceWarnings)
 
-```
+```text
 Name                           Stmts   Miss  Cover   Missing
 ------------------------------------------------------------
 sources\__init__.py                0      0   100%
@@ -961,7 +961,7 @@ TOTAL                           1122    131    88%
 
 **A.3 Audit behaviour tests** (`audit_week2/logs/pytest_audit_all.txt` holds the full output including captured logs)
 
-```
+```text
 audit_week2/tests/test_extra_edges.py::test_x1_failed_run_is_not_retried_until_next_interval FAILED
 audit_week2/tests/test_extra_edges.py::test_x2_two_sources_listing_the_same_item FAILED
 audit_week2/tests/test_pipeline_behaviour.py::test_01_full_pipeline_on_fixtures PASSED
@@ -1015,7 +1015,7 @@ audit_week2/tests/test_scheduler_behaviour.py::test_21_crawl_frequency_numbers P
 
 Assertion messages of the 8 failures:
 
-```
+```text
 E       AssertionError: a failed run should be retried on the next trigger, not after a full interval
 E       assert 0 == 1
 E       AssertionError: sources overwrite each other's rows
@@ -1035,7 +1035,7 @@ E       assert "ValueError: time data '2026-09-26 06:00' does not match format '
 
 ### Appendix B: full log of one fixture run (case 1: real config, real Fetcher, local HTTP server)
 
-```
+```text
 2026-09-26 19:24:40 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
 2026-09-26 19:24:40 [INFO] logger=web_monitor.fetcher FETCH url=http://127.0.0.1:61279/events/seminars-and-talks status=200 duration_ms=2
 2026-09-26 19:24:40 [INFO] logger=web_monitor Page 1 yielded 10 items
@@ -1064,7 +1064,7 @@ E       assert "ValueError: time data '2026-09-26 06:00' does not match format '
 
 Sources `iit_bombay_me_events`, `cmi_seminars` and `me_with_hss_adapter` (config-only reuse check), run by the real `src.scheduler.run_once` against the saved fixtures.
 
-```
+```text
 2026-09-26 19:23:34 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_me_events interval_minutes=1440 last_started_at=never next_due_at=now due=true
 2026-09-26 19:23:34 [INFO] logger=web_monitor RUN_START run_id=0daff1e1e1c2498fab0031ca2e20a52f source=iit_bombay_me_events
 2026-09-26 19:23:34 [INFO] logger=web_monitor START source_id=iit_bombay_me_events

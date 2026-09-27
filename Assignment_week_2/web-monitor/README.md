@@ -72,7 +72,7 @@ fetch listing (robots.txt, delay, timeout, TLS verified) -> adapter.parse_listin
 Python 3.13 on Windows (the code is plain Python and also runs elsewhere).
 
 ```powershell
-cd C:\Project\OSINT_SSRISS\Assignment_week_2\web-monitor
+cd OSINT_SSRISS\Assignment_week_2\web-monitor          # inside your clone
 python -m venv venv
 venv\Scripts\python -m pip install -r requirements.txt
 ```
@@ -156,8 +156,9 @@ appends the output to `logs\scheduler.log`. Register it to fire **hourly**. The 
 was off or asleep, and retries a failed run at the next trigger.
 
 ```bat
+rem Run from the web-monitor folder in cmd.exe: %CD% expands to its full path when the task is created.
 schtasks /Create /TN "WebMonitor\ScheduledRun" /SC HOURLY /MO 1 /F ^
-  /TR "\"C:\Project\OSINT_SSRISS\Assignment_week_2\web-monitor\scripts\run_scheduler_once.bat\""
+  /TR "\"%CD%\scripts\run_scheduler_once.bat\""
 schtasks /Run   /TN "WebMonitor\ScheduledRun"           & rem run now to test
 schtasks /Query /TN "WebMonitor\ScheduledRun" /V /FO LIST
 ```

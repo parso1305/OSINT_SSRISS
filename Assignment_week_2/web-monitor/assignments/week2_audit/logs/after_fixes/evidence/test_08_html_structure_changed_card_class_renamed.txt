@@ -1,8 +1,8 @@
-scheduler result: {'run_id': 'f3bfe6600cc3480cb529dcf43595b37f', 'source_id': 'iit_bombay_hss_seminars', 'status': 'failed', 'error': 'EmptyListingError: Listing returned HTTP 200 but parsed 0 items: possible silent layout change (set allow_empty_listing to accept this)'}
+scheduler result: {'run_id': '60865764eadf40718889664b04af73b5', 'source_id': 'iit_bombay_hss_seminars', 'status': 'failed', 'error': 'EmptyListingError: Listing returned HTTP 200 but parsed 0 items: possible silent layout change (set allow_empty_listing to accept this)'}
 runs: [('failed', None, 0, 'EmptyListingError: Listing returned HTTP 200 but parsed 0 items: possible silent layout change (set allow_empty_listing to accept this)')]
 rows stored: 0
 speakers on ok-enriched rows: None
 --- WARNING/ERROR/summary lines ---
-2026-09-27 12:16:11 [INFO] logger=web_monitor PARSE records=0
-2026-09-27 12:16:11 [ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:58971/events/seminars-and-talks stage=parse error_type=EmptyListingError message="Listing returned HTTP 200 but parsed 0 items: possible silent layout change (set allow_empty_listing to accept this)"
-2026-09-27 12:16:11 [ERROR] logger=web_monitor RUN_END run_id=f3bfe6600cc3480cb529dcf43595b37f source=iit_bombay_hss_seminars status=failed duration_ms=70 new=0 existing=0 changed=0 failed=0 error="EmptyListingError: Listing returned HTTP 200 but parsed 0 items: possible silent layout change (set allow_empty_listing to accept this)"
+2026-09-27 12:34:38 [INFO] logger=web_monitor PARSE records=0
+2026-09-27 12:34:38 [ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:60111/events/seminars-and-talks stage=parse error_type=EmptyListingError message="Listing returned HTTP 200 but parsed 0 items: possible silent layout change (set allow_empty_listing to accept this)"
+2026-09-27 12:34:38 [ERROR] logger=web_monitor RUN_END run_id=60865764eadf40718889664b04af73b5 source=iit_bombay_hss_seminars status=failed duration_ms=56 new=0 existing=0 changed=0 failed=0 error="EmptyListingError: Listing returned HTTP 200 but parsed 0 items: possible silent layout change (set allow_empty_listing to accept this)"

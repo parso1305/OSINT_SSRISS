@@ -1,12 +1,12 @@
-records before: sha256=9139ffa1918e6e8f rows=20
-records after:  sha256=9139ffa1918e6e8f rows=20
-scheduler result: {'run_id': 'd60f30954cc84d229ef746f5da772e43', 'source_id': 'iit_bombay_hss_seminars', 'status': 'failed', 'error': "FetchError: ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=58955): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:58955/events/seminars-and-talks"}
-runs table: [('success', None), ('failed', "FetchError: ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=58955): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:58955/events/seminars-and-talks")]
+records before: sha256=427c41347984a864 rows=20
+records after:  sha256=427c41347984a864 rows=20
+scheduler result: {'run_id': '89bc4bf00b774855a1e4c5544132806c', 'source_id': 'iit_bombay_hss_seminars', 'status': 'failed', 'error': "FetchError: ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=60095): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:60095/events/seminars-and-talks"}
+runs table: [('success', None), ('failed', "FetchError: ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=60095): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:60095/events/seminars-and-talks")]
 --- log of the failing run ---
-2026-09-27 12:16:10 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-27T06:46:09Z last_status=success consecutive_failures=0 wait_minutes=1440 next_due_at=2026-09-28T06:46:09Z next_due_reason=forced due=true
-2026-09-27 12:16:10 [INFO] logger=web_monitor RUN_START run_id=d60f30954cc84d229ef746f5da772e43 source=iit_bombay_hss_seminars
-2026-09-27 12:16:10 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
-2026-09-27 12:16:11 [WARNING] logger=web_monitor.fetcher FETCH_ERROR url=http://127.0.0.1:58955/events/seminars-and-talks status=none error_type=ReadTimeout message="ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=58955): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:58955/events/seminars-and-talks"
-2026-09-27 12:16:11 [ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:58955/events/seminars-and-talks stage=fetch error_type=FetchError message="ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=58955): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:58955/events/seminars-and-talks"
-2026-09-27 12:16:11 [ERROR] logger=web_monitor RUN_END run_id=d60f30954cc84d229ef746f5da772e43 source=iit_bombay_hss_seminars status=failed duration_ms=1021 new=0 existing=0 changed=0 failed=0 error="FetchError: ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=58955): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:58955/events/seminars-and-talks"
+2026-09-27 12:34:36 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-27T07:04:35Z last_status=success consecutive_failures=0 wait_minutes=1440 next_due_at=2026-09-28T07:04:35Z next_due_reason=forced due=true
+2026-09-27 12:34:36 [INFO] logger=web_monitor RUN_START run_id=89bc4bf00b774855a1e4c5544132806c source=iit_bombay_hss_seminars
+2026-09-27 12:34:36 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
+2026-09-27 12:34:37 [WARNING] logger=web_monitor.fetcher FETCH_ERROR url=http://127.0.0.1:60095/events/seminars-and-talks status=none error_type=ReadTimeout message="ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=60095): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:60095/events/seminars-and-talks"
+2026-09-27 12:34:37 [ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url=http://127.0.0.1:60095/events/seminars-and-talks stage=fetch error_type=FetchError message="ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=60095): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:60095/events/seminars-and-talks"
+2026-09-27 12:34:37 [ERROR] logger=web_monitor RUN_END run_id=89bc4bf00b774855a1e4c5544132806c source=iit_bombay_hss_seminars status=failed duration_ms=1026 new=0 existing=0 changed=0 failed=0 error="FetchError: ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=60095): Read timed out. (read timeout=1.0) for url: http://127.0.0.1:60095/events/seminars-and-talks"
 

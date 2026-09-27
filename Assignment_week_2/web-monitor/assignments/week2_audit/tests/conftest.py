@@ -61,8 +61,8 @@ def log_stream():
 
 
 def open_problem(ref: str, why: str):
-    """An audit finding outside the 2026-09-27 fix list: still fails, and is expected to (strict: a fix shows up)."""
-    return pytest.mark.xfail(strict=True, reason=f"OPEN audit {ref}: {why} (not in the fix list; see FIXES.md)")
+    """A documented known limitation: still fails, and is expected to (strict=True, so a fix shows up as XPASS)."""
+    return pytest.mark.xfail(strict=True, reason=f"KNOWN LIMITATION (audit {ref}): {why}; see FIXES.md")
 
 
 def site_config(site, **overrides):
