@@ -1,0 +1,42 @@
+# Live demo, 2026-09-27T06:34:53Z: python -m src.scheduler --once --source iit_bombay_hss_seminars --force --config assignments/08_schedule/live_demo_config.json --db data/live_demo.db
+# config = real entry with detail_limit 3; TLS verified via ca_bundle certs/iitb_ca_bundle.pem
+## run 1
+2026-09-27 12:04:54 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=never last_status=none consecutive_failures=0 wait_minutes=1440 next_due_at=now next_due_reason=forced due=true
+2026-09-27 12:04:54 [INFO] logger=web_monitor RUN_START run_id=d1ecb33f6cfa4335b17644a6ba7c215e source=iit_bombay_hss_seminars
+2026-09-27 12:04:54 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
+2026-09-27 12:04:56 [INFO] logger=web_monitor.fetcher FETCH url=https://www.hss.iitb.ac.in/events/seminars-and-talks status=200 duration_ms=281
+2026-09-27 12:04:56 [INFO] logger=web_monitor Page 1 yielded 10 items
+2026-09-27 12:04:57 [INFO] logger=web_monitor.fetcher FETCH url=https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1 status=200 duration_ms=250
+2026-09-27 12:04:57 [INFO] logger=web_monitor Page 2 yielded 10 items
+2026-09-27 12:04:57 [INFO] logger=web_monitor PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+2026-09-27 12:04:57 [INFO] logger=web_monitor PARSE records=20
+2026-09-27 12:04:59 [INFO] logger=web_monitor.fetcher FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=212
+2026-09-27 12:05:00 [INFO] logger=web_monitor.fetcher FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=200
+2026-09-27 12:05:02 [INFO] logger=web_monitor.fetcher FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=222
+2026-09-27 12:05:02 [INFO] logger=web_monitor ENRICH ok=3 failed=0 not_attempted=17
+2026-09-27 12:05:02 [INFO] logger=web_monitor NORMALIZE records=20
+2026-09-27 12:05:02 [INFO] logger=web_monitor VALIDATE valid=20 invalid=0
+2026-09-27 12:05:02 [INFO] logger=web_monitor STORE new=20 existing=0 changed=0
+2026-09-27 12:05:02 [INFO] logger=web_monitor END source_id=iit_bombay_hss_seminars duration_ms=8012
+2026-09-27 12:05:02 [INFO] logger=web_monitor RUN_END run_id=d1ecb33f6cfa4335b17644a6ba7c215e source=iit_bombay_hss_seminars status=success duration_ms=8026 new=20 existing=0 changed=0 failed=0 error=""
+## run 1 exit code: 0
+## run 2
+2026-09-27 12:05:02 [INFO] logger=web_monitor SCHEDULE source=iit_bombay_hss_seminars interval_minutes=1440 last_started_at=2026-09-27T06:34:54Z last_status=success consecutive_failures=0 wait_minutes=1440 next_due_at=2026-09-28T06:34:54Z next_due_reason=forced due=true
+2026-09-27 12:05:02 [INFO] logger=web_monitor RUN_START run_id=5e7c4021c4b04df8b1fc820fe2e65c02 source=iit_bombay_hss_seminars
+2026-09-27 12:05:02 [INFO] logger=web_monitor START source_id=iit_bombay_hss_seminars
+2026-09-27 12:05:04 [INFO] logger=web_monitor.fetcher FETCH url=https://www.hss.iitb.ac.in/events/seminars-and-talks status=200 duration_ms=255
+2026-09-27 12:05:04 [INFO] logger=web_monitor Page 1 yielded 10 items
+2026-09-27 12:05:06 [INFO] logger=web_monitor.fetcher FETCH url=https://www.hss.iitb.ac.in/events/seminars-and-talks?page=1 status=200 duration_ms=277
+2026-09-27 12:05:06 [INFO] logger=web_monitor Page 2 yielded 10 items
+2026-09-27 12:05:06 [INFO] logger=web_monitor PAGINATE pages_crawled=2 stop_reason=max_pages_reached
+2026-09-27 12:05:06 [INFO] logger=web_monitor PARSE records=20
+2026-09-27 12:05:07 [INFO] logger=web_monitor.fetcher FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability status=200 duration_ms=321
+2026-09-27 12:05:09 [INFO] logger=web_monitor.fetcher FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/tracing-success-indian-democracy-success-nation-building status=200 duration_ms=224
+2026-09-27 12:05:10 [INFO] logger=web_monitor.fetcher FETCH url=https://www.hss.iitb.ac.in/events/seminar-talk/echoes-translation-audibility-and-relationality-indian-jewish-womens-songs-oup status=200 duration_ms=201
+2026-09-27 12:05:10 [INFO] logger=web_monitor ENRICH ok=3 failed=0 not_attempted=17
+2026-09-27 12:05:10 [INFO] logger=web_monitor NORMALIZE records=20
+2026-09-27 12:05:10 [INFO] logger=web_monitor VALIDATE valid=20 invalid=0
+2026-09-27 12:05:10 [INFO] logger=web_monitor STORE new=0 existing=20 changed=0
+2026-09-27 12:05:10 [INFO] logger=web_monitor END source_id=iit_bombay_hss_seminars duration_ms=7972
+2026-09-27 12:05:10 [INFO] logger=web_monitor RUN_END run_id=5e7c4021c4b04df8b1fc820fe2e65c02 source=iit_bombay_hss_seminars status=success duration_ms=7986 new=0 existing=20 changed=0 failed=0 error=""
+## run 2 exit code: 0

@@ -204,3 +204,27 @@ unchanged. Every SCHEDULE line now shows `last_status`, `consecutive_failures`, 
 
 A listing that parses to 0 items is also a failed run now (`EmptyListingError`), so it gets the same retry
 schedule and exit code 1.
+
+## Live demo (Assignment 8.3), 2026-09-27
+
+HSS was reachable again, so the optional live demo was run. Command (twice, into a new DB):
+
+```text
+python -m src.scheduler --once --source iit_bombay_hss_seminars --force \
+  --config assignments/08_schedule/live_demo_config.json --db data/live_demo.db
+```
+
+[`live_demo_config.json`](live_demo_config.json) is the real `iit_bombay_hss_seminars` entry with `detail_limit: 3`
+instead of 10, to keep the demo to 6 requests per run: robots.txt, 2 listing pages and 3 detail pages, spaced by
+`request_delay_s` 1.5. TLS is verified through `ca_bundle` (`certs/iitb_ca_bundle.pem`). Full log:
+[`live_demo.log`](live_demo.log) (0 WARNING/ERROR lines).
+
+`runs` table after both runs:
+
+| run_id | started_at | finished_at | status | new | existing | changed | failed |
+|---|---|---|---|---|---|---|---|
+| d1ecb33f… | 2026-09-27T06:34:54Z | 2026-09-27T06:35:02Z | success | 20 | 0 | 0 | 0 |
+| 5e7c4021… | 2026-09-27T06:35:02Z | 2026-09-27T06:35:10Z | success | 0 | 20 | 0 | 0 |
+
+Run 2 stored `new=0 existing=20 changed=0`: re-running against the live site creates no duplicates and no false
+changes. Both runs exited with code 0. `data/live_demo.db` is git-ignored runtime state; the log above is the evidence.
