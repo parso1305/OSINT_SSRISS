@@ -130,7 +130,8 @@ The config caps it at `max_pages: 2`. The fixture run stopped with `stop_reason=
 
 ## 5. Size of `sources/iit_bombay.py`
 
-`wc -l` gives 203 lines: about 146 lines of code, plus docstrings and comments. That covers two parsers,
+`wc -l` gives 220 lines: 157 lines of code, plus docstrings and comments. (At the audit it was 203 / 146; the
+unparseable-date reporting added after the audit accounts for the difference.) That covers two parsers,
 one normalizer and 6 small private helpers.
 
 Judgment: **short enough.** Almost all of it is selectors and cleaning rules this site genuinely
