@@ -1,5 +1,7 @@
 # Assignment 04: Fetching and Parsing HTML
 
+[Week 1 README](../README.md) · [Project README](../../README.md)
+
 This assignment demonstrates how to fetch HTML from a webpage and parse it locally using `requests` and `BeautifulSoup`. It is designed with clear separation of concerns (fetching vs. parsing) and resilient data extraction techniques.
 
 ## 1. How to install dependencies
