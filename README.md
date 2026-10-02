@@ -8,21 +8,7 @@ TLS), follows pagination and detail pages, and normalizes each event into a shar
 stores the events in SQLite, and flags which ones are new, unchanged or changed. Each site plugs in through a small
 adapter and a config entry. Every result below links to the test, log or file that proves it.
 
-## Start here
 
-| Time | Read |
-|---|---|
-| 5 min | this page → [Week 2 results](Assignment_week_2/web-monitor/RESULTS.md) (benchmark, test numbers, known limitations) |
-| 20 min | [Week 2 README](Assignment_week_2/web-monitor/README.md) (architecture, how to run, how to add a source) → [audit fixes](Assignment_week_2/web-monitor/assignments/week2_audit/FIXES.md) (each problem → commit → test) |
-| Deep dive | the [audit report](Assignment_week_2/web-monitor/assignments/week2_audit/AUDIT_REPORT.md), then the per-assignment READMEs listed in the [Week 2 README](Assignment_week_2/web-monitor/README.md#assignment-documents) |
-
-## Weeks
-
-| Week | Folder | What it contains | Status |
-|---|---|---|---|
-| 1 | [`Assignment/`](Assignment) | Exercises: HTTP inspection, IIT Bombay recon, DOM selector map, fetch + parse, normalization + SQLite dedup | PASS as exercises, with KNOWN LIMITATIONS listed in [its README](Assignment/README.md) |
-| 2 | [`Assignment_week_2/web-monitor/`](Assignment_week_2/web-monitor) | The monitoring system: assignments 1 and 3–8, the audit and its fixes | 56 of 58 benchmark items PASS; 1 DEFERRED, 1 NOT STARTED |
-| — | Assignment 9 | Template swap with a teammate's framework; scheduled next. | NOT STARTED |
 
 ## Headline results (Week 2)
 
