@@ -1,0 +1,1863 @@
+
+
+
+
+
+
+
+
+
+<!doctype html>
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes,  minimum-scale=1, maximum-scale=1, user-scalable=0" />
+ 
+
+    <link rel="profile" href="https://gmpg.org/xfn/11">
+
+    <!-- Fonts START -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700&display=swap" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- Fonts END -->
+
+
+    <!-- Magnific popup -->
+
+    <link rel="stylesheet preload" as="css" href="https://acr.iitbombay.org/wp-content/themes/iitbombay-theme/assets/css/main.css?v=1.0" />
+	
+	
+	
+		<style>
+		.header-list .drop ul {
+    overflow: visible !important;
+}
+/* 1. Ensure the parent list item is the relative anchor */
+.header-list .drop ul li.has-submenu {
+    position: relative !important;
+}
+
+/* 2. Style the 'Heritage' submenu */
+.header-list .drop ul li.has-submenu .submenu-right {
+    position: absolute;
+    top: 0;
+    /* This pushes it completely outside the parent menu to the right */
+    left: 100%; 
+    background: #fff;
+    min-width: 180px;
+    display: none;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    box-shadow: 5px 0px 15px rgba(0,0,0,0.2);
+    z-index: 9999;
+}
+
+/* 3. Show it on hover */
+.header-list .drop ul li.has-submenu:hover > .submenu-right {
+    display: block;
+}
+
+/* 4. Optional: Fix the link styling inside the submenu */
+.submenu-right li a {
+    color: #00338d !important;
+    padding: 12px 20px;
+    display: block;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.submenu-right li a:hover {
+		color: #ffffff !important;
+    background: rgba(255,255,255,0.1);
+}
+		
+	
+
+/* New: Separator for the list items inside the Donor Wall dropdown */
+.header-list .drop ul li.menu-separator {
+    border-top: 1px solid #00338d;
+    margin: 5px 0;
+    height: 0;
+    padding: 0;
+}
+/* ==================================================
+DONOR WALL DROPDOWN = 2 COLUMN MEGA MENU
+Paste in header.php style section
+================================================== */
+
+/* donor wall parent */
+.header-list > li.drop:nth-child(3){
+    position:relative;
+}
+
+/* main dropdown box */
+.header-list > li.drop:nth-child(3) > ul {
+    width: 350px !important;
+    min-width: 350px !important;
+    padding: 7px 18px !important;
+    background: #fff !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 26px;
+    row-gap: 0;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .12);
+    border: 1px solid #ececec;
+}
+
+/* remove default list spacing */
+.header-list > li.drop:nth-child(3) > ul li{
+    list-style:none;
+    margin:0;
+    padding:0;
+}
+
+/* all links */
+.header-list > li.drop:nth-child(3) > ul li a{
+    display:block;
+    padding:9px 11px;
+    color:#00338d !important;
+    text-decoration:none;
+    font-size:15px;
+    line-height:1.2;
+    transition:.25s ease;
+    white-space:nowrap;
+}
+
+/* hover */
+.header-list > li.drop:nth-child(3) > ul li a:hover{
+    background:#0b3589;
+    color:#fff !important;
+}
+
+/* LEFT COLUMN = existing first 5 items */
+.header-list > li.drop:nth-child(3) > ul li:nth-child(1),
+.header-list > li.drop:nth-child(3) > ul li:nth-child(2),
+.header-list > li.drop:nth-child(3) > ul li:nth-child(3),
+.header-list > li.drop:nth-child(3) > ul li:nth-child(4),
+.header-list > li.drop:nth-child(3) > ul li:nth-child(5){
+    grid-column:1;
+}
+
+/* separator line middle */
+.header-list > li.drop:nth-child(3) > ul::before{
+    content:'';
+    position:absolute;
+    top:18px;
+    bottom:18px;
+    left:50%;
+    width:1px;
+    background:#0b3589;
+    opacity:.35;
+}
+
+/* hide old separator row */
+.header-list > li.drop:nth-child(3) > ul li.menu-separator{
+    display:none !important;
+}
+
+/* RIGHT COLUMN = Heritage Circle */
+.header-list > li.drop:nth-child(3) > ul li:last-child{
+    grid-column:2;
+    grid-row:3;   /* middle aligned beside Dean's Circle */
+    align-self:center;
+}
+
+/* dropdown positioning */
+.header-list > li.drop:nth-child(3) > ul{
+    position:absolute;
+    transform: translateX(16%);
+}
+
+/* mobile ignore */
+@media(max-width:991px){
+.header-list > li.drop:nth-child(3) > ul{
+    width:100% !important;
+    min-width:100% !important;
+    display:block !important;
+}
+.header-list > li.drop:nth-child(3) > ul::before{
+    display:none;
+}
+}
+		
+		@media (max-width: 991px) {
+  .mob-navigation .menu-separator {
+    border-top: 1px solid #00338d;
+    margin: 8px 15px;
+    height: 0;
+    padding: 0;
+  }
+
+  .mob-navigation li a {
+    display: block;
+  }
+}
+			
+			
+			
+
+</style>
+	
+	
+	
+	
+		<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1382108470649175');
+fbq('track', 'PageView');
+
+</script>
+
+<!-- End Meta Pixel Code -->
+    
+    <meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
+
+	<title>Upcoming Events - Indian Institute of Technology Bombay</title>
+	<link rel="canonical" href="https://acr.iitbombay.org/events/upcoming-events/" />
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="Upcoming Events - Indian Institute of Technology Bombay" />
+	<meta property="og:url" content="https://acr.iitbombay.org/events/upcoming-events/" />
+	<meta property="og:site_name" content="Indian Institute of Technology Bombay" />
+	<meta property="article:modified_time" content="2024-04-24T11:41:42+00:00" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://acr.iitbombay.org/events/upcoming-events/","url":"https://acr.iitbombay.org/events/upcoming-events/","name":"Upcoming Events - Indian Institute of Technology Bombay","isPartOf":{"@id":"https://acr.iitbombay.org/#website"},"datePublished":"2022-12-07T13:26:26+00:00","dateModified":"2024-04-24T11:41:42+00:00","breadcrumb":{"@id":"https://acr.iitbombay.org/events/upcoming-events/#breadcrumb"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://acr.iitbombay.org/events/upcoming-events/"]}]},{"@type":"BreadcrumbList","@id":"https://acr.iitbombay.org/events/upcoming-events/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://acr.iitbombay.org/"},{"@type":"ListItem","position":2,"name":"Events","item":"https://acr.iitbombay.org/events/"},{"@type":"ListItem","position":3,"name":"Upcoming Events"}]},{"@type":"WebSite","@id":"https://acr.iitbombay.org/#website","url":"https://acr.iitbombay.org/","name":"Indian Institute of Technology Bombay","description":"","potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://acr.iitbombay.org/?s={search_term_string}"},"query-input":"required name=search_term_string"}],"inLanguage":"en-US"}]}</script>
+
+
+<link rel='dns-prefetch' href='//static.addtoany.com' />
+<link rel='dns-prefetch' href='//code.jquery.com' />
+<link rel='dns-prefetch' href='//cdn.jsdelivr.net' />
+<link rel='dns-prefetch' href='//cdnjs.cloudflare.com' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link rel="alternate" type="application/rss+xml" title="Indian Institute of Technology Bombay &raquo; Feed" href="https://acr.iitbombay.org/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Indian Institute of Technology Bombay &raquo; Comments Feed" href="https://acr.iitbombay.org/comments/feed/" />
+<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="https://acr.iitbombay.org/wp-json/oembed/1.0/embed?url=https%3A%2F%2Facr.iitbombay.org%2Fevents%2Fupcoming-events%2F" />
+<style id="wp-img-auto-sizes-contain-inline-css">
+img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
+/*# sourceURL=wp-img-auto-sizes-contain-inline-css */
+</style>
+<style id="wp-emoji-styles-inline-css">
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*# sourceURL=wp-emoji-styles-inline-css */
+</style>
+<link rel='stylesheet' id='wp-block-library-css' href='https://acr.iitbombay.org/wp-includes/css/dist/block-library/style.min.css?ver=7.1.3' media='all' />
+<style id="classic-theme-styles-inline-css">
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+/*# sourceURL=/wp-includes/css/classic-themes.min.css */
+</style>
+<style id="global-styles-inline-css">
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);}.wp-block-button{--wp--preset--dimension--25: 25%;--wp--preset--dimension--50: 50%;--wp--preset--dimension--75: 75%;--wp--preset--dimension--100: 100%;}:where(body) { margin: 0; }:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}body{padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;}:root :where(.wp-element-button, .wp-block-button__link){background-color: #32373c;border-width: 0;color: #fff;font-family: inherit;font-size: inherit;font-style: inherit;font-weight: inherit;letter-spacing: inherit;line-height: inherit;padding-top: calc(0.667em + 2px);padding-right: calc(1.333em + 2px);padding-bottom: calc(0.667em + 2px);padding-left: calc(1.333em + 2px);text-decoration: none;text-transform: inherit;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:root :where(.wp-block-icon svg){width: 24px;}
+:where(.wp-block-gallery.is-layout-flex){gap: var( --wp--style--gallery-gap-default, var( --gallery-block--gutter-size, var( --wp--style--block-gap, 0.5em ) ) );}:where(.wp-block-gallery.is-layout-grid){gap: var( --wp--style--gallery-gap-default, var( --gallery-block--gutter-size, var( --wp--style--block-gap, 0.5em ) ) );}
+:where(.wp-block-latest-posts.is-layout-flex){gap: 1.25em;}:where(.wp-block-latest-posts.is-layout-grid){gap: 1.25em;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+:where(.wp-block-term-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-term-template.is-layout-grid){gap: 1.25em;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+/*# sourceURL=global-styles-inline-css */
+</style>
+<link rel='stylesheet' id='contact-form-7-css' href='https://acr.iitbombay.org/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=6.1.7' media='all' />
+<link rel='stylesheet' id='floating-buttons-style-css' href='https://acr.iitbombay.org/wp-content/plugins/floating-buttons-plugin/style.css?ver=7.1.3' media='all' />
+<link rel='stylesheet' id='Magnific-Popus-css' href='https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css?ver=1.1' media='all' />
+<link rel='stylesheet' id='select2-css-css' href='https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css?ver=1.1' media='all' />
+<link rel='stylesheet' id='swiper-bundle-css' href='https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css?ver=1.1' media='all' />
+<link rel='stylesheet' id='Material-css-css' href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0&#038;ver=1.1' media='all' />
+<link rel='stylesheet' id='main-css' href='https://acr.iitbombay.org/wp-content/themes/iitbombay-theme/assets/css/main.css?ver=1.1' media='all' />
+<link rel='stylesheet' id='intl-tel-css-css' href='https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css?ver=7.1.3' media='all' />
+<link rel='stylesheet' id='ivory-search-styles-css' href='https://acr.iitbombay.org/wp-content/plugins/add-search-to-menu/public/css/ivory-search.min.css?ver=5.5.19' media='all' />
+<link rel='stylesheet' id='addtoany-css' href='https://acr.iitbombay.org/wp-content/plugins/add-to-any/addtoany.min.css?ver=1.16' media='all' />
+<link rel='stylesheet' id='elementor-frontend-css' href='https://acr.iitbombay.org/wp-content/plugins/elementor/assets/css/frontend.min.css?ver=4.3.5' media='all' />
+<link rel='stylesheet' id='eael-general-css' href='https://acr.iitbombay.org/wp-content/plugins/essential-addons-for-elementor-lite/assets/front-end/css/view/general.min.css?ver=6.8.3' media='all' />
+<script id="addtoany-core-js-before">
+window.a2a_config=window.a2a_config||{};a2a_config.callbacks=[];a2a_config.overlays=[];a2a_config.templates={};
+
+//# sourceURL=addtoany-core-js-before
+</script>
+<script id="addtoany-core-js" defer src="https://static.addtoany.com/menu/page.js"></script>
+<script id="jquery-core-js" src="https://acr.iitbombay.org/wp-includes/js/jquery/jquery.min.js?ver=3.7.1"></script>
+<script id="jquery-migrate-js" src="https://acr.iitbombay.org/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1"></script>
+<script id="addtoany-jquery-js" defer src="https://acr.iitbombay.org/wp-content/plugins/add-to-any/addtoany.min.js?ver=1.1"></script>
+<script id="seo-automated-link-building-js-extra">
+var seoAutomatedLinkBuilding = {"ajaxUrl":"https://acr.iitbombay.org/wp-admin/admin-ajax.php"};
+//# sourceURL=seo-automated-link-building-js-extra
+</script>
+<script id="seo-automated-link-building-js" src="https://acr.iitbombay.org/wp-content/plugins/seo-automated-link-building/js/seo-automated-link-building.js?ver=7.1.3"></script>
+<link rel="https://api.w.org/" href="https://acr.iitbombay.org/wp-json/" /><link rel="alternate" title="JSON" type="application/json" href="https://acr.iitbombay.org/wp-json/wp/v2/pages/13596" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://acr.iitbombay.org/xmlrpc.php?rsd" />
+
+<link rel='shortlink' href='https://acr.iitbombay.org/?p=13596' />
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T2QNHVRS');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NWVM69FZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1382108470649175');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1382108470649175&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
+<script type="text/javascript">
+_linkedin_partner_id = "10410681";
+window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+window._linkedin_data_partner_ids.push(_linkedin_partner_id);
+</script><script type="text/javascript">
+(function(l) {
+if (!l){window.lintrk = function(a,b){window.lintrk.q.push([a,b])};
+window.lintrk.q=[]}
+var s = document.getElementsByTagName("script")[0];
+var b = document.createElement("script");
+b.type = "text/javascript";b.async = true;
+b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
+s.parentNode.insertBefore(b, s);})(window.lintrk);
+</script>
+<noscript>
+<img height="1" width="1" style="display:none;" alt="" src="https://px.ads.linkedin.com/collect/?pid=10410681&fmt=gif" />
+</noscript>
+
+			<style>
+				.e-con.e-parent:nth-of-type(n+4):not(.e-lazyloaded):not(.e-no-lazyload),
+				.e-con.e-parent:nth-of-type(n+4):not(.e-lazyloaded):not(.e-no-lazyload) * {
+					background-image: none !important;
+				}
+				@media screen and (max-height: 1024px) {
+					.e-con.e-parent:nth-of-type(n+3):not(.e-lazyloaded):not(.e-no-lazyload),
+					.e-con.e-parent:nth-of-type(n+3):not(.e-lazyloaded):not(.e-no-lazyload) * {
+						background-image: none !important;
+					}
+				}
+				@media screen and (max-height: 640px) {
+					.e-con.e-parent:nth-of-type(n+2):not(.e-lazyloaded):not(.e-no-lazyload),
+					.e-con.e-parent:nth-of-type(n+2):not(.e-lazyloaded):not(.e-no-lazyload) * {
+						background-image: none !important;
+					}
+				}
+			</style>
+			<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://acr.iitbombay.org/#organization",
+      "name": "IIT Bombay Alumni and Corporate Relations",
+      "url": "https://acr.iitbombay.org/",
+      "logo": {
+        "@type": "ImageObject",
+        "@id": "https://acr.iitbombay.org/#logo",
+        "url": "https://acr.iitbombay.org/wp-content/themes/iitbombay-theme/assets/img/logo.svg"
+      },
+      "sameAs": [
+        "https://www.facebook.com/deanacriitbombay",
+        "https://x.com/DeanACRIITB",
+        "https://www.linkedin.com/company/dean-acr-iit-bombay/"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://acr.iitbombay.org/#website",
+      "url": "https://acr.iitbombay.org/",
+      "name": "IIT Bombay Alumni and Corporate Relations",
+      "alternateName": "IIT Bombay ACR",
+      "description": "Discover opportunities to engage with IIT Bombay through alumni relations, corporate partnerships and philanthropy that create lasting impact.",
+      "publisher": {
+        "@id": "https://acr.iitbombay.org/#organization"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://acr.iitbombay.org/?s={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
+}
+</script>
+<link rel="icon" href="https://acr.iitbombay.org/wp-content/uploads/2022/12/apple-touch-icon-152x152-precomposed-150x150.png" sizes="32x32" />
+<link rel="icon" href="https://acr.iitbombay.org/wp-content/uploads/2022/12/apple-touch-icon-152x152-precomposed.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="https://acr.iitbombay.org/wp-content/uploads/2022/12/apple-touch-icon-152x152-precomposed.png" />
+<meta name="msapplication-TileImage" content="https://acr.iitbombay.org/wp-content/uploads/2022/12/apple-touch-icon-152x152-precomposed.png" />
+<style id="wp-custom-css">
+.wpcf7-spinner, #giving-circle, #annual-contributors{
+	display:none;
+}
+
+/* Style the form container */
+.wpcf7 form {
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+/* Style the input fields */
+.wpcf7 input[type="text"],
+.wpcf7 input[type="email"],
+.wpcf7 input[type="url"],
+.wpcf7 input[type="tel"],
+.wpcf7 input[type="number"],
+.wpcf7 input[type="date"],
+.wpcf7 textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Style the submit button */
+.wpcf7 input[type="submit"] {
+    background-color: var(--dblue);
+		width: 100%;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.wpcf7 input[type="submit"]:hover {
+    background-color: #005d8c;
+}
+
+/* Style the form labels */
+.wpcf7 label {
+    display: block;
+    margin-bottom: 15px;
+}
+
+.wpcf7-form-control-wrap {
+	margin-bottom: 15px;
+}
+
+.news-email-wrap {
+	gap: 10px;
+}
+.news-email-wrap .wpcf7-form-control-wrap {
+	width: 70% !important;
+	margin-bottom: 0;
+}
+
+.news-email-wrap .wpcf7-submit {
+	width: 30% !important;
+	padding: 0 !important;
+}
+
+.table-scroll{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  width:100%;
+}
+.table-scroll table{
+  width:100%;
+  min-width:600px; /* adjust or remove */
+}
+.faculty-detail-section {
+    padding: 40px 0;
+}
+
+.faculty-detail-img img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+/* =========================================================
+   YFF CONTACT FORM - COMPLETE CSS
+   Contact Form 7
+========================================================= */
+
+
+/* =========================================================
+   1. FORM CONTAINER
+========================================================= */
+
+.yff-form {
+  background: #fff;
+  padding: 30px 24px;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.yff-form h3 {
+  font-size: 28px;
+  color: #0b3d91;
+  margin-bottom: 4px;
+}
+
+.yff-form .sub {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 14px;
+}
+
+.yff-form-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+
+/* =========================================================
+   2. CONTACT FORM 7
+========================================================= */
+
+.wpcf7-form p {
+  margin: 0;
+}
+
+.wpcf7-form-control-wrap {
+  display: block;
+  width: 100% !important;
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+}
+
+.wpcf7 label {
+  display: block;
+  margin-bottom: 3px;
+}
+
+
+/* =========================================================
+   3. FORM ROW
+========================================================= */
+
+.form-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+}
+
+
+/* =========================================================
+   4. FORM GROUP
+========================================================= */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.form-group label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #2d3748;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   5. INPUT FIELDS
+========================================================= */
+
+.input-field {
+  width: 100% !important;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+  box-sizing: border-box !important;
+}
+
+.input-field:focus {
+  border-color: #0b3d91;
+  background: #fff;
+}
+
+
+/* =========================================================
+   6. SELECT FIELD
+========================================================= */
+
+select.input-field {
+  appearance: none;
+  height: 46px;
+}
+
+
+/* =========================================================
+   7. HIDDEN CF7 FIELDS
+========================================================= */
+
+.hidden,
+.wpcf7-form-control .hidden,
+.wpcf7-form-control-wrap:has(input[type="hidden"]),
+.wpcf7-form-control-wrap:empty {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+
+/* =========================================================
+   8. CAPTCHA
+========================================================= */
+
+.captcha-box label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.captcha-group {
+  margin-top: -5px;
+}
+
+.captcha-top-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: nowrap;
+}
+
+.captcha-top-row label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #2d3748;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.captcha-image-wrap img {
+  display: block;
+}
+
+.captcha-group .wpcf7-captchar {
+  margin-top: -10px !important;
+}
+
+.captcha-refresh {
+  background: none;
+  border: none;
+  color: #0b3d91;
+  cursor: pointer;
+  font-size: 23px;
+  margin: 0;
+}
+
+#captcha-question {
+  background-color: #d1d2d2;
+  padding: 5px;
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   9. SUBMIT BUTTON
+========================================================= */
+
+.form-submit {
+  margin-top: 5px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #0b3d91, #1c5ed6);
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: -12px;
+}
+
+.submit-btn:hover {
+  opacity: 0.9;
+}
+
+
+/* =========================================================
+   10. CF7 SUBMIT LOADING STATE
+========================================================= */
+
+.wpcf7-submit.is-loading {
+  background-color: #082d8a !important;
+  padding-left: 45px !important;
+  color: transparent !important;
+
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/></path></svg>');
+
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.8;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.wpcf7-submit.is-loading-text {
+  padding-left: 50px !important;
+  color: white !important;
+  background-position: 15px center;
+  background-size: 20px;
+}
+
+
+/* =========================================================
+   11. CF7 RESPONSE MESSAGE
+========================================================= */
+
+.yff-form .wpcf7-response-output {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+  margin-top: 10px;
+}
+
+
+/* =========================================================
+   12. VALIDATION ERROR
+========================================================= */
+
+.wpcf7-not-valid-tip {
+  color: #dc3232;
+  font-size: 0.8em;
+  font-weight: normal;
+  display: block;
+}
+
+
+/* =========================================================
+   13. PHONE FIELD - INTL TEL INPUT
+========================================================= */
+
+.iti {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block;
+}
+
+.yff-phone {
+  width: 100% !important;
+  height: 45px !important;
+  padding: 9px 12px 9px 85px !important;
+  border-radius: 8px !important;
+  border: 1px solid #ddd !important;
+  background: #fff !important;
+  font-size: 14px;
+  transition: 0.2s;
+  box-sizing: border-box !important;
+}
+
+.yff-phone:focus {
+  border-color: #0b3d91 !important;
+  outline: none;
+}
+
+.yff-form .iti {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block;
+}
+
+
+/* =========================================================
+   14. COUNTRY SELECTOR
+========================================================= */
+
+.iti__flag-container {
+  padding: 2px;
+  border-right: 1px solid #ddd;
+  background: #f8f8f8;
+  border-radius: 8px 0 0 8px;
+}
+
+.iti__selected-flag {
+  padding: 0 10px 0 15px !important;
+  background-color: transparent !important;
+}
+
+
+/* =========================================================
+   15. COUNTRY DROPDOWN
+========================================================= */
+
+.iti__country-list {
+  background-color: #ffffff !important;
+  border: 1px solid #ddd !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12) !important;
+  z-index: 9999;
+
+  width: min(360px, calc(100vw - 24px)) !important;
+  max-width: calc(100vw - 24px) !important;
+
+  max-height: 280px !important;
+  overflow-x: hidden !important;
+  padding: 10px 0 !important;
+}
+
+.iti__country {
+  padding: 10px 15px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.iti__country:hover {
+  background-color: #f0f4f8 !important;
+}
+
+
+/* =========================================================
+   16. COUNTRY NAME / DIAL CODE
+========================================================= */
+
+.iti__dial-code,
+.iti__country-list .iti__country-name span,
+.iti__country-list .iti__country-name .iti__secondary-text {
+  display: none !important;
+}
+
+.iti__country-name {
+  color: #333 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+
+/* =========================================================
+   17. PHONE VALIDATION
+========================================================= */
+
+.phone-error {
+  font-weight: 500;
+  display: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.yff-phone.wpcf7-not-valid,
+.yff-phone:invalid,
+.yff-phone.error-active {
+  border-color: #dc3232 !important;
+  background-color: #fff8f8 !important;
+}
+
+
+/* =========================================================
+   18. FORM WIDTH / OVERFLOW PROTECTION
+========================================================= */
+
+.yff-form,
+.form-row,
+.form-group,
+.input-field,
+.submit-btn {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.yff-form h3,
+.yff-form .sub,
+.form-group label,
+.submit-btn {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+
+/* =========================================================
+   19. TABLET FORM
+========================================================= */
+
+@media (max-width: 860px) {
+
+  .yff-form {
+    width: 80% !important;
+    max-width: 480px !important;
+    margin: 0 auto !important;
+  }
+}
+
+
+/* =========================================================
+   20. MOBILE FORM
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .yff-form {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 24px 18px;
+    border-radius: 14px;
+  }
+
+  .yff-form h3 {
+    font-size: 24px;
+    line-height: 1.25;
+  }
+
+  .yff-form .sub {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr !important;
+    gap: 0;
+  }
+
+  .form-group label {
+    font-size: 14px;
+    white-space: normal !important;
+  }
+
+  .input-field,
+  select.input-field {
+    width: 100% !important;
+    min-height: 46px;
+    font-size: 16px;
+  }
+
+  .submit-btn {
+    min-height: 48px;
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+}
+
+
+/* =========================================================
+   21. SMALL PHONE / HIGH ZOOM
+========================================================= */
+
+@media (max-width: 400px) {
+
+  .yff-form {
+    padding: 20px 14px;
+  }
+
+  .yff-form h3 {
+    font-size: 22px;
+  }
+
+  .yff-form .sub {
+    font-size: 14px;
+  }
+}
+
+
+/* =========================================================
+   22. VERY NARROW / EXTREME ZOOM
+========================================================= */
+
+@media (max-width: 320px) {
+
+  .yff-form {
+    padding: 18px 12px;
+  }
+}
+
+.chair-table {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+.chair-table table {
+    min-width: 850px !important;
+}
+.campain-left .txt_20_r {
+    opacity: .7;
+    line-height: 1.8;
+    display: none !important;
+}
+
+.chair-table .eael-data-table,
+.chair-table .eael-data-table th,
+.chair-table .eael-data-table th *,
+.chair-table .eael-data-table td,
+.chair-table .eael-data-table td * {
+    font-family: "General Sans", sans-serif !important;
+}
+</style>
+			<style type="text/css">
+					</style>
+					<style type="text/css">
+					</style>
+		    
+<script src='//cdnt.netcoresmartech.com/smartechclient.js'></script>
+<script>
+smartech('create', 'ADGMOT35CHFLVDHBJNIG50K968GDCVLLBESP97KESE2HF3E2T8BG' );
+smartech('register', '8ce903eff400b3d15ea403a57525a909');
+smartech('identify', '');
+
+smartech('dispatch','page browse',{});
+
+</script>
+
+	
+	
+	
+	
+	
+	<script type="text/javascript">
+_linkedin_partner_id = "10410681";
+window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+window._linkedin_data_partner_ids.push(_linkedin_partner_id);
+</script><script type="text/javascript">
+(function(l) {
+if (!l){window.lintrk = function(a,b){window.lintrk.q.push([a,b])};
+window.lintrk.q=[]}
+var s = document.getElementsByTagName("script")[0];
+var b = document.createElement("script");
+b.type = "text/javascript";b.async = true;
+b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
+s.parentNode.insertBefore(b, s);})(window.lintrk);
+</script>
+
+
+	
+	
+	
+	
+</head>
+
+<body class="wp-singular page-template page-template-upcoming-events-new page-template-upcoming-events-new-php page page-id-13596 page-child parent-pageid-13722 wp-theme-iitbombay-theme iitbombay-theme elementor-default elementor-kit-14796">
+
+
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2QNHVRS"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NWVM69FZ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+	<noscript>
+<img height="1" width="1" style="display:none;" alt="" src="https://px.ads.linkedin.com/collect/?pid=10410681&fmt=gif" />
+</noscript>
+	
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1382108470649175&ev=PageView&noscript=1"
+/></noscript>
+	
+    <header id="header" class="fixHeader">
+        <div class="header-box">
+            <!--<div class="hr-top hr-web">
+                <a href="https://acr.iitbombay.org/donation/" class="button" type="button">Give Back</a>
+            </div>-->
+            <div class="hr-bottom hr-web">
+                <div class="head-left">
+                    <div class="logoBox">
+                        <a class="logo" href="https://acr.iitbombay.org/">
+                            <img src="https://acr.iitbombay.org/wp-content/themes/iitbombay-theme/assets/img/logo.svg" alt="Logo" width="100%" height="100%" loading="eager" />
+                        </a>
+                    </div>
+                </div>
+                <div class="head-right">
+                    <ul class="header-list">
+                        <li class="drop">
+                            <!--<a href="https://acr.iitbombay.org/about/">About</a>-->
+                            <a>About</a>
+                            <ul>
+                                <li><a href="https://acr.iitbombay.org/about/#overview">Overview</a></li>
+                                <!-- <li><a href="https://acr.iitbombay.org/about/#deans">Dean’s Message</a></li> -->
+                                <li><a href="https://acr.iitbombay.org/about/#team">Meet the Team</a></li>
+                                <li><a href="https://acr.iitbombay.org/careers/">Careers</a></li>
+                            </ul>
+                        </li>
+                        <li class="drop">
+                            <!--<a href="https://acr.iitbombay.org/stay-connected/">Alumni Corner</a>-->
+                            <a >Alumni Corner</a>
+                            <ul>
+                                <li><a href="https://acr.iitbombay.org/stay-connected/#overview">Overview</a></li>
+                                <li><a href="https://acr.iitbombay.org/stay-connected/#reunion">Reunions</a></li>
+                                <li><a href="https://acr.iitbombay.org/stay-connected/#newsletter">Newsletter</a></li>
+                                <li><a href="https://acr.iitbombay.org/stay-connected/#nostalgia">Nostalgia Corner</a></li>
+                                <li><a href="https://acr.iitbombay.org/stay-connected/#awards">Alumni Awards</a></li>
+                                <li><a href="https://acr.iitbombay.org/stay-connected/#comm">Alumni Communities</a></li>
+                                <li><a href="https://acr.iitbombay.org/stay-connected/#stories">Community Stories</a></li>
+                                <li><a href="https://acr.iitbombay.org/stay-connected/#cep">Continuous Education Program</a></li>
+                            </ul>
+                        </li>
+                        <li class="drop">
+                            <!--<a href="https://acr.iitbombay.org/donor-wall/">Donor Wall</a>-->
+                            <a >Donor Wall</a>
+                            <ul>
+                               <!--  <li><a href="https://acr.iitbombay.org/donor-wall/#overview">Overview</a></li> -->
+                                <li><a href="https://acr.iitbombay.org/chairmans-circle">Chairman's Circle</a></li>
+                                <li><a href="https://acr.iitbombay.org/directors-circle">Director's Circle</a></li>
+                                <li><a href="https://acr.iitbombay.org/deans-circle">Dean's Circle</a></li>
+                                <li><a href="https://acr.iitbombay.org/leadership-circle">Leadership Circle</a></li>
+                                <li><a href="https://acr.iitbombay.org/giving-circle/">Giving Circle</a></li>
+                                <!-- <li><a href="https://acr.iitbombay.org/donor-wall/#annual">Annual Contributors</a></li> -->
+								<li class="menu-separator"></li>
+							<li><a href="https://acr.iitbombay.org/living-legacy-circle">Living Legacy Circle</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <!--<a href="https://acr.iitbombay.org/batch-legacy/">Batch Legacy</a>-->
+                            <a href="https://acr.iitbombay.org/batch-legacy/">Batch Legacy</a>
+                        </li>
+                        <li class="drop tbg">
+                            <!--<a href="https://acr.iitbombay.org/giving-back/">Giving Back</a>-->
+                            <a class="">Giving Back</a>
+                            <ul>
+                                <li><a href="https://acr.iitbombay.org/giving-back/#why">Why Give</a></li>
+                                <li><a href="https://acr.iitbombay.org/giving-back/#cause">Causes to Donate</a></li>
+                                <li><a href="https://acr.iitbombay.org/ways-of-giving/">Ways of Giving</a></li>
+                                <li><a href="https://acr.iitbombay.org/giving-back/#stories"> Power of your Gift</a></li>
+                                <li><a href="https://acr.iitbombay.org/giving-back/#campaigns">Current Campaigns</a></li>
+								<li><a href="https://acr.iitbombay.org/living-legacy-programme">Living Legacy Programme</a></li>
+                                <li><a href="https://acr.iitbombay.org/campaign/go-iitb-2025/">GO-IITB</a></li>
+                            </ul>
+                        </li>
+                        <li class="drop">
+                            <!--<a href="https://acr.iitbombay.org/corporate-connect/">Corporate Connect</a>-->
+                            <a >Corporate Philanthropy &amp; CSR Partnerships</a>
+                            <ul>
+                                <li><a href="https://acr.iitbombay.org/corporate-connect/#overview">Overview</a></li>
+                                <li><a href="https://acr.iitbombay.org/corporate-connect/#partner">Partnering with IITB</a></li>
+                                <!-- <li><a href="https://acr.iitbombay.org/corporate-connect/#csr">CSR</a></li> -->
+                                <li><a href="https://acr.iitbombay.org/corporate-connect/#testimonial">Testimonials</a></li>
+                                <li><a href="https://acr.iitbombay.org/corporate-connect/#key-partners">Key Partners</a></li>
+                                <li><a href="https://acr.iitbombay.org/corporate-connect/#cs">Case Studies</a></li>
+                                <li><a href="https://acr.iitbombay.org/corporate-connect/#recent-philanthropic-support">Recent Corporate Philanthropy &amp; CSR Partnerships</a></li>
+                                <li><a href="https://acr.iitbombay.org/csr-newsletter/">CSR Newsletter</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="https://acr.iitbombay.org/events/upcoming-events/">Events</a>
+                            <!-- <ul>
+                                <li><a href="https://acr.iitbombay.org/events/upcoming-events/">Upcoming Events</a></li>
+                                <li><a href="https://acr.iitbombay.org/events/all-events/">Previous Events</a></li>
+                                <li><a href="https://acr.iitbombay.org/fan/">FAN</a></li>
+                                <li><a href="https://acr.iitbombay.org/dam/">DAM</a></li>
+                            </ul> -->
+                        </li>
+                        <li class="drop">
+                            <!--<a href="javascript:void(0)">Resources</a>-->
+                            <a >Resources</a>
+                            <ul>
+                                <li><a href="https://acr.iitbombay.org/resources/news/">News</a></li>
+                                <li><a href="https://acr.iitbombay.org/resources/newsletter/">Newsletters</a></li>
+                                <li><a href="https://acr.iitbombay.org/annual-reports/">Annual Reports </a></li>
+                                <li><a href="https://acr.iitbombay.org/media-gallery/">Media Gallery</a></li>
+                                <li><a href="https://acr.iitbombay.org/story/">Impact Stories</a></li>
+                                <li><a href="https://acr.iitbombay.org/useful-links/">Useful Links</a></li>
+                                <li><a href="#footer">Contact Us</a></li>
+                            </ul>
+                        </li>
+                        <li class="search-sec">
+                            <div class="search-ic">
+                                <form  class="is-search-form is-form-style is-form-style-2 is-form-id-18464 " action="https://acr.iitbombay.org/" method="get" role="search" ><label for="is-search-input-18464"><span class="is-screen-reader-text">Search for:</span><input  type="search" id="is-search-input-18464" name="s" value="" class="is-search-input" placeholder="Search here..." autocomplete=off /></label><input type="hidden" name="id" value="18464" /></form>                                <button type="submit" class="search__btn btn">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="hr-mob">
+                <div class="hr-top">
+                    <a href="https://acr.iitbombay.org/giving-back/" class="button" type="button">Give Back</a>
+                </div>
+                <div class="hr-bottom">
+                    <div class="mob-left">
+                        <a class="logo" href="https://acr.iitbombay.org/">
+                            <img src="https://acr.iitbombay.org/wp-content/themes/iitbombay-theme/assets/img/logo.svg" alt="Logo" width="100%" height="100%" loading="eager" />
+                        </a>
+                    </div>
+                    <div class="mob-right">
+
+                        <!-- <div class="search-sec">
+                            <div class="search-ic">
+                                                                <input type='hidden' value='17220' name='wpessid' />
+                                <button type="submit" class="search__btn btn">
+                            </div>
+                        </div> -->
+                        <div id="hamburger" class="hamburger" onclick="this.classList.toggle('open');">
+                            <svg width="100" height="100" viewBox="0 0 100 100">
+                                <path class="line line1" d="M 20,29.000046 H 80.000231 C 80.000231,29.000046 94.498839,28.817352 94.532987,66.711331 94.543142,77.980673 90.966081,81.670246 85.259173,81.668997 79.552261,81.667751 75.000211,74.999942 75.000211,74.999942 L 25.000021,25.000058" />
+                                <path class="line line2" d="M 20,50 H 80" />
+                                <path class="line line3" d="M 20,70.999954 H 80.000231 C 80.000231,70.999954 94.498839,71.182648 94.532987,33.288669 94.543142,22.019327 90.966081,18.329754 85.259173,18.331003 79.552261,18.332249 75.000211,25.000058 75.000211,25.000058 L 25.000021,74.999942" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Side Menu -->
+        <div class="menuOverlay"></div>
+        <aside class="mobile-menu reverse_anim" id="mobileMenu">
+            <nav role="mob-navigation" class="mob-navigation">
+                <div class="search--visible">
+                    <form  class="is-search-form is-form-style is-form-style-2 is-form-id-18464 " action="https://acr.iitbombay.org/" method="get" role="search" ><label for="is-search-input-18464"><span class="is-screen-reader-text">Search for:</span><input  type="search" id="is-search-input-18464" name="s" value="" class="is-search-input" placeholder="Search here..." autocomplete=off /></label><input type="hidden" name="id" value="18464" /></form>                </div>
+                <div class="nav-toggle">
+                    <span class="nav-back">
+                        <span class="material-symbols-sharp">
+                            arrow_back
+                        </span>
+                    </span>
+                    <span class="nav-title">
+                    </span>
+                    <span class="nav-close"></span>
+                </div>
+
+                <ul>
+                    <li class="has-dropdown">
+                        <a href="https://acr.iitbombay.org/about/">About</a>
+                        <ul>
+                            <li><a href="https://acr.iitbombay.org/about/#overview">Overview</a></li>
+                            <!-- <li><a href="https://acr.iitbombay.org/about/#deans">Dean’s Message</a></li> -->
+                            <li><a href="https://acr.iitbombay.org/about/#team">Meet the Team</a></li>
+                            <li><a href="https://acr.iitbombay.org/careers/">Careers</a></li>
+                        </ul>
+                    </li>
+                    <li class="has-dropdown">
+                        <a href="https://acr.iitbombay.org/stay-connected/">Alumni Corner</a>
+                        <ul>
+                            <li><a href="https://acr.iitbombay.org/stay-connected/#overview">Overview</a></li>
+                            <li><a href="https://acr.iitbombay.org/stay-connected/#reunion">Reunions</a></li>
+                            <li><a href="https://acr.iitbombay.org/stay-connected/#newsletter">Newsletter</a></li>
+                            <li><a href="https://acr.iitbombay.org/stay-connected/#nostalgia">Nostalgia Corner</a></li>
+                            <li><a href="https://acr.iitbombay.org/stay-connected/#awards">Alumni Awards</a></li>
+                            <li><a href="https://acr.iitbombay.org/stay-connected/#comm">Alumni Communities</a></li>
+                            <li><a href="https://acr.iitbombay.org/stay-connected/#stories">Community Stories</a></li>
+                            <li><a href="https://acr.iitbombay.org/stay-connected/#cep">Continuous Education Program</a></li>
+                        </ul>
+                    </li>
+                    <li class="has-dropdown">
+                        <a href="https://acr.iitbombay.org/donor-wall/">Donor Wall</a>
+                        <ul>
+                           <!--  <li><a href="https://acr.iitbombay.org/donor-wall/#overview">Overview</a></li> -->
+                            <li><a href="https://acr.iitbombay.org/chairmans-circle">Chairman's Circle</a></li>
+                            <li><a href="https://acr.iitbombay.org/directors-circle">Director's Circle</a></li>
+                            <li><a href="https://acr.iitbombay.org/deans-circle">Dean's Circle</a></li>
+                            <li><a href="https://acr.iitbombay.org/leadership-circle">Leadership Circle</a></li>
+                            <li><a href="https://acr.iitbombay.org/giving-circle/">Giving Circle</a></li>
+                            <!-- <li><a href="https://acr.iitbombay.org/donor-wall/#annual">Annual Contributors</a></li> -->
+							<li class="menu-separator"></li>
+							<li><a href="https://acr.iitbombay.org/living-legacy-circle">Living Legacy Circle</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="https://acr.iitbombay.org/batch-legacy/">Batch Legacy</a>
+                    </li>
+                    <li class="has-dropdown">
+                        <a href="https://acr.iitbombay.org/giving-back/">Giving Back</a>
+                        <ul>
+                            <li><a href="https://acr.iitbombay.org/giving-back/#why">Why Give</a></li>
+                            <li><a href="https://acr.iitbombay.org/giving-back/#cause">Causes to Donate</a></li>
+                            <li><a href="https://acr.iitbombay.org/ways-of-giving/">Ways of Giving</a></li>
+                            <li><a href="https://acr.iitbombay.org/giving-back/#stories"> Power of your Gift</a></li>
+                            <li><a href="https://acr.iitbombay.org/giving-back/#campaigns">Current Campaigns</a></li>
+							<li><a href="https://acr.iitbombay.org/living-legacy-programme">Living Legacy Programme</a></li>
+                            <li><a href="https://acr.iitbombay.org/campaign/go-iitb-2025/">GO-IITB</a></li>
+                        </ul>
+                    </li>
+                    <li class="has-dropdown">
+                        <a href="https://acr.iitbombay.org/corporate-connect/">Corporate Philanthropy &amp; CSR Partnerships</a>
+                        <ul>
+                            <li><a href="https://acr.iitbombay.org/corporate-connect/#overview">Overview</a></li>
+                            <li><a href="https://acr.iitbombay.org/corporate-connect/#partner">Partnering with IITB</a></li>
+                            <!-- <li><a href="https://acr.iitbombay.org/corporate-connect/#csr">CSR</a></li> -->
+                            <li><a href="https://acr.iitbombay.org/corporate-connect/#testimonial">Testimonials</a></li>
+                            <li><a href="https://acr.iitbombay.org/corporate-connect/#key-partners">Key Partners</a></li>
+                            <li><a href="https://acr.iitbombay.org/corporate-connect/#cs">Case Studies</a></li>
+                            <li><a href="https://acr.iitbombay.org/corporate-connect/#recent-philanthropic-support">Recent Corporate Philanthropy &amp; CSR Partnerships</a></li>
+                            <li><a href="https://acr.iitbombay.org/csr-newsletter/">CSR Newsletter</a></li>
+                        </ul>
+                    </li>
+                    <li class="has-dropdown">
+                        <a href="#">Events</a>
+                        <ul>
+                            <li><a href="https://acr.iitbombay.org/events/upcoming-events/">Upcoming Events</a></li>
+                            <!-- <li><a href="https://acr.iitbombay.org/events/all-events/">Previous Events</a></li>
+                            <li><a href="https://acr.iitbombay.org/fan/">FAN</a></li>
+                            <li><a href="https://acr.iitbombay.org/dam/">DAM</a></li> -->
+                        </ul>
+                    </li>
+                    <li class="has-dropdown">
+                        <a href="javascript:void(0)">Resources</a>
+                        <ul>
+                            <li><a href="https://acr.iitbombay.org/resources/news/">News</a></li>
+                            <li><a href="https://acr.iitbombay.org/resources/newsletter/">Newsletters</a></li>
+                            <li><a href="https://acr.iitbombay.org/annual-reports/">Annual Reports </a></li>
+                            <li><a href="https://acr.iitbombay.org/media-gallery/">Media Gallery</a></li>
+                            <li><a href="https://acr.iitbombay.org/story/">Impact Stories</a></li>
+                            <li><a href="https://acr.iitbombay.org/useful-links/">Useful Links</a></li>
+                            <li><a href="#footer">Contact Us</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+
+            </nav>
+            <!--  <button class="button login">Login</button> -->
+        </aside>
+    </header>
+<main class="main-container">
+  <section class="comm-section pt-0 top-content-banner page-header-section">
+
+        
+       
+
+          <a href="https://acr.iitbombay.org/events_list/indore-alumni-connect-2026/" class=" ">
+            <div class="page-header page-header-sec-height page-header-height">
+              <div class="container">
+                <div class="ph-top-flex">
+                  <div class="ph-left">
+                    <div class="detail-page-header-left-content header-spacing">
+                      <h3 class="hdn_24_b blue js-animate-me">
+                        Upcoming Events
+                      </h3>
+                      <h2 class="hdn_48_sb js-animate-me">
+                        Indore Alumni Connect 2026                      </h2>
+                      <p class="txt_18_r js-animate-fade">
+                        On behalf of IIT Bombay, the IIT Bombay Alumni Association (IITBAA) welcomes alumni to the Indore Alumni Connect 2026. This special gathering, supported by the IIT Bombay Alumni Association – Indore Chapter, is an opportunity to reconnect with your IIT Bombay family, meet fellow alumni, and engage with the leadership of your Alma Mater and IITBAA.                      </p>
+                      <p class="txt_18_r js-animate-fade">
+                        November 21, 2026                      </p>
+                    </div>
+                  </div>
+                  <div class="ph-right js-animate-img">
+                    <div class="ph-img">
+                      <img width="1032" height="576" src="https://acr.iitbombay.org/wp-content/uploads/2026/10/image-1-.jpg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" decoding="async" srcset="https://acr.iitbombay.org/wp-content/uploads/2026/10/image-1-.jpg 1032w, https://acr.iitbombay.org/wp-content/uploads/2026/10/image-1--300x167.jpg 300w, https://acr.iitbombay.org/wp-content/uploads/2026/10/image-1--1024x572.jpg 1024w, https://acr.iitbombay.org/wp-content/uploads/2026/10/image-1--768x429.jpg 768w" sizes="(max-width: 1032px) 100vw, 1032px" />                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="page-div-absolute">
+                <div class="ph-img js-animate-img">
+                  <img width="1032" height="576" src="https://acr.iitbombay.org/wp-content/uploads/2026/10/image-1-.jpg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" decoding="async" srcset="https://acr.iitbombay.org/wp-content/uploads/2026/10/image-1-.jpg 1032w, https://acr.iitbombay.org/wp-content/uploads/2026/10/image-1--300x167.jpg 300w, https://acr.iitbombay.org/wp-content/uploads/2026/10/image-1--1024x572.jpg 1024w, https://acr.iitbombay.org/wp-content/uploads/2026/10/image-1--768x429.jpg 768w" sizes="(max-width: 1032px) 100vw, 1032px" />                </div>
+              </div>
+            </div>
+          </a>
+        
+
+
+      </section>
+  
+  <!-- Note: Hide as per BRD 19 -->
+  <!-- Tabs START -->
+  <section class="comm-section events-section" id="eveSec">
+    <div class="container">
+      <!-- <div id="content-1" class="tab-filter">
+        <ul class="tabs-view tabs-resources">
+                                    <li class="active-tab"><a href="https://acr.iitbombay.org/events/upcoming-events/">Upcoming Events</a></li>
+                          <li class=""><a href="https://acr.iitbombay.org/events/all-events/">All Events</a></li>
+                          <li class=""><a href="https://acr.iitbombay.org/fan/">Faculty Alumni Network</a></li>
+                          <li class=""><a href="https://acr.iitbombay.org/dam/">Distinguished Alumni Meet</a></li>
+                      
+        </ul>
+      </div> -->
+      <div class="tabs-content">
+        <div class="comm-section comm-less">
+          <!--<div class="title-sec">
+            <div class=" hdn_48_sb"> Upcoming Events</div>
+
+             <div class="filtersec">
+
+              <div class="input-icon-wrap case-study-input-wrap">
+                <span class="input-icon"><span class="material-symbols-sharp">
+                    search
+                  </span></span>
+                <input type="text" class="input-with-icon" id="search-1" placeholder="Search by Name">
+              </div>
+              <div class="input-icon-wrap case-study-input-wrap ui" id="example8">
+                <span class="input-icon"><span class="material-symbols-sharp">
+                    calendar_month
+                  </span></span>
+
+                <select class="filter-select input-with-icon" value-group="color" id="filters-1">
+                  <option value="">Search by year</option>
+                  
+                                                                                              <option value=".y2023">2023</option>
+                                                              <option value=".yyear">year</option>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              <option value=".y2021">2021</option>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              <option value=".y2024">2024</option>
+                                                                                                                                                                                                                                                                                                                                                                                                                                      <option value=".y2026">2026</option>
+                                                                                                                                                                                                                                                                                                                                                              <option value=".y2025">2025</option>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                  </select>
+              </div>
+            </div>
+          </div> -->
+          <div class="f-row f-3 f-1024-2 f-640-1 gridContainer">
+            <!--  -->
+
+
+            
+                            <!-- Note: Old $cnt > 1; new $cnt >= 2 as per BRD 19 as we omit the first event from the list-->
+                
+
+
+                            <!-- Note: Old $cnt > 1; new $cnt >= 2 as per BRD 19 as we omit the first event from the list-->
+                                                      <div class="f-col list-item y2026">
+                 
+
+                      <a href="https://acr.iitbombay.org/events_list/ieor-alumni-meet/" class="case-study-card js-animate-fade">
+
+                        <div class="case-study-image">
+                          <img width="1032" height="576" src="https://acr.iitbombay.org/wp-content/uploads/2026/10/ieor.jpg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" decoding="async" srcset="https://acr.iitbombay.org/wp-content/uploads/2026/10/ieor.jpg 1032w, https://acr.iitbombay.org/wp-content/uploads/2026/10/ieor-300x167.jpg 300w, https://acr.iitbombay.org/wp-content/uploads/2026/10/ieor-1024x572.jpg 1024w, https://acr.iitbombay.org/wp-content/uploads/2026/10/ieor-768x429.jpg 768w" sizes="(max-width: 1032px) 100vw, 1032px" />                        </div>
+                        <div class="case-study-content">
+                          <h4 class="hdn_24_b">IEOR Alumni Meet</h4>
+                          
+                          <div class="case-wrap">
+                            <p class="txt_18_r"> November 21, 2026 </p>
+                            <p class="txt_18_r">IIT Bombay, Main Gate Rd, IIT Area, Powai, Mumbai, Maharashtra, India</p>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                                  
+
+
+                            <!-- Note: Old $cnt > 1; new $cnt >= 2 as per BRD 19 as we omit the first event from the list-->
+                                                      <div class="f-col list-item y2026">
+                 
+
+                      <a href="https://acr.iitbombay.org/events_list/womens-hostel-celebration-lumina-connect/" class="case-study-card js-animate-fade">
+
+                        <div class="case-study-image">
+                          <img width="1364" height="576" src="https://acr.iitbombay.org/wp-content/uploads/2026/09/1364x576_lumina-1.jpg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" decoding="async" srcset="https://acr.iitbombay.org/wp-content/uploads/2026/09/1364x576_lumina-1.jpg 1364w, https://acr.iitbombay.org/wp-content/uploads/2026/09/1364x576_lumina-1-300x127.jpg 300w, https://acr.iitbombay.org/wp-content/uploads/2026/09/1364x576_lumina-1-1024x432.jpg 1024w, https://acr.iitbombay.org/wp-content/uploads/2026/09/1364x576_lumina-1-768x324.jpg 768w" sizes="(max-width: 1364px) 100vw, 1364px" />                        </div>
+                        <div class="case-study-content">
+                          <h4 class="hdn_24_b">Women Hostels&#8217; Reunion &amp; Lumina Connect</h4>
+                          
+                          <div class="case-wrap">
+                            <p class="txt_18_r"> December 19, 2026 </p>
+                            <p class="txt_18_r">TBA</p>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                                  
+
+
+                            <!-- Note: Old $cnt > 1; new $cnt >= 2 as per BRD 19 as we omit the first event from the list-->
+                                                      <div class="f-col list-item y2026">
+                 
+
+                      <a href="https://acr.iitbombay.org/events_list/alumni-day-2/" class="case-study-card js-animate-fade">
+
+                        <div class="case-study-image">
+                          <img width="1140" height="636" src="https://acr.iitbombay.org/wp-content/uploads/2026/10/1140x636_alumni-day.jpg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" decoding="async" srcset="https://acr.iitbombay.org/wp-content/uploads/2026/10/1140x636_alumni-day.jpg 1140w, https://acr.iitbombay.org/wp-content/uploads/2026/10/1140x636_alumni-day-300x167.jpg 300w, https://acr.iitbombay.org/wp-content/uploads/2026/10/1140x636_alumni-day-1024x571.jpg 1024w, https://acr.iitbombay.org/wp-content/uploads/2026/10/1140x636_alumni-day-768x428.jpg 768w" sizes="(max-width: 1140px) 100vw, 1140px" />                        </div>
+                        <div class="case-study-content">
+                          <h4 class="hdn_24_b">Alumni Day</h4>
+                          
+                          <div class="case-wrap">
+                            <p class="txt_18_r"> December 27, 2026 </p>
+                            <p class="txt_18_r">IIT Bombay Campus</p>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                                  
+
+
+            
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Give Back Section -->
+  <!-- Give Back Section -->
+    
+              <section class="comm-section give-back-section section-trigger blue-gredient-bg" id="11">
+          <div class="container">
+            <div class="f-row align-items-center">
+              <div class="w30 w-1024-100">
+                <div class="section-header">
+                  <h2 class="hdn_48_sb white js-animate-me">
+                    Give Back<br />
+To Make<br />
+A Difference                  </h2>
+                  <a href="https://acr.iitbombay.org/giving-back/ways-of-giving/" class="button white">
+                    <span>View ways of giving
+                      <span class="button-icon">
+                        <span class="material-symbols-sharp">
+                          <span>arrow_outward</span>
+                        </span>
+                      </span>
+                    </span>
+                    <span>View ways of giving
+                      <span class="button-icon">
+                        <span class="material-symbols-sharp">
+                          <span>arrow_outward</span>
+                        </span>
+                      </span>
+                    </span>
+                  </a>
+                </div>
+              </div>
+              <div class="w70 w-1024-100">
+                <div class="gbd-images">
+                                            <a href="https://acr.iitbombay.org/causes-to-donate/" class="gbd-wrap">
+                            <div class="gbd-img">
+                              <img src="https://acr.iitbombay.org/wp-content/uploads/2022/12/Institute-Development-small-370x258-1.webp" alt="Logo" width="100%" height="100%" loading="lazy" />
+                            </div>
+                            <div class="gbd-title">
+                              <p class="txt_18_b white">Institute Development </p>
+                            </div>
+                          </a>
+                                            <a href="https://acr.iitbombay.org/giving-back/scholarship-and-students-aid/" class="gbd-wrap">
+                            <div class="gbd-img">
+                              <img src="https://acr.iitbombay.org/wp-content/uploads/2022/12/Student-Aid-small-370x258-1.webp" alt="Logo" width="100%" height="100%" loading="lazy" />
+                            </div>
+                            <div class="gbd-title">
+                              <p class="txt_18_b white">Student Aid</p>
+                            </div>
+                          </a>
+                                            <a href="https://acr.iitbombay.org/batch-legacy-givingback/" class="gbd-wrap">
+                            <div class="gbd-img">
+                              <img src="https://acr.iitbombay.org/wp-content/uploads/2022/12/Batch-Legacy_300.webp" alt="Logo" width="100%" height="100%" loading="lazy" />
+                            </div>
+                            <div class="gbd-title">
+                              <p class="txt_18_b white">Batch Legacy</p>
+                            </div>
+                          </a>
+                                            <a href="https://acr.iitbombay.org/current-campaign/" class="gbd-wrap">
+                            <div class="gbd-img">
+                              <img src="https://acr.iitbombay.org/wp-content/uploads/2022/12/Current-Campaign_370x258.webp" alt="Logo" width="100%" height="100%" loading="lazy" />
+                            </div>
+                            <div class="gbd-title">
+                              <p class="txt_18_b white">Current Campaigns</p>
+                            </div>
+                          </a>
+                                            <a href="https://acr.iitbombay.org/centres-of-excellence/" class="gbd-wrap">
+                            <div class="gbd-img">
+                              <img src="https://acr.iitbombay.org/wp-content/uploads/2022/11/Centre-of-Excellence_370x258-1.webp" alt="Logo" width="100%" height="100%" loading="lazy" />
+                            </div>
+                            <div class="gbd-title">
+                              <p class="txt_18_b white">Centers of Excellence</p>
+                            </div>
+                          </a>
+                                            <a href="https://acr.iitbombay.org/giving-back/student-housing/" class="gbd-wrap">
+                            <div class="gbd-img">
+                              <img src="https://acr.iitbombay.org/wp-content/uploads/2022/12/Student-Housing-small-370x258-1.webp" alt="Logo" width="100%" height="100%" loading="lazy" />
+                            </div>
+                            <div class="gbd-title">
+                              <p class="txt_18_b white">Student Housing</p>
+                            </div>
+                          </a>
+                                            <a href="https://acr.iitbombay.org/giving-back/faculty/" class="gbd-wrap">
+                            <div class="gbd-img">
+                              <img src="https://acr.iitbombay.org/wp-content/uploads/2022/12/Faculty-small_370x258.webp" alt="Logo" width="100%" height="100%" loading="lazy" />
+                            </div>
+                            <div class="gbd-title">
+                              <p class="txt_18_b white">Faculty</p>
+                            </div>
+                          </a>
+                                            <a href="https://acr.iitbombay.org/giving-back/entrepreneurship/" class="gbd-wrap">
+                            <div class="gbd-img">
+                              <img src="https://acr.iitbombay.org/wp-content/uploads/2022/12/Giving-Back-Enter_370x258.webp" alt="Logo" width="100%" height="100%" loading="lazy" />
+                            </div>
+                            <div class="gbd-title">
+                              <p class="txt_18_b white">Entrepreneurship</p>
+                            </div>
+                          </a>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      
+  </main><!-- #main -->
+
+<footer id="footer">
+
+    <div class="container">
+        <div class="footer-wrap">
+            <div class="f-row">
+                <div class="w40  w-1024-100">
+                    <a class="footer-logo" href="https://acr.iitbombay.org/">
+                        <img src="https://acr.iitbombay.org/wp-content/themes/iitbombay-theme/assets/img/footer-logo.svg" alt="Logo" width="100%" height="100%" loading="eager" />
+                    </a>
+                    <p class="txt_16_r borderColor">
+                        Main Gate Rd, IIT Area, Powai, Mumbai, Maharashtra 400076
+                    </p>
+                    <a href="https://goo.gl/maps/qaoXRqYen3bt2Ygr9" target="_blank" rel="noopener noreferrer" class="button link">
+                        <span>
+                            <span class="button-icon">
+                                <span class="material-symbols-sharp">
+                                    <span>location_on</span>
+                                </span>
+                            </span>
+                            LOCATION
+                            <span class="button-icon">
+                                <span class="material-symbols-sharp">
+                                    <span>arrow_outward</span>
+                                </span>
+                            </span>
+                        </span>
+                        <span>
+                            <span class="button-icon">
+                                <span class="material-symbols-sharp">
+                                    <span>location_on</span>
+                                </span>
+                            </span>
+                            LOCATION
+                            <span class="button-icon">
+                                <span class="material-symbols-sharp">
+                                    <span>arrow_outward</span>
+                                </span>
+                            </span>
+                        </span>
+                        <!-- span. -->
+                    </a>
+                </div>
+                <div class="w60 w-1024-100">
+                    <div class="footer-right">
+                        <div class="footer-links-wrap">
+                            <p class="link-title txt_18_b">Quick links</p>
+                            <ul class="footer-ql">
+                            <li>
+                                    <a href="https://acr.iitbombay.org" class="txt_18_r borderColor">Home</a>
+                                </li>
+                                <li>
+                                    <a href="https://acr.iitbombay.org/about/" class="txt_18_r borderColor">About</a>
+                                </li>
+                                <li>
+                                    <a href="https://acr.iitbombay.org/giving-back/" class="txt_18_r borderColor">Giving Back</a>
+                                </li>
+                                <li>
+                                    <a href="https://acr.iitbombay.org/stay-connected/" class="txt_18_r borderColor">Alumni Corner</a>
+                                </li>
+                                <li>
+                                    <a href="https://acr.iitbombay.org/corporate-connect/" class="txt_18_r borderColor">Corporate Connect</a>
+                                </li>
+                                <li>
+                                    <a href="https://acr.iitbombay.org/donor-wall/" class="txt_18_r borderColor">Donor Wall</a>
+                                </li>
+                                <li>
+                                    <a href="https://acr.iitbombay.org/upcoming-events/" class="txt_18_r borderColor">Events</a>
+                                </li>
+                                <li>
+                                    <a href="https://acr.iitbombay.org/distinguished-alumnus/" class="txt_18_r borderColor">Awards</a>
+                                </li>
+                                <li>
+                                    <a href="https://acr.iitbombay.org/batch-legacy/" class="txt_18_r borderColor">Batch Legacy</a>
+                                </li>
+                                <li>
+                                    <a href="https://acr.iitbombay.org/news/" class="txt_18_r borderColor">Resources</a>
+                                </li>
+                                <li>
+                                    <a href="https://acr.iitbombay.org/privacy-policy/" class="txt_18_r borderColor">Privacy Policy</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- <div class="footer-links-wrap">
+                            <p class="link-title txt_18_b">Connect</p>
+                            <ul>
+                                <li>
+                                    <a href="#" class="txt_18_r borderColor">Login</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="txt_18_r borderColor">Contact</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="txt_18_r borderColor">Privacy Policy</a>
+                                </li>
+                            </ul>
+                        </div> -->
+                        <div class="footer-links-wrap">
+                            <p class="link-title txt_18_b">Contact us</p>
+                            <ul>
+                                <!-- <li>
+                                    <a href="tel:9122-2576-4889" class="txt_18_r borderColor">9122-2576-4889</a>, <a href="tel:2576-7023" class="txt_18_r borderColor">2576-7023</a>
+                                </li> -->
+                                <li>
+                                    <a href="mailto:dean.acr.office@iitbombay.org" class="txt_18_r borderColor">dean.acr.office@iitbombay.org</a>
+                                </li>
+                            </ul>
+                            <div class="social">
+                                <a href="https://www.linkedin.com/company/dean-acr-iit-bombay/?viewAsMember=true" class="social-icon" target="_blank">
+                                    <img src="https://acr.iitbombay.org/wp-content/themes/iitbombay-theme/assets/img/linkedin.svg" alt="Logo" width="100%" height="100%" loading="lazy" />
+                                </a>
+                                <a href="https://www.facebook.com/deanacriitbombay" class="social-icon" target="_blank">
+                                    <img src="https://acr.iitbombay.org/wp-content/themes/iitbombay-theme/assets/img/facebook.svg" alt="Logo" width="100%" height="100%" loading="lazy" />
+                                </a>
+                                <a href="https://x.com/DeanACRIITB" class="social-icon" target="_blank">
+                                    <img src="https://acr.iitbombay.org/wp-content/themes/iitbombay-theme/assets/img/twitter.svg" alt="Logo" width="100%" height="100%" loading="lazy" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copy">
+            <a href="#" class="copy">2026 IIT Bombay. All Rights Reserved.</a>
+            <a style="opacity:0; position: absolute; z-index: -1;" href="https://leo9studio.com" class="copy-2">Designed and Developed by Leo9 Studio</a>
+        </div>
+    </div>
+</footer>
+<!-- ====== SCROLL TO TOP BUTTON ====== -->
+<button class="scrollToTopBtn">
+    <span class="material-symbols-sharp">
+        keyboard_arrow_up
+    </span>
+</button>
+<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/wp-*.php","/wp-admin/*","/wp-content/uploads/*","/wp-content/*","/wp-content/plugins/*","/wp-content/themes/iitbombay-theme/*","/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+    <div id="floating-buttons">
+                    <button id="donate-btn" type="button">Donate Now</button>
+                <button id="scroll-up" title="Scroll to Top" type="button">
+            <span class="button-icon">
+                <span class="material-symbols-sharp">
+                    <span>arrow_upward</span>
+                </span>
+            </span>
+        </button>
+        <button id="scroll-down" title="Scroll to Bottom" type="button">
+            <span class="button-icon">
+                <span class="material-symbols-sharp">
+                    <span>arrow_downward</span>
+                </span>
+            </span>
+        </button>
+    </div>
+    			<script>
+				( () => {
+					const lazyloadRunObserver = () => {
+						const lazyloadBackgrounds = document.querySelectorAll( `.e-con.e-parent:not(.e-lazyloaded)` );
+						const lazyloadBackgroundObserver = new IntersectionObserver( ( entries ) => {
+							entries.forEach( ( entry ) => {
+								if ( entry.isIntersecting ) {
+									let lazyloadBackground = entry.target;
+									if( lazyloadBackground ) {
+										lazyloadBackground.classList.add( 'e-lazyloaded' );
+									}
+									lazyloadBackgroundObserver.unobserve( entry.target );
+								}
+							});
+						}, { rootMargin: '200px 0px 200px 0px' } );
+						lazyloadBackgrounds.forEach( ( lazyloadBackground ) => {
+							lazyloadBackgroundObserver.observe( lazyloadBackground );
+						} );
+					};
+					const events = [
+						'DOMContentLoaded',
+						'elementor/lazyload/observe',
+					];
+					events.forEach( ( event ) => {
+						document.addEventListener( event, lazyloadRunObserver );
+					} );
+				} )();
+			</script>
+			<script async data-wp-strategy="async" id="add-to-calendar-button-js" src="https://acr.iitbombay.org/wp-content/plugins/add-to-calendar-button/lib/atcb.min.js?ver=2.15.0"></script>
+<script id="wp-hooks-js" src="https://acr.iitbombay.org/wp-includes/js/dist/hooks.min.js?ver=f0f188028580e8dc1255"></script>
+<script id="wp-i18n-js" src="https://acr.iitbombay.org/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"></script>
+<script id="wp-i18n-js-after">
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+//# sourceURL=wp-i18n-js-after
+</script>
+<script id="swv-js" src="https://acr.iitbombay.org/wp-content/plugins/contact-form-7/includes/swv/js/index.js?ver=6.1.7"></script>
+<script id="contact-form-7-js-before">
+var wpcf7 = {
+    "api": {
+        "root": "https:\/\/acr.iitbombay.org\/wp-json\/",
+        "namespace": "contact-form-7\/v1"
+    }
+};
+//# sourceURL=contact-form-7-js-before
+</script>
+<script id="contact-form-7-js" src="https://acr.iitbombay.org/wp-content/plugins/contact-form-7/includes/js/index.js?ver=6.1.7"></script>
+<script id="floating-buttons-script-js-extra">
+var floatingButtonData = {"donate_url":"https://portal.acr.iitbombay.org/payments","enable_up":"1","enable_down":"1"};
+//# sourceURL=floating-buttons-script-js-extra
+</script>
+<script id="floating-buttons-script-js" src="https://acr.iitbombay.org/wp-content/plugins/floating-buttons-plugin/script.js?ver=7.1.3"></script>
+<script id="jquery-js-js" src="https://code.jquery.com/jquery-3.6.0.min.js?ver=1.1"></script>
+<script id="swiper-bundle-js-js" src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js?ver=1.1"></script>
+<script id="jquery-ui-js-js" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js?ver=1.1"></script>
+<script id="gsap-js-js" src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js?ver=1.1"></script>
+<script id="scroll-trigger-js-js" src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/ScrollTrigger.min.js?ver=1.1"></script>
+<script id="splittext-js-js" src="https://acr.iitbombay.org/wp-content/themes/iitbombay-theme/assets/js/SplitText3.min.js?ver=1.1"></script>
+<script id="lottie-js-js" src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.6.6/lottie.min.js?ver=1.1"></script>
+<script id="sw-js" src="https://acr.iitbombay.org/wp-content/themes/iitbombay-theme/assets/js/sw.js?ver=1.1"></script>
+<script id="common-js-js" src="https://acr.iitbombay.org/wp-content/themes/iitbombay-theme/assets/js/common.js?ver=1.1"></script>
+<script id="intl-tel-js-js" src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+<script id="intl-tel-utils-js" src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
+<script id="eael-general-js-extra">
+var localize = {"ajaxurl":"https://acr.iitbombay.org/wp-admin/admin-ajax.php","nonce":"9996248ab0","i18n":{"added":"Added ","compare":"Compare","loading":"Loading..."},"eael_translate_text":{"required_text":"is a required field","invalid_text":"Invalid","billing_text":"Billing","shipping_text":"Shipping","fg_mfp_counter_text":"of"},"page_permalink":"https://acr.iitbombay.org/events/upcoming-events/","cart_redirectition":"","cart_page_url":"","el_breakpoints":{"mobile":{"label":"Mobile Portrait","value":767,"default_value":767,"direction":"max","is_enabled":true},"mobile_extra":{"label":"Mobile Landscape","value":880,"default_value":880,"direction":"max","is_enabled":false},"tablet":{"label":"Tablet Portrait","value":1024,"default_value":1024,"direction":"max","is_enabled":true},"tablet_extra":{"label":"Tablet Landscape","value":1200,"default_value":1200,"direction":"max","is_enabled":false},"laptop":{"label":"Laptop","value":1366,"default_value":1366,"direction":"max","is_enabled":false},"widescreen":{"label":"Widescreen","value":2400,"default_value":2400,"direction":"min","is_enabled":false}}};
+//# sourceURL=eael-general-js-extra
+</script>
+<script id="eael-general-js" src="https://acr.iitbombay.org/wp-content/plugins/essential-addons-for-elementor-lite/assets/front-end/js/view/general.min.js?ver=6.8.3"></script>
+<script id="ivory-search-scripts-js-extra">
+var IvorySearchVars = {"is_analytics_enabled":"1"};
+//# sourceURL=ivory-search-scripts-js-extra
+</script>
+<script id="ivory-search-scripts-js" src="https://acr.iitbombay.org/wp-content/plugins/add-search-to-menu/public/js/ivory-search.min.js?ver=5.5.19"></script>
+<script id="wp-emoji-settings" type="application/json">
+{"baseUrl":"https://s.w.org/images/core/emoji/17.0.2/72x72/","ext":".png","svgUrl":"https://s.w.org/images/core/emoji/17.0.2/svg/","svgExt":".svg","source":{"concatemoji":"https://acr.iitbombay.org/wp-includes/js/wp-emoji-release.min.js?ver=7.1.3"}}
+</script>
+<script type="module">
+/*! This file is auto-generated */
+var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof HTMLScriptElement))throw new Error("Element missing: "+e);const r=JSON.parse(t.text),s=(window._wpemojiSettings=r,"wpEmojiSettingsSupports"),o=["flag","emoji"];function i(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(s,JSON.stringify(t))}catch(e){}}function c(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0);const r=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);return t.every((e,t)=>e===r[t])}function p(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var n=e.getImageData(16,16,1,1);for(let e=0;e<n.data.length;e++)if(0!==n.data[e])return!1;return!0}function u(e,t,n,r){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!r(e,"\ud83e\u1fac8")}return!1}function f(e,t,n,r){let a;const s=(a="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):document.createElement("canvas")).getContext("2d",{willReadFrequently:!0}),o=(s.textBaseline="top",s.font="600 32px Arial",{});return e.forEach(e=>{o[e]=t(s,e,n,r)}),o}function a(e){var t=document.createElement("script");t.src=e,t.defer=!0,document.head.appendChild(t)}r.supports={everything:!0,everythingExceptFlag:!0},new Promise(t=>{let n=function(){try{var e=JSON.parse(sessionStorage.getItem(s));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(o),u.toString(),c.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"});const a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=e=>{i(n=e.data),a.terminate(),t(n)})}catch(e){}i(n=f(o,u,c,p))}t(n)}).then(e=>{for(const n in e)r.supports[n]=e[n],r.supports.everything=r.supports.everything&&r.supports[n],"flag"!==n&&(r.supports.everythingExceptFlag=r.supports.everythingExceptFlag&&r.supports[n]);var t;r.supports.everythingExceptFlag=r.supports.everythingExceptFlag&&!r.supports.flag,r.supports.everything||((t=r.source||{}).concatemoji?a(t.concatemoji):t.wpemoji&&t.twemoji&&(a(t.twemoji),a(t.wpemoji)))});
+//# sourceURL=https://acr.iitbombay.org/wp-includes/js/wp-emoji-loader.min.js
+</script>
+
+</body>
+
+</html>

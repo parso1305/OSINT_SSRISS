@@ -1,0 +1,204 @@
+{
+  "requests_used": 28,
+  "entries": [
+    {
+      "url": "https://www.iitb.ac.in/robots.txt",
+      "final_url": "https://www.iitb.ac.in/robots.txt",
+      "status": 200,
+      "content_type": "text/plain",
+      "fetched_at": "2026-10-16T13:53:17Z",
+      "bytes": 2027,
+      "file": "www.iitb.ac.in__robots_txt.txt"
+    },
+    {
+      "url": "https://www.iitb.ac.in/",
+      "final_url": "https://www.iitb.ac.in/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:53:20Z",
+      "bytes": 331139,
+      "file": "www.iitb.ac.in__root.html"
+    },
+    {
+      "url": "https://www.iitb.ac.in/events",
+      "final_url": "https://www.iitb.ac.in/events",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:53:45Z",
+      "bytes": 543244,
+      "file": "www.iitb.ac.in__events.html"
+    },
+    {
+      "url": "https://www.iitb.ac.in/institute-colloquium",
+      "final_url": "https://www.iitb.ac.in/institute-colloquium",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:53:48Z",
+      "bytes": 132860,
+      "file": "www.iitb.ac.in__institute_colloquium.html"
+    },
+    {
+      "url": "https://www.iitb.ac.in/news",
+      "final_url": "https://www.iitb.ac.in/news",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:53:51Z",
+      "bytes": 174616,
+      "file": "www.iitb.ac.in__news.html"
+    },
+    {
+      "url": "https://www.iitb.ac.in/announcements",
+      "final_url": "https://www.iitb.ac.in/announcements",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:53:54Z",
+      "bytes": 138814,
+      "file": "www.iitb.ac.in__announcements.html"
+    },
+    {
+      "url": "https://www.iitb.ac.in/rss.xml",
+      "final_url": "https://www.iitb.ac.in/rss.xml",
+      "status": 200,
+      "content_type": "application/rss+xml; charset=utf-8",
+      "fetched_at": "2026-10-16T13:53:57Z",
+      "bytes": 2412569,
+      "file": "www.iitb.ac.in__rss_xml.xml"
+    },
+    {
+      "url": "https://www.iitb.ac.in/sitemap.xml",
+      "final_url": null,
+      "status": 404,
+      "content_type": null,
+      "fetched_at": null,
+      "bytes": 0,
+      "file": null,
+      "error": "HTTP 404 Not Found"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/institute-lecture-saral-ai-democratising-scholarly-work-transforming-accessible-multilingual",
+      "final_url": "https://www.iitb.ac.in/event/institute-lecture-saral-ai-democratising-scholarly-work-transforming-accessible-multilingual",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:55:41Z",
+      "bytes": 135202,
+      "file": "www.iitb.ac.in__event_institute_lecture_saral_ai_democratising_scholarly_work_transforming_accessible_multilingual.html"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/institute-lecture-taming-turbulence",
+      "final_url": "https://www.iitb.ac.in/event/institute-lecture-taming-turbulence",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:55:44Z",
+      "bytes": 132868,
+      "file": "www.iitb.ac.in__event_institute_lecture_taming_turbulence.html"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/international-conference-quantum-dynamics",
+      "final_url": "https://www.iitb.ac.in/event/international-conference-quantum-dynamics",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:55:47Z",
+      "bytes": 129880,
+      "file": "www.iitb.ac.in__event_international_conference_quantum_dynamics.html"
+    },
+    {
+      "url": "https://acr.iitbombay.org/robots.txt",
+      "final_url": "https://acr.iitbombay.org/robots.txt",
+      "status": 200,
+      "content_type": "text/plain; charset=utf-8",
+      "fetched_at": "2026-10-16T13:56:12Z",
+      "bytes": 179,
+      "file": "acr.iitbombay.org__robots_txt.txt"
+    },
+    {
+      "url": "https://acr.iitbombay.org/",
+      "final_url": "https://acr.iitbombay.org/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:56:15Z",
+      "bytes": 219520,
+      "file": "acr.iitbombay.org__root.html"
+    },
+    {
+      "url": "https://acr.iitbombay.org/events/upcoming-events/",
+      "final_url": "https://acr.iitbombay.org/events/upcoming-events/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:56:34Z",
+      "bytes": 98961,
+      "file": "acr.iitbombay.org__events_upcoming_events.html"
+    },
+    {
+      "url": "https://acr.iitbombay.org/sitemap.xml",
+      "final_url": "https://acr.iitbombay.org/sitemap.xml",
+      "status": 200,
+      "content_type": "application/xml",
+      "fetched_at": "2026-10-16T13:56:37Z",
+      "bytes": 86769,
+      "file": "acr.iitbombay.org__sitemap_xml.xml"
+    },
+    {
+      "url": "https://acr.iitbombay.org/feed/",
+      "final_url": "https://acr.iitbombay.org/feed/",
+      "status": 200,
+      "content_type": "application/rss+xml; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:56:40Z",
+      "bytes": 10078,
+      "file": "acr.iitbombay.org__feed.xml"
+    },
+    {
+      "url": "https://acr.iitbombay.org/events_list/ieor-alumni-meet/",
+      "final_url": "https://acr.iitbombay.org/events_list/ieor-alumni-meet/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:56:43Z",
+      "bytes": 101400,
+      "file": "acr.iitbombay.org__events_list_ieor_alumni_meet.html"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/5th-japan-india-forum",
+      "final_url": "https://www.iitb.ac.in/event/5th-japan-india-forum",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:57:47Z",
+      "bytes": 130533,
+      "file": "www.iitb.ac.in__event_5th_japan_india_forum.html"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/moving-towards-inclusive-neuro-digital-world-mindworkshop",
+      "final_url": "https://www.iitb.ac.in/event/moving-towards-inclusive-neuro-digital-world-mindworkshop",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:57:50Z",
+      "bytes": 131377,
+      "file": "www.iitb.ac.in__event_moving_towards_inclusive_neuro_digital_world_mindworkshop.html"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/birth-anniversary-gandhi-ji-and-shastri-ji-1",
+      "final_url": "https://www.iitb.ac.in/event/birth-anniversary-gandhi-ji-and-shastri-ji-1",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:57:53Z",
+      "bytes": 135661,
+      "file": "www.iitb.ac.in__event_birth_anniversary_gandhi_ji_and_shastri_ji_1.html"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/national-engineers-day-1",
+      "final_url": "https://www.iitb.ac.in/event/national-engineers-day-1",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:57:56Z",
+      "bytes": 131955,
+      "file": "www.iitb.ac.in__event_national_engineers_day_1.html"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/van-mahotsav-2026",
+      "final_url": "https://www.iitb.ac.in/event/van-mahotsav-2026",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-16T13:57:59Z",
+      "bytes": 130288,
+      "file": "www.iitb.ac.in__event_van_mahotsav_2026.html"
+    }
+  ]
+}
