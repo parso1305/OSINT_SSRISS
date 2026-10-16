@@ -137,15 +137,15 @@ def test_case09_unparseable_detail_dates_never_erase_stored_values(tmp_path, log
 
     assert second["detail_status"]["ok"] == 10
     assert second["counts"] == {"new": 0, "existing": 10, "changed": 0}   # was changed=10
-    erased = [u for u in urls if before[u]["ends_at"] and not after[u]["ends_at"]]
+    erased = [u for u in urls if before[u]["event_end"] and not after[u]["event_end"]]
     assert erased == []                                                    # was 10/10
-    assert sum(before[u]["ends_at"] is not None for u in urls) == 10
+    assert sum(before[u]["event_end"] is not None for u in urls) == 10
     for u in urls:
-        assert (after[u]["starts_at"], after[u]["ends_at"], after[u]["content_hash"]) == \
-               (before[u]["starts_at"], before[u]["ends_at"], before[u]["content_hash"])
+        assert (after[u]["event_start"], after[u]["event_end"], after[u]["content_hash"]) == \
+               (before[u]["event_start"], before[u]["event_end"], before[u]["content_hash"])
         assert after[u]["detail_fetch_status"] == "ok"
-    assert log.count('field=ends_at raw="25 September 2025"') == 10
-    assert log.count('field=starts_at raw="25 September 2025"') == 10     # listing fallback used, still loud
+    assert log.count('field=event_end raw="25 September 2025"') == 10
+    assert log.count('field=event_start raw="25 September 2025"') == 10     # listing fallback used, still loud
     assert log.count("[WARNING] logger=web_monitor PARSE_WARNING source_id=iit_bombay_hss_seminars") == 20
 
 
@@ -156,7 +156,7 @@ def test_case09_fresh_db_keeps_listing_start_and_warns(tmp_path, log_stream):
             site.overrides["/events/seminar-talk/" + slug] = textual_dates(slug)
         result = run_source(hss_config(site), db_path=str(tmp_path / "t09b.db"))
     assert result["invalid"] == [] and result["counts"]["new"] == 10
-    assert all(r["starts_at"] and r["ends_at"] is None for r in result["records"])   # nothing stored to keep
+    assert all(r["event_start"] and r["event_end"] is None for r in result["records"])   # nothing stored to keep
     assert log_stream.getvalue().count("PARSE_WARNING") == 20
 
 
@@ -171,9 +171,9 @@ def test_case09_listing_and_detail_dates_unparseable_rejects_new_and_keeps_store
             site.overrides["/events/seminar-talk/" + slug] = textual_dates(slug)
         site.overrides[LISTING_PATH] = re.sub(r'(icon-calendar"></i>)[^<]+', r"\g<1>2025/09/25 ", listing_html())
         second = run_source(hss_config(site), db_path=db)
-    assert len(second["invalid"]) == 10 and all("starts_at: required" in i["errors"] for i in second["invalid"])
+    assert len(second["invalid"]) == 10 and all("event_start: required" in i["errors"] for i in second["invalid"])
     assert records_checksum(db) == before
-    assert get_record(db, first["records"][0]["item_url"])["starts_at"] == first["records"][0]["starts_at"]
+    assert get_record(db, first["records"][0]["item_url"])["event_start"] == first["records"][0]["event_start"]
     assert "PARSE_WARNING" in log_stream.getvalue() and "VALIDATION_FAILURE" in log_stream.getvalue()
 
 
@@ -256,8 +256,10 @@ def test_listing_url_with_trailing_slash_is_fetched_as_given_and_redirects_are_l
 # -- audit 8.3 (CMI): date-only events -------------------------------------------------------------------
 
 def base_record(**fields) -> dict:
-    record = {"item_url": "https://x.org/e#/item/abc", "source_id": "s", "institution": "I", "content_type": "event",
-              "title": "T", "starts_at": "2026-10-02", "timezone": "Asia/Kolkata", "detail_fetch_status": "not_attempted"}
+    # source_url, fetched_at and http_status became REQUIRED in the shared-schema alignment (Part 0).
+    record = {"item_url": "https://x.org/e#/item/abc", "source_name": "s", "institution": "I", "item_type": "event",
+              "title": "T", "event_start": "2026-10-02", "timezone": "Asia/Kolkata", "detail_fetch_status": "not_attempted",
+              "source_url": "https://x.org/e", "fetched_at": "2026-10-01T00:00:00Z", "http_status": 200}
     record.update(fields)
     return record
 
@@ -265,10 +267,10 @@ def base_record(**fields) -> dict:
 def test_date_only_events_validate_with_their_rules():
     from src.schema import validate_record
     assert validate_record(base_record()) == []
-    assert validate_record(base_record(ends_at="2026-10-03")) == []
+    assert validate_record(base_record(event_end="2026-10-03")) == []
     assert validate_record(base_record(timezone=None)) == \
-        ["timezone: required when starts_at is date-only (it is a local calendar date)"]
-    assert validate_record(base_record(ends_at="2026-10-03T10:00:00Z")) == ["ends_at: must be date-only exactly when starts_at is"]
-    assert validate_record(base_record(ends_at="2026-10-01")) == ["ends_at: earlier than starts_at"]
-    assert any("starts_at: expected" in e for e in validate_record(base_record(starts_at="2026-02-30")))
-    assert any("listing_fetched_at: expected" in e for e in validate_record(base_record(listing_fetched_at="2026-10-02")))
+        ["timezone: required when event_start is date-only (it is a local calendar date)"]
+    assert validate_record(base_record(event_end="2026-10-03T10:00:00Z")) == ["event_end: must be date-only exactly when event_start is"]
+    assert validate_record(base_record(event_end="2026-10-01")) == ["event_end: earlier than event_start"]
+    assert any("event_start: expected" in e for e in validate_record(base_record(event_start="2026-02-30")))
+    assert any("fetched_at: expected" in e for e in validate_record(base_record(fetched_at="2026-10-02")))

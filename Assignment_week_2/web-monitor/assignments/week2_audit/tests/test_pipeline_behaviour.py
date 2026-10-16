@@ -82,10 +82,10 @@ def test_03_enrichment_distribution_and_merge_rule(tmp_path, evidence):
         by_status[r["detail_fetch_status"]] = by_status.get(r["detail_fetch_status"], 0) + 1
     evidence("stored rows by detail_fetch_status:", by_status)
 
-    listing = {"item_url": "https://example.org/e/1", "title": "Listing title", "venue": "Room A",
+    listing = {"item_url": "https://example.org/e/1", "title": "Listing title", "location": "Room A",
                "description": "listing description", "category": "Seminar"}
     detail = {"item_url": "https://elsewhere.example/other", "title": "Detail title | Humanities and Social Sciences",
-              "venue": "", "description": None, "speaker": "Dr Jane Roe", "event_type": "Talk",
+              "location": "", "description": None, "speaker": "Dr Jane Roe", "event_type": "Talk",
               "detail_fetch_status": "forged-by-detail"}
     merged = merge_listing_and_detail(listing, detail)
     evidence("crafted listing:", listing, "crafted detail:", detail, "merged:", merged)
@@ -102,7 +102,7 @@ def test_03_enrichment_distribution_and_merge_rule(tmp_path, evidence):
 
     assert result["detail_status"] == {"ok": 10, "failed": 0, "not_attempted": 10}
     assert merged["title"] == detail["title"]                      # detail wins
-    assert merged["venue"] == "Room A"                             # empty detail value does not erase
+    assert merged["location"] == "Room A"                             # empty detail value does not erase
     assert merged["description"] == "listing description"          # None does not erase
     assert merged["item_url"] == listing["item_url"]               # item_url always from listing
     assert "detail_fetch_status" not in merged                     # provenance key not taken from detail
@@ -127,8 +127,8 @@ def test_04_normalization_rules(tmp_path, evidence):
         if rec["description"] and re.match(r"(?i)(abstract|description)\s*:", rec["description"]):
             failures.append(f"label kept: {slug}")
     titles_with_suffix = [r["title"] for r in rows.values() if " | Humanities" in (r["title"] or "")]
-    bad_utc = [(r["item_url"], r["starts_at"], r["ends_at"]) for r in rows.values()
-               if not UTC_Z.match(r["starts_at"] or "") or (r["ends_at"] and not UTC_Z.match(r["ends_at"]))]
+    bad_utc = [(r["item_url"], r["event_start"], r["event_end"]) for r in rows.values()
+               if not UTC_Z.match(r["event_start"] or "") or (r["event_end"] and not UTC_Z.match(r["event_end"]))]
     evidence(f"titles still carrying the site suffix: {titles_with_suffix}", f"non-UTC-Z timestamps: {bad_utc}")
 
     evidence("--- IST display (detail page visible text) vs stored UTC, 3 records ---")
@@ -137,13 +137,13 @@ def test_04_normalization_rules(tmp_path, evidence):
             ".field--name-field-event-date time").get_text(strip=True)          # e.g. 'Thu, 09/25/2025 - 15:30'
         ist = datetime.strptime(visible, "%a, %m/%d/%Y - %H:%M").replace(tzinfo=timezone(timedelta(hours=5, minutes=30)))
         expected = ist.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        evidence(f"{slug[:40]:40} visible IST={visible!r} -> UTC {expected} | stored starts_at={rows[slug]['starts_at']} "
+        evidence(f"{slug[:40]:40} visible IST={visible!r} -> UTC {expected} | stored event_start={rows[slug]['event_start']} "
                  f"| timezone={rows[slug]['timezone']}")
-        if expected != rows[slug]["starts_at"]:
+        if expected != rows[slug]["event_start"]:
             failures.append(f"IST/UTC mismatch {slug}")
 
-    online = {r["venue"]: r["is_online"] for r in rows.values()}
-    evidence("venue -> is_online:", online)
+    online = {r["location"]: r["is_online"] for r in rows.values()}
+    evidence("location -> is_online:", online)
     babones = rows[TRACING]["speakers"]
     evidence(f"affiliation split (Tracing): {babones}")
     evidence(f"failures: {failures}")
@@ -276,8 +276,8 @@ def test_09_date_format_changed(tmp_path, log_stream, evidence, variant):
         after = get_record(db, site.url + DETAIL_PREFIX + ISLANDS)
     log = log_stream.getvalue()[mark:]
     evidence(f"counts={result['counts']} detail={result['detail_status']} invalid={len(result['invalid'])}",
-             f"baseline (before format change): starts_at={baseline and baseline['starts_at']} ends_at={baseline and baseline['ends_at']}",
-             f"after format change:            starts_at={after and after['starts_at']} ends_at={after and after['ends_at']}",
+             f"baseline (before format change): event_start={baseline and baseline['event_start']} event_end={baseline and baseline['event_end']}",
+             f"after format change:            event_start={after and after['event_start']} event_end={after and after['event_end']}",
              f"first invalid: {result['invalid'][:1]}",
              "--- WARNING/ERROR lines ---", lines(log, "[WARNING]", "[ERROR]") or "(none)",
              lines(log, "VALIDATE", "STORE"))
@@ -285,8 +285,8 @@ def test_09_date_format_changed(tmp_path, log_stream, evidence, variant):
     if variant == "detail_and_listing_dates_unparseable":
         assert result["invalid"] and "VALIDATION_FAILURE" in log      # loud: records rejected
     else:
-        # starts_at survives via the listing fallback, but ends_at is silently lost with no log line
-        assert has_warning, f"format change produced no warning; ends_at now {after['ends_at']!r}"
+        # event_start survives via the listing fallback, but event_end is silently lost with no log line
+        assert has_warning, f"format change produced no warning; event_end now {after['event_end']!r}"
 
 
 def test_10_missing_optional_fields(tmp_path, evidence):
@@ -308,7 +308,7 @@ def test_10_missing_optional_fields(tmp_path, evidence):
         rec = get_record(db, site.url + DETAIL_PREFIX + ISLANDS)
     evidence(f"counts={result['counts']} invalid={result['invalid']}", rec, f"validate_record: {validate_record(rec)}")
     assert rec is not None and validate_record(rec) == []
-    assert rec["speakers"] == [] and rec["venue"] is None and rec["ends_at"] is None
+    assert rec["speakers"] == [] and rec["location"] is None and rec["event_end"] is None
 
 
 # Case 11 (six href forms -> one item) was superseded by the path-as-given fix (2026-09-27). Its replacement,
@@ -323,7 +323,7 @@ def test_12_failed_refetch_is_not_a_change(tmp_path, log_stream, evidence, kind)
     target = DETAIL_PREFIX + ISLANDS
     with AuditSite() as site:
         if kind == "listing_disagrees_with_detail":
-            # Real-world drift: the listing card shows a different venue spelling than the detail page.
+            # Real-world drift: the listing card shows a different location spelling than the detail page.
             site.faults[LISTING_PATH] = Fault(body=listing_html().replace(
                 'icon-marker"></i> LT 101', 'icon-marker"></i> LT-101, HSS Building', 1))
         cfg = site_config(site, supports_pagination=False, timeout_s=1.0)
@@ -339,10 +339,10 @@ def test_12_failed_refetch_is_not_a_change(tmp_path, log_stream, evidence, kind)
             cfg = site_config(site, supports_pagination=False, detail_limit=0)
         second = run_source(cfg, db_path=db)
         after = get_record(db, site.url + target)
-    changed_fields = [f for f in ("title", "starts_at", "ends_at", "speakers", "venue", "event_type", "description", "is_online")
+    changed_fields = [f for f in ("title", "event_start", "event_end", "speakers", "location", "event_type", "description", "is_online")
                       if before[f] != after[f]]
-    evidence(f"run1: status={before['detail_fetch_status']} venue={before['venue']!r} desc={before['description'][:50]!r}",
-             f"run2: counts={second['counts']} status={after['detail_fetch_status']} venue={after['venue']!r} "
+    evidence(f"run1: status={before['detail_fetch_status']} location={before['location']!r} desc={before['description'][:50]!r}",
+             f"run2: counts={second['counts']} status={after['detail_fetch_status']} location={after['location']!r} "
              f"desc={(after['description'] or '')[:50]!r}",
              f"content fields that differ run1 -> run2: {changed_fields}",
              f"content_hash equal: {before['content_hash'] == after['content_hash']}")

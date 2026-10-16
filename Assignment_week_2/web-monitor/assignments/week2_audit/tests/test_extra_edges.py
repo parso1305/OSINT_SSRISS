@@ -31,6 +31,6 @@ def test_x2_two_sources_listing_the_same_item(tmp_path, evidence):
              f"cycle2: {[(r['source_id'], r['counts']) for r in r2]}",
              f"rows total={count_records(db)}; rows per source: {SOURCE_ID}={count_records(db, SOURCE_ID)} "
              f"audit_parent_site={count_records(db, 'audit_parent_site')}",
-             f"shared row after cycle 1: source_id={after_cycle1['source_id']} organizer={after_cycle1['organizer']}")
+             f"shared row after cycle 1: source_name={after_cycle1['source_name']} organizations={after_cycle1['organizations']}")
     changed = sum(r["counts"]["changed"] for r in r2)
     assert changed == 0 and count_records(db, SOURCE_ID) == 10, "sources overwrite each other's rows"

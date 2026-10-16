@@ -167,8 +167,8 @@ NOTES = {
         "items are enriched and every record is stored."),
     "parse_warning": (
         "`normalize` (per field)", "`WARNING`, run continues", "none (PARSE_WARNING)",
-        "The detail page's `<time datetime>` is text instead of ISO 8601. The value counts as unknown: `starts_at` "
-        "falls back to the listing date + time, `ends_at` keeps any stored value, and the change is logged instead "
+        "The detail page's `<time datetime>` is text instead of ISO 8601. The value counts as unknown: `event_start` "
+        "falls back to the listing date + time, `event_end` keeps any stored value, and the change is logged instead "
         "of silently erasing data."),
 }
 

@@ -161,8 +161,8 @@ def test_not_due_until_interval_and_interval_change_is_picked_up(tmp_path, log_s
 def test_store_records_rolls_back_the_whole_batch():
     import tempfile
     db = str(Path(tempfile.mkdtemp()) / "a.db")
-    good = {"item_url": "https://x.org/a", "source_id": "s", "institution": "I", "content_type": "event",
-            "title": "A", "starts_at": "2025-01-01T00:00:00Z", "detail_fetch_status": "not_attempted"}
+    good = {"item_url": "https://x.org/a", "source_name": "s", "institution": "I", "item_type": "event",
+            "title": "A", "event_start": "2025-01-01T00:00:00Z", "detail_fetch_status": "not_attempted"}
     with pytest.raises(ValueError):
         store_records(db, [good, dict(good, item_url=None)])  # 2nd record fails after the 1st was written
     assert count_records(db) == 0

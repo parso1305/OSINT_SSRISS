@@ -10,7 +10,7 @@ Line layout of one item (135 in the fixture; the labelled lines come in varying 
   | title (may be missing, or split by a stray backslash-newline) | <strong>speaker</strong> | affiliation
 Times: "Time: 3:30 p.m." on one line, or a blank "Time:" / a format line followed by schedule lines
 ("11:00 - 11:30 am: Pre-seminar"). Multi-session series list several sessions; the header date is the
-session the entry is listed under, so starts_at = header date + the first time given (full schedule kept
+session the entry is listed under, so event_start = header date + the first time given (full schedule kept
 in extras.time_raw).
 """
 
@@ -74,7 +74,7 @@ def parse_listing(html: str, base_url: str) -> list[dict]:
             "series": lines[1] if len(lines) > 1 else None,
             "date_raw": get("Date:"),
             "time_raw": " | ".join(s for s in schedule if s) or None,
-            "venue": get("Venue:"),
+            "location": get("Venue:"),
             "title": _title(lines[body_end:speaker_idx]),
             "speaker": speaker,
             "affiliation": lines[speaker_idx + 1].rstrip(".") if speaker_idx + 1 < len(lines) else None,
@@ -84,7 +84,7 @@ def parse_listing(html: str, base_url: str) -> list[dict]:
 
 
 def _start(record: dict) -> tuple[Optional[str], Optional[str]]:
-    """(starts_at, None), or (None, the raw text that could not be turned into a start).
+    """(event_start, None), or (None, the raw text that could not be turned into a start).
 
     Header date '28-09-26' + the first time in the schedule ('11.00 a.m to 12.45 p.m.', '2.00 - 3.00 p.m.',
     '11:00 - 11:30 am: Pre-seminar | ...'), IST -> UTC. A header date with no time anywhere -> date-only 'YYYY-MM-DD'.
@@ -113,16 +113,16 @@ def _start(record: dict) -> tuple[Optional[str], Optional[str]]:
 
 def normalize(record: dict) -> dict:
     speaker = record.get("speaker")
-    starts_at, unparsed = _start(record)
+    event_start, unparsed = _start(record)
     return {
-        "parse_warnings": {"starts_at": unparsed} if unparsed else {},
+        "parse_warnings": {"event_start": unparsed} if unparsed else {},
         "title": record.get("title"),
-        "starts_at": starts_at,
-        "ends_at": None,
+        "event_start": event_start,
+        "event_end": None,
         "timezone": DISPLAY_TIMEZONE,
         "speakers": [{"name": speaker, "affiliation": record.get("affiliation")}] if speaker else [],
-        "venue": record.get("venue"),
-        "is_online": True if record.get("venue") and re.search(r"online|zoom", record["venue"], re.I) else None,
+        "location": record.get("location"),
+        "is_online": True if record.get("location") and re.search(r"online|zoom", record["location"], re.I) else None,
         "event_type": record.get("series"),
         "description": None,                 # abstract only via POST + nonce: not fetchable with GET
         "extras": {k: record.get(k) for k in ("header_date", "date_raw", "time_raw", "absyear", "absref")

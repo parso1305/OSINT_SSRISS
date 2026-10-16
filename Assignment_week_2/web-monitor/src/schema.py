@@ -1,18 +1,23 @@
 """Shared cross-team record schema (Assignment 6, section c) and validation.
 
-Record layout for content_type "event":
-  IDENTIFIERS   item_url, source_id, institution
-  CONTENT       content_type, title, starts_at, ends_at, timezone, speakers, venue, is_online,
-                event_type, organizer, description
-  PROVENANCE    listing_fetched_at, detail_fetched_at, detail_fetch_status, detail_http_status,
-                detail_error (+ content_hash, first_seen_at, last_seen_at, added by storage)
+Record layout for item_type "event". Field names follow the team's Week 2 event schema, so two interns'
+records of the same item type go into one shared table without renaming (Week 2 Section 6 checkpoint):
+  IDENTIFIERS   item_url, source_name, institution
+  CONTENT       item_type, title, event_start, event_end, timezone, speakers, location, is_online,
+                event_type, organizations, description
+  PROVENANCE    source_url, raw_text, fetched_at, http_status, detail_fetched_at, detail_fetch_status,
+                detail_http_status, detail_error
+  STORAGE       content_hash, first_seen_at, last_seen_at (added by storage)
   extras        dict of source-specific fields (never shared columns)
 
-Dates (starts_at, ends_at):
+source_name / item_type hold the config values source_id / content_type: config keys describe a source,
+record fields describe an item, so only the record side was renamed.
+
+Dates (event_start, event_end):
   "YYYY-MM-DDTHH:MM:SSZ"   an instant, always UTC
   "YYYY-MM-DD"             date-only: the event's local calendar date in `timezone` (all-day, or the site
                            gives no time). Never converted to UTC (a date without a time has no UTC instant).
-                           Requires `timezone`; ends_at, if present, must then be date-only too.
+                           Requires `timezone`; event_end, if present, must then be date-only too.
   A convention rather than an all_day column: the value describes itself, and existing rows and their
   content_hash stay unchanged.
 
@@ -31,31 +36,34 @@ from datetime import datetime
 from typing import Optional, Any
 from src.urls import resolve_item_url
 
-IDENTIFIER_FIELDS = ("item_url", "source_id", "institution")
+IDENTIFIER_FIELDS = ("item_url", "source_name", "institution")
+# content_hash covers CONTENT_FIELDS only, so raw_text, fetched_at, http_status and detail_* never make a re-fetch look "changed".
 CONTENT_FIELDS = (
-    "content_type", "title", "starts_at", "ends_at", "timezone", "speakers", "venue",
-    "is_online", "event_type", "organizer", "description",
+    "item_type", "title", "event_start", "event_end", "timezone", "speakers", "location",
+    "is_online", "event_type", "organizations", "description",
 )
 PROVENANCE_FIELDS = (
-    "listing_fetched_at", "detail_fetched_at", "detail_fetch_status", "detail_http_status", "detail_error",
+    "source_url", "raw_text", "fetched_at", "http_status",
+    "detail_fetched_at", "detail_fetch_status", "detail_http_status", "detail_error",
 )
 STORAGE_FIELDS = ("content_hash", "first_seen_at", "last_seen_at")
 RECORD_FIELDS = IDENTIFIER_FIELDS + CONTENT_FIELDS + PROVENANCE_FIELDS + ("extras",)
 
-REQUIRED_FIELDS = ("item_url", "source_id", "institution", "content_type", "title", "starts_at")
+REQUIRED_FIELDS = ("item_url", "source_name", "source_url", "institution", "item_type",
+                   "title", "event_start", "fetched_at", "http_status")
 DETAIL_FETCH_STATUSES = ("ok", "failed", "not_attempted")
-CONTENT_TYPES = ("event",)
+ITEM_TYPES = ("event",)   # was CONTENT_TYPES; Week 3 Section 8 widens it
 UTC_TIMESTAMP_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
-_STRING_FIELDS = ("source_id", "institution", "content_type", "title", "timezone", "venue",
-                  "event_type", "organizer", "description", "detail_error")
-_EVENT_TIME_FIELDS = ("starts_at", "ends_at")                  # UTC timestamp or date-only
-_FETCH_TIME_FIELDS = ("listing_fetched_at", "detail_fetched_at")  # always UTC timestamps
+_STRING_FIELDS = ("source_name", "source_url", "institution", "item_type", "title", "timezone", "location",
+                  "event_type", "description", "raw_text", "detail_error")
+_EVENT_TIME_FIELDS = ("event_start", "event_end")          # UTC timestamp or date-only
+_FETCH_TIME_FIELDS = ("fetched_at", "detail_fetched_at")    # always UTC timestamps
 
 
 def is_date_only(value: Any) -> bool:
-    """True for a valid ISO calendar date 'YYYY-MM-DD' (the date-only form of starts_at / ends_at)."""
+    """True for a valid ISO calendar date 'YYYY-MM-DD' (the date-only form of event_start / event_end)."""
     if not isinstance(value, str) or not ISO_DATE_RE.match(value):
         return False
     try:
@@ -68,20 +76,25 @@ def is_date_only(value: Any) -> bool:
 def assemble_record(config: Any, merged: dict, normalized: dict) -> dict:
     """
     Builds a shared-schema record from generic inputs:
-      item_url    always the listing's canonical URL (merged["item_url"]), never from the adapter
-      identity    source_id / institution / content_type from config; organizer from adapter or config
-      content     from the adapter's normalize()
-      provenance  from the fetch/enrich stages (merged record)
+      item_url       always the listing's canonical URL (merged["item_url"]), never from the adapter
+      identity       source_name / institution / item_type from config (config keys source_id /
+                     content_type): they describe the source, so no adapter can get them wrong
+      organizations  from the adapter when the page names an organiser, else [config.organizer]
+      content        from the adapter's normalize()
+      provenance     from the fetch/enrich stages (merged record: raw_text, fetched_at, http_status,
+                     detail_*); source_url is the configured listing URL (the page an item was found on
+                     is extras.discovered_on_url / discovered_on_page)
     """
     record = {field: normalized.get(field) for field in CONTENT_FIELDS}
     record["item_url"] = merged.get("item_url")
-    record["source_id"] = config.source_id
+    record["source_name"] = config.source_id
     record["institution"] = config.institution
-    record["content_type"] = config.content_type
-    record["organizer"] = normalized.get("organizer") or config.organizer
+    record["item_type"] = config.content_type
+    record["organizations"] = normalized.get("organizations") or ([config.organizer] if config.organizer else [])
     record["speakers"] = normalized.get("speakers") or []
     for field in PROVENANCE_FIELDS:
         record[field] = merged.get(field)
+    record["source_url"] = config.listing_url
     record["extras"] = dict(normalized.get("extras") or {})
     return record
 
@@ -116,17 +129,17 @@ def validate_record(record: dict) -> list[str]:
     if item_url and resolve_item_url(item_url, "") != item_url:
         errors.append(f"item_url: not canonical ({item_url!r})")
 
-    if record.get("content_type") not in (None, *CONTENT_TYPES):
-        errors.append(f"content_type: expected one of {CONTENT_TYPES}")
+    if record.get("item_type") not in (None, *ITEM_TYPES):
+        errors.append(f"item_type: expected one of {ITEM_TYPES}")
 
-    starts_at, ends_at = record.get("starts_at"), record.get("ends_at")
-    if is_date_only(starts_at) and not record.get("timezone"):
-        errors.append("timezone: required when starts_at is date-only (it is a local calendar date)")
-    if isinstance(starts_at, str) and isinstance(ends_at, str):
-        if is_date_only(starts_at) != is_date_only(ends_at):
-            errors.append("ends_at: must be date-only exactly when starts_at is")
-        elif ends_at < starts_at:
-            errors.append("ends_at: earlier than starts_at")
+    event_start, event_end = record.get("event_start"), record.get("event_end")
+    if is_date_only(event_start) and not record.get("timezone"):
+        errors.append("timezone: required when event_start is date-only (it is a local calendar date)")
+    if isinstance(event_start, str) and isinstance(event_end, str):
+        if is_date_only(event_start) != is_date_only(event_end):
+            errors.append("event_end: must be date-only exactly when event_start is")
+        elif event_end < event_start:
+            errors.append("event_end: earlier than event_start")
 
     speakers = record.get("speakers")
     if speakers is not None:
@@ -141,11 +154,25 @@ def validate_record(record: dict) -> list[str]:
                 elif speaker["affiliation"] is not None and not isinstance(speaker["affiliation"], str):
                     errors.append(f"speakers[{i}].affiliation: expected str or null")
 
+    # A list rather than one string: the shared schema allows several organisers per item.
+    organizations = record.get("organizations")
+    if organizations is not None:
+        if not isinstance(organizations, list):
+            errors.append("organizations: expected list")
+        else:
+            for i, org in enumerate(organizations):
+                if not isinstance(org, str) or not org:
+                    errors.append(f"organizations[{i}]: expected non-empty str")
+
     if record.get("is_online") not in (None, True, False):
         errors.append("is_online: expected bool or null")
 
     if record.get("detail_fetch_status") not in DETAIL_FETCH_STATUSES:
         errors.append(f"detail_fetch_status: expected one of {DETAIL_FETCH_STATUSES}")
+    # bool is a subclass of int in Python; True must not pass as a status code.
+    http_status = record.get("http_status")
+    if http_status is not None and (not isinstance(http_status, int) or isinstance(http_status, bool)):
+        errors.append("http_status: expected int")
     status = record.get("detail_http_status")
     if status is not None and not isinstance(status, int):
         errors.append("detail_http_status: expected int or null")

@@ -55,10 +55,62 @@ fails (the whole run's writes roll back). Per-item problems do not fail the run:
 (`VALIDATION_FAILURE`, not stored). Neither a failed detail fetch nor an unparseable value ever erases stored data.
 
 **Output**: table `records` (one row per canonical `item_url`, shared schema in `src/schema.py`) and table `runs`
-(one row per run: status, counts, error), both in the `--db` file. The `data/events.db` in this working copy
-predates the scheduler: it holds only the legacy Section 1-5 tables until the scheduler's first run against it.
+(one row per run: status, counts, error), both in the `--db` file. `data/events.db` is created on the first run
+(the local databases were reset for the shared-schema rename below, so no row predates it).
 Logs go to stdout as `YYYY-MM-DD HH:MM:SS [LEVEL] logger=<name> EVENT key=value …` (examples:
 [`assignments/01_logging/failure_examples.md`](assignments/01_logging/failure_examples.md)).
+
+## Shared record schema
+
+Every row in `records` uses the team's Week 2 event-schema field names, so another intern's records of the same
+item type can be written into the same table without renaming anything (Week 2 Section 6 checkpoint;
+`tests/test_runner.py::test_records_table_has_shared_schema_fields` checks the table). Field groups and validation
+rules: `src/schema.py`.
+
+**16 shared fields**
+
+| Field | Value |
+|---|---|
+| `item_url` | `TEXT PRIMARY KEY`; canonical URL from `src.urls.resolve_item_url()` |
+| `source_name` | config `source_id`, e.g. `iit_bombay_hss_seminars` |
+| `source_url` | config `listing_url` (the listing the item came from) |
+| `item_type` | config `content_type`; today always `event` |
+| `title` | text |
+| `event_start`, `event_end` | UTC `YYYY-MM-DDTHH:MM:SSZ`, or date-only `YYYY-MM-DD` plus `timezone` |
+| `location` | text |
+| `speakers` | JSON list of `{"name", "affiliation"}` |
+| `organizations` | JSON list of strings: from the page when it names an organiser, else `[config organizer]` |
+| `description` | text |
+| `raw_text` | listing card text, as scraped (not part of `content_hash`) |
+| `first_seen_at`, `last_seen_at` | `TEXT NOT NULL`, UTC; set by storage |
+| `fetched_at` | listing fetch time, UTC with `Z` |
+| `http_status` | `INTEGER`; HTTP status of the listing response |
+
+**Kept extras** (columns beyond the shared 16)
+
+| Column | Why it stays |
+|---|---|
+| `institution` | Groups sources by institution; `source_name` names a feed, not an institution. |
+| `timezone` | Needed to read a date-only `event_start` (a local calendar date has no UTC instant). |
+| `is_online` | Online/in-person filter without re-parsing `location`. |
+| `event_type` | The site's own category (Seminar / Talk / Workshop), finer than `item_type`. |
+| `detail_fetched_at` | When the detail page was fetched (separate from the listing's `fetched_at`). |
+| `detail_fetch_status` | `ok` / `failed` / `not_attempted`: tells "the field is empty" apart from "the detail page was not read". |
+| `detail_http_status` | `INTEGER`; detail response status, separate from the listing's `http_status`. |
+| `detail_error` | Error type and message of a failed detail fetch. |
+| `extras` | JSON dict of source-specific values only (node id, raw date text, pagination provenance `discovered_on_url` / `discovered_on_page`). |
+| `content_hash` | `TEXT NOT NULL`; sha256 over the content fields only, so `raw_text`, `fetched_at`, `http_status` and `detail_*` never make a re-fetch look changed. |
+
+**Rename map (Week 3 Part 0)**: `source_id` → `source_name`; new `source_url`; `content_type` → `item_type`;
+`starts_at` → `event_start`; `ends_at` → `event_end`; `venue` → `location`; `organizer` (text) → `organizations`
+(JSON list of strings); `extras.raw_text` → `raw_text` column; `listing_fetched_at` → `fetched_at`; new
+`http_status`. Unchanged: `item_url`, `title`, `speakers`, `description`, `first_seen_at`, `last_seen_at`.
+Config keys (`source_id`, `content_type`, `organizer`), the `runs` table and the `source_id=` log keys keep their
+names: they describe a source or a run, not a record. Every stored `content_hash` changed with the rename (the hash
+covers field names as well as values), so local databases were reset rather than migrated.
+
+`speakers` keeps its `{name, affiliation}` object shape, although some teammates store plain strings. It is not
+changed now because Week 3 Section 6 moves speakers into a people table.
 
 ## Adding a source (adapter + config only)
 
@@ -67,9 +119,10 @@ Logs go to stdout as `YYYY-MM-DD HH:MM:SS [LEVEL] logger=<name> EVENT key=value 
      `src.urls.resolve_item_url(href, base_url)`. If items have no URL of their own, use
      `src.urls.synthetic_item_url(base_url, <site id, or title + date>)` (rules in `src/schema.py`).
      Raise an error when the listing container is missing, so a redesign fails loudly.
-   * `normalize(record) -> dict`: shared-schema content fields (`title`, `starts_at` as UTC
-     `YYYY-MM-DDTHH:MM:SSZ` or date-only `YYYY-MM-DD`, `ends_at`, `timezone`, `speakers`, `venue`, `is_online`,
-     `event_type`, `organizer`, `description`), `extras` for site-only fields, and optionally
+   * `normalize(record) -> dict`: shared-schema content fields (`title`, `event_start` as UTC
+     `YYYY-MM-DDTHH:MM:SSZ` or date-only `YYYY-MM-DD`, `event_end`, `timezone`, `speakers`, `location`,
+     `is_online`, `event_type`, `description`, and `organizations` only when the page names an organiser),
+     `extras` for site-only fields, and optionally
      `parse_warnings: {field: raw}` for values present but unparseable (logged; stored values are kept).
    * `parse_detail(html, item_url) -> dict`: only if the source has detail pages (`supports_detail`).
    * Optional `NEXT_PAGE_SELECTOR` (default: `rel="next"` links).
@@ -78,7 +131,7 @@ Logs go to stdout as `YYYY-MM-DD HH:MM:SS [LEVEL] logger=<name> EVENT key=value 
 | Key | Meaning |
 |---|---|
 | `source_id`, `institution`, `adapter`, `listing_url` | required; `adapter` is a module path, e.g. `sources.iit_bombay` |
-| `content_type`, `organizer` | copied into every record (`organizer` only when the adapter gives none) |
+| `content_type`, `organizer` | copied into every record as `item_type` and `organizations: [organizer]` (the latter only when the adapter gives none) |
 | `enabled` | picked up by `--once` without `--source` |
 | `supports_pagination`, `max_pages` | follow next-page links, at most `max_pages` pages |
 | `supports_detail`, `detail_limit` | fetch the detail page of the first `detail_limit` items |

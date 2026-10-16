@@ -45,7 +45,7 @@ def make_fake_adapter() -> types.ModuleType:
         } for li in soup.select("ul.talks li")]
 
     def normalize(record: dict) -> dict:
-        return {"title": record["title"], "starts_at": record["when"], "venue": record["where"],
+        return {"title": record["title"], "event_start": record["when"], "location": record["where"],
                 "is_online": record["where"] == "Online" or None}
 
     adapter.parse_listing = parse_listing
@@ -63,7 +63,7 @@ def test_new_source_needs_only_adapter_and_config(tmp_path):
 
     assert first["counts"] == {"new": 2, "existing": 0, "changed": 0}
     assert second["counts"] == {"new": 0, "existing": 2, "changed": 0}
-    assert count_records(db, source_id="fake_university_talks") == 2
+    assert count_records(db, source_name="fake_university_talks") == 2
     stored = get_record(db, site.url + "/talks/quantum-2026")
     assert stored["title"] == "Quantum Algorithms for Cryptanalysis"
     assert stored["institution"] == "Fake University"
@@ -93,7 +93,7 @@ def make_no_links_adapter() -> types.ModuleType:
     def normalize(record: dict) -> dict:
         timed = record["time"] != "All day"
         return {"title": record["title"], "timezone": "UTC",
-                "starts_at": f"{record['date']}T{record['time']}:00Z" if timed else record["date"]}
+                "event_start": f"{record['date']}T{record['time']}:00Z" if timed else record["date"]}
 
     adapter.parse_listing, adapter.normalize = parse_listing, normalize
     return adapter
@@ -108,7 +108,7 @@ def test_source_without_item_links_and_with_a_date_only_event(tmp_path):
         again = run_source(SourceConfig(**{**config.__dict__, "listing_url": site.url + "/seminars?page=2"}), db_path=db)
     assert first["invalid"] == [] and first["counts"] == {"new": 2, "existing": 0, "changed": 0}
     assert again["counts"] == {"new": 0, "existing": 2, "changed": 0}          # page param does not change identity
-    starts = sorted(r["starts_at"] for r in first["records"])
+    starts = sorted(r["event_start"] for r in first["records"])
     assert starts == ["2026-10-02", "2026-10-05T15:00:00Z"]
     assert all(r["item_url"].startswith(site.url + "/seminars#/item/") for r in first["records"])
-    assert count_records(db, source_id="fake_no_links") == 2
+    assert count_records(db, source_name="fake_no_links") == 2

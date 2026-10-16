@@ -57,7 +57,7 @@ def parse_listing(html: str, base_url: str) -> list[dict]:
         raw_href = link_el.get("href") if link_el else None
         category_el = card.select_one(CATEGORY_SELECTOR)
 
-        # Card detail rows are identified by icon class: calendar, time, marker (venue)
+        # Card detail rows are identified by icon class: calendar, time, marker (location)
         details = {}
         for li in card.select(CARD_DETAIL_SELECTOR):
             icon = li.select_one("i.icon")
@@ -68,7 +68,7 @@ def parse_listing(html: str, base_url: str) -> list[dict]:
             elif "icon-time" in classes:
                 details["time_raw"] = text
             elif "icon-marker" in classes:
-                details["venue"] = text
+                details["location"] = text
 
         items.append({
             "title": link_el.get_text(" ", strip=True) if link_el else None,
@@ -77,7 +77,7 @@ def parse_listing(html: str, base_url: str) -> list[dict]:
             "category": category_el.get_text(" ", strip=True) if category_el else None,
             "date_raw": details.get("date_raw"),
             "time_raw": details.get("time_raw"),
-            "venue": details.get("venue"),
+            "location": details.get("location"),
             "raw_text": card.get_text(" ", strip=True),
         })
     return items
@@ -91,7 +91,7 @@ def parse_detail(html: str, item_url: str) -> dict:
     typed separately by editors and is wrong on at least one live page ("Echoes of Translation:
     Echoes of Translation:Audibility..."), while <title> matches the listing. Because the generic
     merge lets detail values win, reading field-event-title would overwrite a correct listing title.
-    starts_at/ends_at are the <time datetime> attributes (UTC, "Z"); the visible text is IST.
+    event_start/event_end are the <time datetime> attributes (UTC, "Z"); the visible text is IST.
 
     Raises:
         StructuralError: If the event article is absent.
@@ -119,9 +119,9 @@ def parse_detail(html: str, item_url: str) -> dict:
     return {
         "title": title_el.get_text(strip=True) or None if title_el else None,
         "speaker": field_text("speaker"),
-        "starts_at": field_datetime("date"),
-        "ends_at": field_datetime("end-date"),
-        "venue": field_text("location"),
+        "event_start": field_datetime("date"),
+        "event_end": field_datetime("end-date"),
+        "location": field_text("location"),
         "event_type": field_text("type"),
         "description": body_el.get_text(" ", strip=True) or None if body_el else None,
         "image_url": resolve_item_url(image_el.get("src"), item_url) or None if image_el else None,
@@ -186,9 +186,15 @@ def normalize(record: dict) -> dict:
 
     A date that is present but unparseable is reported in parse_warnings {field: raw} (logged by the runner;
     storage keeps the stored value) and treated as no value, so the listing fallback applies.
+    The warning keys are shared-schema field names (event_start, event_end): storage uses them to decide
+    which stored values to carry forward.
+
+    organizations is not returned: HSS listing and detail pages name no organiser, so assemble_record
+    falls back to [config.organizer]. raw_text is not in extras: it is a shared column now, copied from
+    the listing record by assemble_record.
     """
     title = _clean(record.get("title"))
-    venue = _clean(record.get("venue"))
+    location = _clean(record.get("location"))
     description = _clean(record.get("description"))
     parse_warnings: dict[str, str] = {}
 
@@ -199,22 +205,22 @@ def normalize(record: dict) -> dict:
             parse_warnings[field] = raw
         return value
 
-    starts_at = utc("starts_at") or _listing_start_utc(record.get("date_raw"), record.get("time_raw"))
-    if starts_at is None and record.get("date_raw"):
-        parse_warnings.setdefault("starts_at", f"{record.get('date_raw')} {record.get('time_raw') or ''}".strip())
+    event_start = utc("event_start") or _listing_start_utc(record.get("date_raw"), record.get("time_raw"))
+    if event_start is None and record.get("date_raw"):
+        parse_warnings.setdefault("event_start", f"{record.get('date_raw')} {record.get('time_raw') or ''}".strip())
     return {
         "parse_warnings": parse_warnings,
         "title": title.removesuffix(SITE_TITLE_SUFFIX) if title else None,
-        "starts_at": starts_at,
-        "ends_at": utc("ends_at"),
+        "event_start": event_start,
+        "event_end": utc("event_end"),
         "timezone": DISPLAY_TIMEZONE,
         "speakers": _speakers(record.get("speaker")),
-        "venue": venue,
-        "is_online": True if venue and ONLINE_VENUE_RE.search(venue) else None,
+        "location": location,
+        "is_online": True if location and ONLINE_VENUE_RE.search(location) else None,
         "event_type": _clean(record.get("event_type") or record.get("category")),
         "description": DESCRIPTION_LABEL_RE.sub("", description) or None if description else None,
         "extras": {key: record.get(key) for key in (
-            "node_id", "detail_canonical_url", "date_raw", "time_raw", "raw_href", "raw_text",
+            "node_id", "detail_canonical_url", "date_raw", "time_raw", "raw_href",
             "discovered_on_url", "discovered_on_page",
         ) if record.get(key) is not None},
     }

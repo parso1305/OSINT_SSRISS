@@ -39,20 +39,20 @@ def listing_items(base_url: str = "https://www.hss.iitb.ac.in/events/seminars-an
 # ---------------------------------------------------------------------------
 
 def test_merge_detail_wins_except_item_url():
-    listing = {"item_url": "https://a.org/x", "title": "Listing title", "venue": "Room 1", "category": "Talk"}
-    detail = {"item_url": "https://evil.org/y", "title": "Detail title", "venue": "Room 2", "speaker": "Dr X"}
+    listing = {"item_url": "https://a.org/x", "title": "Listing title", "location": "Room 1", "category": "Talk"}
+    detail = {"item_url": "https://evil.org/y", "title": "Detail title", "location": "Room 2", "speaker": "Dr X"}
     merged = merge_listing_and_detail(listing, detail)
     assert merged["item_url"] == "https://a.org/x"
     assert merged["title"] == "Detail title"
-    assert merged["venue"] == "Room 2"
+    assert merged["location"] == "Room 2"
     assert merged["speaker"] == "Dr X"
     assert merged["category"] == "Talk"
 
 
 def test_merge_empty_detail_values_do_not_erase_listing_values():
-    listing = {"item_url": "https://a.org/x", "venue": "Room 1", "title": "T"}
-    merged = merge_listing_and_detail(listing, {"venue": None, "title": "", "speaker": None})
-    assert merged["venue"] == "Room 1" and merged["title"] == "T"
+    listing = {"item_url": "https://a.org/x", "location": "Room 1", "title": "T"}
+    merged = merge_listing_and_detail(listing, {"location": None, "title": "", "speaker": None})
+    assert merged["location"] == "Room 1" and merged["title"] == "T"
     assert "speaker" not in merged
 
 

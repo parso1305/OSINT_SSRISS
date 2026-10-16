@@ -78,13 +78,13 @@ def test_end_to_end_on_fixtures_all_records_valid(tmp_path, log_stream):
     assert result["counts"] == {"new": 20, "existing": 0, "changed": 0}
     assert result["invalid"] == []
     assert all(validate_record(r) == [] for r in result["records"])
-    assert count_records(db, source_id=SOURCE_ID) == 20
+    assert count_records(db, source_name=SOURCE_ID) == 20
 
     stored = get_record(db, site.url + TRACING)
     assert stored["speakers"] == [{"name": "Salvatore Babones", "affiliation": "University of Sydney"}]
-    assert (stored["starts_at"], stored["ends_at"], stored["is_online"]) == ("2025-09-17T09:30:00Z", "2025-09-17T11:30:00Z", True)
+    assert (stored["event_start"], stored["event_end"], stored["is_online"]) == ("2025-09-17T09:30:00Z", "2025-09-17T11:30:00Z", True)
     assert stored["description"].startswith("Why did democracy take root")
-    assert (stored["institution"], stored["organizer"]) == ("IIT Bombay", "Department of Humanities and Social Sciences")
+    assert (stored["institution"], stored["organizations"]) == ("IIT Bombay", ["Department of Humanities and Social Sciences"])
 
     log = log_stream.getvalue()
     assert f"logger=web_monitor START source_id={SOURCE_ID}" in log
@@ -114,7 +114,7 @@ def test_failed_detail_fetch_keeps_listing_record(tmp_path, log_stream):
     assert result["counts"]["new"] == 20
     assert (stored["detail_fetch_status"], stored["detail_http_status"]) == ("failed", 404)
     assert stored["title"] == "Tracing the Success of Indian Democracy to Success in Nation-Building"
-    assert stored["starts_at"] == "2025-09-17T09:30:00Z"   # from listing date + time
+    assert stored["event_start"] == "2025-09-17T09:30:00Z"   # from listing date + time
     assert stored["speakers"] == [] and stored["description"] is None
     log = log_stream.getvalue()
     assert "[WARNING] logger=web_monitor.detail DETAIL_FAILURE" in log and "status=404" in log
@@ -156,16 +156,38 @@ def test_real_content_change_is_detected(tmp_path):
         second = run_source(site_config(site), db_path=db)
         stored = get_record(db, site.url + ISLANDS)
     assert second["counts"] == {"new": 0, "existing": 19, "changed": 1}
-    assert stored["venue"] == "LT 102"
+    assert stored["location"] == "LT 102"
 
 
 def test_content_hash_ignores_provenance():
-    record = {"title": "T", "starts_at": "2025-01-01T00:00:00Z", "detail_fetch_status": "ok",
-              "detail_fetched_at": "2026-01-01T00:00:00Z", "listing_fetched_at": "2026-01-01T00:00:00Z", "extras": {"raw_text": "a"}}
+    record = {"title": "T", "event_start": "2025-01-01T00:00:00Z", "detail_fetch_status": "ok",
+              "detail_fetched_at": "2026-01-01T00:00:00Z", "fetched_at": "2026-01-01T00:00:00Z", "raw_text": "a",
+              "http_status": 200, "extras": {"node_id": "a"}}
     changed_provenance = dict(record, detail_fetch_status="failed", detail_fetched_at="2027-01-01T00:00:00Z",
-                              listing_fetched_at="2027-01-01T00:00:00Z", detail_http_status=404, extras={"raw_text": "b"})
+                              fetched_at="2027-01-01T00:00:00Z", detail_http_status=404, raw_text="b",
+                              http_status=304, extras={"node_id": "b"})
     assert content_hash(record) == content_hash(changed_provenance)
     assert content_hash(record) != content_hash(dict(record, title="T2"))
+
+
+def test_records_table_has_shared_schema_fields(tmp_path):
+    """Week 2 Section 6 checkpoint: the records table uses the team's shared event-schema names, so another
+    intern's records of the same item type can be written into it without renaming any field.
+    The 16 names are spelled out here (not imported from src.schema) so a rename there cannot pass silently."""
+    import sqlite3
+    from src.storage import init_records_table
+    shared = ("item_url", "source_name", "source_url", "item_type", "title", "event_start", "event_end",
+              "location", "speakers", "organizations", "description", "raw_text", "first_seen_at",
+              "last_seen_at", "fetched_at", "http_status")
+    db = str(tmp_path / "schema.db")
+    init_records_table(db)
+    conn = sqlite3.connect(db)
+    try:
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(records)")}
+    finally:
+        conn.close()
+    assert len(shared) == 16
+    assert set(shared) <= columns, f"missing shared fields: {sorted(set(shared) - columns)}"
 
 
 # -- Step 4: pagination --------------------------------------------------------------------

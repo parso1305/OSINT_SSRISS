@@ -33,14 +33,18 @@ def get_next_page_url(html: str, current_url: str, selector: str = DEFAULT_NEXT_
     return resolve_item_url(raw_href, current_url) or None
 
 
-def _unpack(fetched: Any, requested_url: str) -> tuple[str, str, str]:
-    """Accepts a FetchResult, an (html, final_url) tuple or a bare html string."""
+def _unpack(fetched: Any, requested_url: str) -> tuple[str, str, str, Optional[int]]:
+    """Accepts a FetchResult, an (html, final_url) tuple or a bare html string.
+
+    Returns (html, final_url, fetched_at, http_status). Only a FetchResult carries a status; the tuple and
+    string forms (test fetchers) give None rather than a guessed 200.
+    """
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     if hasattr(fetched, "text") and hasattr(fetched, "final_url"):
-        return fetched.text, fetched.final_url, getattr(fetched, "fetched_at", now)
+        return fetched.text, fetched.final_url, getattr(fetched, "fetched_at", now), getattr(fetched, "status", None)
     if isinstance(fetched, tuple):
-        return fetched[0], fetched[1], now
-    return fetched, requested_url, now
+        return fetched[0], fetched[1], now, None
+    return fetched, requested_url, now, None
 
 
 def collect_listing(
@@ -60,7 +64,8 @@ def collect_listing(
     (repeated_items), or a fetch failure on page 2+ (fetch_failed: logged as listing FAILURE; items
     from earlier pages are kept). A failure on page 1 raises.
 
-    Each item gets discovered_on_url, discovered_on_page and listing_fetched_at.
+    Each item gets discovered_on_url, discovered_on_page, fetched_at and http_status (of the listing page
+    it was found on; the detail page's fetch is recorded separately as detail_*).
     """
     active_logger = logger or logging.getLogger("web_monitor")
     selector = next_page_selector or DEFAULT_NEXT_PAGE_SELECTOR
@@ -87,7 +92,7 @@ def collect_listing(
 
         page_number = len(visited_urls) + 1
         try:
-            html, base_url, fetched_at = _unpack(fetch_fn(current_url), current_url)
+            html, base_url, fetched_at, http_status = _unpack(fetch_fn(current_url), current_url)
         except FetchError as e:
             if page_number == 1:
                 raise
@@ -101,7 +106,8 @@ def collect_listing(
         for item in page_items:
             item["discovered_on_url"] = current_url
             item["discovered_on_page"] = page_number
-            item["listing_fetched_at"] = fetched_at
+            item["fetched_at"] = fetched_at        # shared-schema provenance: the listing page's fetch
+            item["http_status"] = http_status
         page_urls = {item.get("item_url") for item in page_items}
         all_items.extend(page_items)
         active_logger.info("Page %d yielded %d items", page_number, len(page_items))

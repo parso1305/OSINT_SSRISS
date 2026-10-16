@@ -101,7 +101,7 @@ def main() -> None:
     conn.row_factory = sqlite3.Row
     configs = load_source_configs(cfg_path)
     for sid in ("iit_bombay_me_events", "cmi_seminars"):
-        rows = [dict(r) for r in conn.execute("SELECT * FROM records WHERE source_id = ? ORDER BY starts_at DESC", (sid,))]
+        rows = [dict(r) for r in conn.execute("SELECT * FROM records WHERE source_name = ? ORDER BY event_start DESC", (sid,))]
         for r in rows:
             r["speakers"], r["extras"] = json.loads(r["speakers"]), json.loads(r["extras"])
             r["is_online"] = None if r["is_online"] is None else bool(r["is_online"])

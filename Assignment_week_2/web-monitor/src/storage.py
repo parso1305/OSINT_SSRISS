@@ -186,7 +186,10 @@ def count_items(db_path: str) -> int:
 # Shared-schema records table
 # ---------------------------------------------------------------------------
 
-_JSON_COLUMNS = ("speakers", "extras")
+_JSON_COLUMNS = ("speakers", "organizations", "extras")
+# Stored instead of NULL, so a reader can always json.loads() a column and get the right container type.
+_JSON_EMPTY = {"speakers": [], "organizations": [], "extras": {}}
+_INTEGER_COLUMNS = ("is_online", "http_status", "detail_http_status")
 _RECORD_COLUMNS = IDENTIFIER_FIELDS + CONTENT_FIELDS + PROVENANCE_FIELDS + ("extras",)
 
 
@@ -207,7 +210,7 @@ def init_records_table(db_path: str) -> None:
     if str(parent) not in ("", "."):
         parent.mkdir(parents=True, exist_ok=True)
     columns = ",\n".join(
-        f"{c} {'INTEGER' if c in ('is_online', 'detail_http_status') else 'TEXT'}"
+        f"{c} {'INTEGER' if c in _INTEGER_COLUMNS else 'TEXT'}"
         + (" PRIMARY KEY" if c == "item_url" else "")
         for c in _RECORD_COLUMNS
     )
@@ -241,10 +244,11 @@ def get_record(db_path: str, item_url: str) -> Optional[dict]:
         return _decode_row(row) if row else None
 
 
-def count_records(db_path: str, source_id: Optional[str] = None) -> int:
+def count_records(db_path: str, source_name: Optional[str] = None) -> int:
+    """Row count, optionally for one source (records.source_name holds the config's source_id)."""
     with _connect(db_path) as conn:
-        if source_id:
-            return conn.execute("SELECT COUNT(*) FROM records WHERE source_id = ?", (source_id,)).fetchone()[0]
+        if source_name:
+            return conn.execute("SELECT COUNT(*) FROM records WHERE source_name = ?", (source_name,)).fetchone()[0]
         return conn.execute("SELECT COUNT(*) FROM records").fetchone()[0]
 
 
@@ -252,10 +256,10 @@ def _carry_forward(record: dict, existing: dict, unparsed_fields: Iterable[str] 
     """
     A missing value is not evidence that content was removed when it is missing because of this run:
       - the detail fetch did not succeed: every empty content field keeps its stored value
-        (e.g. description, speakers, ends_at);
+        (e.g. description, speakers, event_end);
       - the adapter could not parse the field (normalize() parse_warnings): that field keeps its stored
         value, even on an ok detail fetch. A format change must never erase data.
-    A non-empty new value (e.g. starts_at from the listing fallback) still wins.
+    A non-empty new value (e.g. event_start from the listing fallback) still wins.
     Provenance always records this run's outcome (detail_fetch_status, ...).
     """
     detail_ok = record.get("detail_fetch_status") == "ok"
@@ -286,7 +290,7 @@ def _upsert(conn: sqlite3.Connection, record: dict, now_iso: str,
 
     values = {c: record.get(c) for c in _RECORD_COLUMNS}
     for column in _JSON_COLUMNS:
-        values[column] = json.dumps(values[column] if values[column] is not None else ([] if column == "speakers" else {}),
+        values[column] = json.dumps(values[column] if values[column] is not None else _JSON_EMPTY[column],
                                     ensure_ascii=False, sort_keys=True)
     if values["is_online"] is not None:
         values["is_online"] = int(values["is_online"])

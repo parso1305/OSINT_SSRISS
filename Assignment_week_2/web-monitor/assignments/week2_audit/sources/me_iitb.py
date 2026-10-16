@@ -55,18 +55,18 @@ def parse_detail(html: str, item_url: str) -> dict:
     article = soup.select_one(DETAIL_ARTICLE_SELECTOR)
     if not article:
         raise StructuralError(f"detail container '{DETAIL_ARTICLE_SELECTOR}' not found on {item_url}")
-    venue = None
+    location = None
     label = article.find(lambda t: t.name == "strong" and "Venue" in t.get_text())
     if label:
         box = label.find_parent("div")
         venue_div = box.find("div") if box else None
-        venue = venue_div.get_text(" ", strip=True) if venue_div else None
+        location = venue_div.get_text(" ", strip=True) if venue_div else None
     body = article.select_one(".col-12.pl-0.pb-4")
     canonical = soup.select_one("link[rel='canonical']")
     title_el = soup.select_one("title")
     return {
         "title": title_el.get_text(strip=True) if title_el else None,
-        "venue": venue,
+        "location": location,
         "description": body.get_text(" ", strip=True) if body else None,
         "detail_canonical_url": resolve_item_url(canonical["href"], item_url) if canonical else None,
         "node_id": article.get("data-history-node-id"),
@@ -87,15 +87,15 @@ def _listing_start_utc(value: Optional[str]) -> Optional[str]:
 
 def normalize(record: dict) -> dict:
     title = _clean(record.get("title"))
-    venue = _clean(record.get("venue"))
+    location = _clean(record.get("location"))
     return {
         "title": title.removesuffix(SITE_TITLE_SUFFIX) if title else None,
-        "starts_at": _listing_start_utc(record.get("listing_datetime")),
-        "ends_at": None,                     # not published as data (only inside free text)
+        "event_start": _listing_start_utc(record.get("listing_datetime")),
+        "event_end": None,                     # not published as data (only inside free text)
         "timezone": DISPLAY_TIMEZONE,
         "speakers": [],                      # not structured on this site
-        "venue": venue,
-        "is_online": True if venue and ONLINE_RE.search(venue) else None,
+        "location": location,
+        "is_online": True if location and ONLINE_RE.search(location) else None,
         "event_type": None,
         "description": _clean(record.get("description")),
         "extras": {k: record.get(k) for k in ("node_id", "detail_canonical_url", "listing_datetime", "date_text",

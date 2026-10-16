@@ -1,5 +1,9 @@
 # Schema Review by Inspection: HSS Seminars (Assignment 6)
 
+> **Status (2026-10-16, Week 3 Part 0).** The `records` field names below were later aligned with the team's
+> shared event schema (`source_id` → `source_name`, `starts_at` → `event_start`, `venue` → `location`, ...); see
+> [README: Shared record schema](../../README.md#shared-record-schema).
+
 > **Status (2026-09-27).** Sections (a)-(g) describe the data and storage **as of Assignment 6** (tables `items` +
 > `item_enrichment`). The Assignment 7 refactor implemented the proposal, so several defects described below are no
 > longer live: the shared-schema `records` table (`src/storage.py`) persists `source_id`, `institution`, `timezone`

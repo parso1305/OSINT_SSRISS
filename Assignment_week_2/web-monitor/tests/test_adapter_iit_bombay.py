@@ -40,7 +40,7 @@ def test_parse_listing_real_pages():
     assert first["item_url"] == SEMINAR + "islands-tri-junction-fragility-and-vulnerability"
     assert first["raw_href"] == "/events/seminar-talk/islands-tri-junction-fragility-and-vulnerability"
     assert first["title"] == "The A&N Islands – At the tri-junction of fragility and vulnerability"
-    assert (first["date_raw"], first["time_raw"], first["venue"], first["category"]) == \
+    assert (first["date_raw"], first["time_raw"], first["location"], first["category"]) == \
         ("25th Sep 2025", "15:30 PM", "LT 101", "Seminar / Talk")
     for name in ("live_page_2.html", "live_page_3.html"):
         assert len(iit_bombay.parse_listing(read(name), base_url=LISTING_URL)) == 10
@@ -58,8 +58,8 @@ def test_parse_detail_real_page_raw_fields():
     d = iit_bombay.parse_detail(read("detail/islands-tri-junction-fragility-and-vulnerability.html"), url)
     assert d["title"] == "The A&N Islands – At the tri-junction of fragility and vulnerability | Humanities and Social Sciences"
     assert d["speaker"] == "Prof Pankaj Sekhsaria"
-    assert (d["starts_at"], d["ends_at"]) == ("2025-09-25T10:00:00Z", "2025-09-25T11:00:00Z")
-    assert (d["venue"], d["event_type"], d["node_id"]) == ("LT 101", "Seminar / Talk", "2809")
+    assert (d["event_start"], d["event_end"]) == ("2025-09-25T10:00:00Z", "2025-09-25T11:00:00Z")
+    assert (d["location"], d["event_type"], d["node_id"]) == ("LT 101", "Seminar / Talk", "2809")
     assert d["description"].startswith("Abstract: The Andaman and Nicobar Islands")
     assert d["detail_canonical_url"] == url
 
@@ -115,11 +115,11 @@ def test_normalize_dates_utc_and_listing_fallback_agrees_with_detail():
     for listing, merged in zip(page1(), merged_page1()):
         from_detail = iit_bombay.normalize(merged)
         from_listing = iit_bombay.normalize(listing)          # no detail: date_raw + time_raw (IST)
-        assert from_detail["starts_at"].endswith("Z") and from_detail["ends_at"].endswith("Z")
-        assert from_listing["starts_at"] == from_detail["starts_at"]
-        assert from_listing["ends_at"] is None
+        assert from_detail["event_start"].endswith("Z") and from_detail["event_end"].endswith("Z")
+        assert from_listing["event_start"] == from_detail["event_start"]
+        assert from_listing["event_end"] is None
         assert from_detail["timezone"] == "Asia/Kolkata"
-    assert iit_bombay.normalize(page1()[0])["starts_at"] == "2025-09-25T10:00:00Z"   # 15:30 IST
+    assert iit_bombay.normalize(page1()[0])["event_start"] == "2025-09-25T10:00:00Z"   # 15:30 IST
 
 
 def test_normalize_is_online_only_when_stated():
