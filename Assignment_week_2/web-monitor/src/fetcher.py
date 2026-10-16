@@ -34,6 +34,9 @@ class FetchResult:
     text: str
     duration_ms: int
     fetched_at: str
+    # Response Content-Type header as sent (None if absent). Added in Week 3 so callers can tell a feed or
+    # sitemap from an HTML error page and record it as evidence; defaulted so existing constructions still work.
+    content_type: Optional[str] = None
 
 
 class FetchError(Exception):
@@ -148,4 +151,5 @@ class Fetcher:
         if response.status_code >= 400:
             raise FetchError(url, response.status_code, f"HTTP {response.status_code} {response.reason}")
         return FetchResult(url=url, final_url=response.url, status=response.status_code,
-                           text=response.text, duration_ms=duration_ms, fetched_at=fetched_at)
+                           text=response.text, duration_ms=duration_ms, fetched_at=fetched_at,
+                           content_type=response.headers.get("Content-Type"))
