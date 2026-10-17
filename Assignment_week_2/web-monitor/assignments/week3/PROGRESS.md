@@ -10,4 +10,5 @@ Live requests before this run: 28 (Section 0 recon, separate budget).
 |---|---|---|---|---|---|
 | 1A feed/sitemap inspectors | done | 0b185af | 162 passed, 1 skipped | 43 passed, 3 xfailed | 4 |
 | 1B unified discovery record | done | 5ae11e9 | 194 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 4 |
-| 2 scope filter | done | (this commit) | 223 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 4 |
+| 2 scope filter | done | ac95879 | 223 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 4 |
+| 3 discovery interface | done | (this commit) | 232 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 4 |

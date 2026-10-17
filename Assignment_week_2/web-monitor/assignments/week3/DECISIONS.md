@@ -71,3 +71,14 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Why:** department sites are separate sources with their own adapters; a central-calendar link to one must not pull a whole department site in.
 - **Alternatives:** `allowed_subdomains_of=["iitb.ac.in"]` (would admit every department site, unbounded).
 - **Reverse:** edit the `scope` block in `config/sources.json`.
+
+## D15 · 3 · Dedup merge rule: html > rss > atom > sitemap, field by field
+- **Decision:** when several methods find one canonical URL, the title and the (timestamp, raw timestamp) pair come from the first method in that priority that has a value; `discovery_methods` keeps all of them.
+- **Why:** the HTML listing shows what the reader sees and the event's own date; a sitemap has no title and its lastmod is unreliable (findings.md).
+- **Alternatives:** newest timestamp wins (would let a 2024 sitemap lastmod or a pubDate stand in for the event date).
+- **Reverse:** change `METHOD_PRIORITY` / `merge_records` in `src/discovery/discover.py`.
+
+## D16 · 3 · Out-of-scope candidates are returned, not dropped
+- **Decision:** `discover_items` returns every unique candidate with `in_scope`/`scope_reason`; the over-cap remainder is marked out of scope with "over max_discovered_items cap (N)".
+- **Why:** Section 8 requires every candidate to be persisted with its reason; dropping them would make scope decisions invisible.
+- **Reverse:** filter `result.candidates` on `in_scope` in `discover_items`.
