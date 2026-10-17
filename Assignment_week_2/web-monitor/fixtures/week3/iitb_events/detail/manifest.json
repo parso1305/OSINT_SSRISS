@@ -1,0 +1,112 @@
+{
+  "pages": [
+    {
+      "url": "https://www.iitb.ac.in/event/lecture-strong-interactions-exotic-emergent-particles-and-future-quantum-technologies",
+      "final_url": "https://www.iitb.ac.in/event/lecture-strong-interactions-exotic-emergent-particles-and-future-quantum-technologies",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-17T00:28:43Z",
+      "file": "lecture-strong-interactions-exotic-emergent-particles-and-future-quantum-technologies.html",
+      "origin": "live sample 2026-10-17 (Section 5)"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/seminar-cum-workshop-staggered-difference-differences-designs",
+      "final_url": "https://www.iitb.ac.in/event/seminar-cum-workshop-staggered-difference-differences-designs",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-17T00:28:46Z",
+      "file": "seminar-cum-workshop-staggered-difference-differences-designs.html",
+      "origin": "live sample 2026-10-17 (Section 5)"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/national-symposium-ai-innovation-bfsi-services",
+      "final_url": "https://www.iitb.ac.in/event/national-symposium-ai-innovation-bfsi-services",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-17T00:28:49Z",
+      "file": "national-symposium-ai-innovation-bfsi-services.html",
+      "origin": "live sample 2026-10-17 (Section 5)"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/institute-lecture-movement-polymer-molecules-under-electric-fields-and-relevance-rechargeable",
+      "final_url": "https://www.iitb.ac.in/event/institute-lecture-movement-polymer-molecules-under-electric-fields-and-relevance-rechargeable",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-17T00:28:52Z",
+      "file": "institute-lecture-movement-polymer-molecules-under-electric-fields-and-relevance-rechargeable.html",
+      "origin": "live sample 2026-10-17 (Section 5)"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/institute-colloquium-tale-two-symmetries",
+      "final_url": "https://www.iitb.ac.in/event/institute-colloquium-tale-two-symmetries",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-17T00:28:55Z",
+      "file": "institute-colloquium-tale-two-symmetries.html",
+      "origin": "live sample 2026-10-17 (Section 5)"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/institute-lecture-living-genome-active-material",
+      "final_url": "https://www.iitb.ac.in/event/institute-lecture-living-genome-active-material",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-17T00:28:58Z",
+      "file": "institute-lecture-living-genome-active-material.html",
+      "origin": "live sample 2026-10-17 (Section 5)"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/institute-colloquium-understanding-glue-binds-us-all",
+      "final_url": "https://www.iitb.ac.in/event/institute-colloquium-understanding-glue-binds-us-all",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-17T00:29:01Z",
+      "file": "institute-colloquium-understanding-glue-binds-us-all.html",
+      "origin": "live sample 2026-10-17 (Section 5)"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/institute-lecture-innovations-jet-noise-reduction-technology",
+      "final_url": "https://www.iitb.ac.in/event/institute-lecture-innovations-jet-noise-reduction-technology",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-17T00:29:04Z",
+      "file": "institute-lecture-innovations-jet-noise-reduction-technology.html",
+      "origin": "live sample 2026-10-17 (Section 5)"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/institute-lecture-nu-frontier-current-challenges-and-opportunities-neutrino-physics",
+      "final_url": "https://www.iitb.ac.in/event/institute-lecture-nu-frontier-current-challenges-and-opportunities-neutrino-physics",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-17T00:29:07Z",
+      "file": "institute-lecture-nu-frontier-current-challenges-and-opportunities-neutrino-physics.html",
+      "origin": "live sample 2026-10-17 (Section 5)"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/lecture-future-cern-and-outstanding-questions-particle-physics",
+      "final_url": "https://www.iitb.ac.in/event/lecture-future-cern-and-outstanding-questions-particle-physics",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-17T00:29:10Z",
+      "file": "lecture-future-cern-and-outstanding-questions-particle-physics.html",
+      "origin": "live sample 2026-10-17 (Section 5)"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/lecture-village-development-through-public-participation-water-conservation-forest-protection",
+      "final_url": "https://www.iitb.ac.in/event/lecture-village-development-through-public-participation-water-conservation-forest-protection",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-17T00:29:13Z",
+      "file": "lecture-village-development-through-public-participation-water-conservation-forest-protection.html",
+      "origin": "live sample 2026-10-17 (Section 5)"
+    },
+    {
+      "url": "https://www.iitb.ac.in/event/institute-colloquium-global-health-research-india-world",
+      "final_url": "https://www.iitb.ac.in/event/institute-colloquium-global-health-research-india-world",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "fetched_at": "2026-10-17T00:29:16Z",
+      "file": "institute-colloquium-global-health-research-india-world.html",
+      "origin": "live sample 2026-10-17 (Section 5)"
+    }
+  ]
+}

@@ -88,3 +88,18 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Kept as is:** the legacy `items` path (`store_item`/`store_all`) still returns `existing` (legacy is out of bounds); `store_records()` still returns a 3-key dict (`not_seen_this_run` is reported separately, so the only test edits are the renames).
 - **Hash reset note:** sorting only changes the hash of rows whose list fields were stored out of order; single-speaker/single-organization rows hash the same as before.
 - **Reverse:** revert the `generic: record states …` commit (the column rename is reversible with `RENAME COLUMN unchanged_count TO existing_count`).
+
+## D18 · 5 · Controlled live entity sample + two synthetic variants
+- **Decision:** the Section 0 evidence had 8 detail pages (< 10), so 12 more lecture/colloquium/seminar pages were fetched once (13 requests, budget ≤ 20). No real page has two people in one field or an `Organized by:` organization line, so two synthetic variants of a real page (only the Speaker paragraph replaced, fictional Section 7 names) cover those cases. Extraction fixture set: 18 real + 2 synthetic = 20.
+- **Alternatives:** hand-written pages (unrealistic markup); more live fetches hoping to find those cases (budget, and unbounded).
+- **Reverse:** delete `synthetic-*.html` and the two cases in `tests/test_entities_extraction.py`.
+
+## D19 · 5, 10 · Event times: detail `<time datetime>` read as IST with a fixed +05:30 offset
+- **Decision:** the adapter drops the mislabelled `Z` and converts IST→UTC with a fixed +05:30 (`timezone = Asia/Kolkata` stored next to it).
+- **Why:** proven mislabel (homepage `11:45:00Z` vs detail `17:15:00Z` for one lecture; body says 5:15 p.m.); India has no DST; the venv has no tz database (`ZoneInfoNotFoundError: Asia/Kolkata`) and `tzdata` would be a new dependency for one constant.
+- **Reverse:** `pip install tzdata` and use `ZoneInfo("Asia/Kolkata")` in `_ist_to_utc`.
+
+## D20 · 5 · People-splitting rule: a new person starts only at an explicit honorific (unless no comma at all)
+- **Decision:** see `05_extraction/notes.md`. Real affiliations contain `;`, `&`, ` and ` and line breaks, so splitting on every separator would invent people ("Padma Shri Awardee", "Professor, Computer Science…"). Plain comma never splits.
+- **Cost:** an unlabelled-honorific list with affiliations ("Ananya Rao, IITB; Ravi Sen, TISS") stays one person (under-split, never a false person). Logged as the conservative failure mode.
+- **Reverse:** change `split_people` in `src/entities.py`.
