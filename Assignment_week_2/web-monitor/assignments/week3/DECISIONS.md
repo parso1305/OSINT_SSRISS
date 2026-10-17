@@ -48,3 +48,14 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 ## D10 · 1A · Event-shaped feed and sitemap fixtures are synthetic
 - **Decision:** the target has no event feed, no Atom feed and no sitemap (Section 0 evidence, live 404 on 2026-10-17), so RSS/Atom/urlset/index exercises use synthetic fixtures modelled on real `/event/<slug>` URLs; the real `/rss.xml` (trimmed) and the real ACR sitemap (trimmed) are also fixtures. Stated in `01_discovery/findings.md` and `fixtures/week3/discovery/README.md`.
 - **Reverse:** n/a (replace fixtures if the site adds a feed).
+
+## D11 · 1B, 10 · HTML discovery reads the homepage events block, not the FullCalendar JSON
+- **Decision:** the target's HTML discovery page is `https://www.iitb.ac.in/` with `LISTING_SELECTORS` for its events block (`.homepage-events .views-row`: 40 server-rendered event cards, `<time datetime>` in correct UTC). It is a block of the same Drupal `events` view that `/events` draws client-side.
+- **Why:** `/events` has 0 item links in its markup; all 643 entries are JSON inside `drupal-settings-json`, which a selector-driven HTML parser cannot read without site-specific JSON decoding. The homepage block is plain HTML for the same view, already capped at 40 items (inside the 20–40 discovered-items ceiling), and its timestamps are correct UTC, unlike the detail pages' `<time datetime="…Z">` which mislabels IST as UTC (17:15 IST shown as `17:15:00Z` on the detail page, `11:45:00Z` on the homepage).
+- **Alternatives:** an adapter hook that turns the calendar JSON into items (full archive, 643 entries: better for a one-off backfill, too many for a capped monitoring run).
+- **Reverse:** add a calendar-JSON listing function to the adapter and point `discovery_urls.html` at `/events`.
+
+## D12 · 1B · DiscoveryRecord rejects a non-canonical discovered_url
+- **Decision:** besides "absolute http(s)", `__post_init__` checks `resolve_item_url(url, "") == url`, so no code path can build a record with an un-canonicalized URL.
+- **Why:** the focus area: one item, one key, regardless of discovery method.
+- **Reverse:** drop that check in `src/discovery/record.py`.

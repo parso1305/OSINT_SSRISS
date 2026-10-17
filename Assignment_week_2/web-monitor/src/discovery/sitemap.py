@@ -15,6 +15,7 @@ from xml.etree.ElementTree import ParseError
 from defusedxml import DefusedXmlException
 from defusedxml.ElementTree import fromstring
 
+from src.discovery.record import DiscoveryRecord, make_record, utc_now
 from src.discovery.timestamps import to_utc_z
 
 SITEMAP_NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -91,3 +92,18 @@ def walk_sitemaps(fetch_text: Callable[[str], Union[str, bytes]], start_url: str
         child = parse_sitemap(fetch_text(child_url))
         items.extend((child_url, e) for e in child.urls)
     return items, children[max_children:]
+
+
+def sitemap_records(content: Union[bytes, str], source_name: str, sitemap_url: str,
+                    discovered_at: Optional[str] = None) -> tuple[list[DiscoveryRecord], list[str]]:
+    """(item records with method "sitemap" and lastmod as source_timestamp, child sitemap URLs).
+    A sitemap index yields no item records, only children; following them is the caller's choice."""
+    discovered_at = discovered_at or utc_now()
+    result = parse_sitemap(content)
+    records = []
+    for entry in result.urls:
+        record = make_record(source_name, entry.loc, sitemap_url, "sitemap", None,
+                             entry.lastmod, entry.lastmod_raw, discovered_at)
+        if record is not None:
+            records.append(record)
+    return records, [c.loc for c in result.child_sitemaps]

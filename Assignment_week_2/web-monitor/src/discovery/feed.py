@@ -14,6 +14,7 @@ from typing import Optional, Union
 
 import feedparser
 
+from src.discovery.record import DiscoveryRecord, make_record, utc_now
 from src.discovery.timestamps import format_utc, to_utc_z
 
 
@@ -95,3 +96,18 @@ def parse_feed(content: Union[bytes, str]) -> FeedResult:
                                  published=published, published_raw=published_raw,
                                  updated=updated, updated_raw=updated_raw))
     return FeedResult(kind=kind, version=version, feed_link=data.feed.get("link"), entries=entries)
+
+
+def feed_records(content: Union[bytes, str], source_name: str, feed_url: str,
+                 discovered_at: Optional[str] = None) -> list[DiscoveryRecord]:
+    """Feed entries as DiscoveryRecords (method "rss" or "atom"). Relative links resolve against the feed URL.
+    Entries whose link is missing or not http(s) are skipped (nothing to discover)."""
+    discovered_at = discovered_at or utc_now()
+    feed = parse_feed(content)
+    records = []
+    for entry in feed.entries:
+        record = make_record(source_name, entry.link, feed_url, feed.kind, entry.title,
+                             entry.timestamp, entry.timestamp_raw, discovered_at)
+        if record is not None:
+            records.append(record)
+    return records

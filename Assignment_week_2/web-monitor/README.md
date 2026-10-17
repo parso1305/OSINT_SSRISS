@@ -112,6 +112,26 @@ covers field names as well as values), so local databases were reset rather than
 `speakers` keeps its `{name, affiliation}` object shape, although some teammates store plain strings. It is not
 changed now because Week 3 Section 6 moves speakers into a people table.
 
+## Discovery record
+
+Week 3 discovery turns every way of finding an item (HTML listing, RSS, Atom, sitemap) into one shape,
+`src/discovery/record.py::DiscoveryRecord` (frozen; validated in `__post_init__`):
+
+| Field | Value |
+|---|---|
+| `source_name` | config `source_id` of the source that found it |
+| `discovered_url` | canonical URL, always the output of `src.urls.resolve_item_url()` (validated: absolute http(s), already canonical) |
+| `discovery_method` | `html` · `rss` · `atom` · `sitemap` |
+| `discovered_title` | listing link text / feed `<title>`; `None` for sitemaps |
+| `source_timestamp` | the source's own timestamp (listing date, pubDate/updated, lastmod) as UTC `...Z`, or `None` |
+| `discovered_at` | when this run found it, UTC `...Z` |
+
+`to_spec_dict()` returns exactly these six. One extra provenance field, `source_timestamp_raw`, stays on the object
+(the timestamp as the source wrote it, kept even when it cannot be normalized). Because every method goes through
+`resolve_item_url()`, one event found as a relative HTML href, an RSS link with `utm_*` and a `#fragment`, and a
+sitemap `<loc>` gets the same `discovered_url` (`tests/test_discovery_record.py::test_same_item_same_url_across_methods`).
+A discovery record is a candidate, not an event record (`assignments/week3/01_discovery/findings.md`).
+
 ## Adding a source (adapter + config only)
 
 1. **Adapter** `sources/<name>.py` (no network, database or logging setup; `tests/test_architecture.py` enforces this):
@@ -223,7 +243,13 @@ web-monitor/
 │   ├── runner.py              run_source(config): the pipeline
 │   ├── scheduler.py           due/retry logic, per-source lock, run records, --once / loop CLI
 │   ├── urls.py                resolve_item_url (the one canonicalizer) + synthetic_item_url
-│   └── logging_config.py      the only log-handler setup + one helper per log event
+│   ├── logging_config.py      the only log-handler setup + one helper per log event
+│   └── discovery/             Week 3: content -> DiscoveryRecord (never fetches)
+│       ├── record.py          DiscoveryRecord (the unified discovery record)
+│       ├── html.py            selector-driven listing parser (selectors come from the adapter)
+│       ├── feed.py            RSS 2.0 / Atom via feedparser (bytes only, never a URL)
+│       ├── sitemap.py         urlset / sitemapindex via defusedxml (+ capped child walk)
+│       └── timestamps.py      to_utc_z: RFC 822 / ISO 8601 -> "...Z"
 ├── sources/
 │   ├── iit_bombay.py          HSS "Seminars and Talks" adapter (live source)
 │   └── iit_bombay_legacy.py   Section 1-4A adapter for the hand-written fixtures (tests only, not in config)
@@ -232,7 +258,7 @@ web-monitor/
 ├── certs/                     CA bundle for HSS (see TLS above)
 ├── fixtures/                  iit_bombay_hss/ (real saved HTML + manifest), iit_bombay/ (legacy hand-written), tls/ (test-only certs)
 ├── tests/                     main suite (see Tests)
-├── assignments/               write-ups and evidence per assignment (below)
+├── assignments/               write-ups and evidence per assignment (below); Week 3 work in assignments/week3/<NN_name>/
 ├── data/  locks/  logs/       runtime state (git-ignored)
 ├── requirements.txt  pytest.ini
 ```

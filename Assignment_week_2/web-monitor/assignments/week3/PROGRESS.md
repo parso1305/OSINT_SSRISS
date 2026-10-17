@@ -9,3 +9,4 @@ Live requests before this run: 28 (Section 0 recon, separate budget).
 | Section | Status | Commit | Main suite | Audit suite | Live requests (this run, cumulative / 80) |
 |---|---|---|---|---|---|
 | 1A feed/sitemap inspectors | done | (this commit) | 162 passed, 1 skipped | 43 passed, 3 xfailed | 4 |
+| 1B unified discovery record | done | (this commit) | 194 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 4 |
