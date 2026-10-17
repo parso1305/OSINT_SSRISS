@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SYNTHETIC Atom fixture: ISO 8601 dates with Z and with +05:30 offsets; one entry has only <updated>. -->
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>IIT Bombay events (Atom fixture)</title>
+  <link href="https://www.iitb.ac.in/events"/>
+  <id>tag:www.iitb.ac.in,2026:events</id>
+  <updated>2026-10-16T09:44:35Z</updated>
+  <entry>
+    <title>Institute Lecture on "Saral AI"</title>
+    <link rel="alternate" href="https://www.iitb.ac.in/event/institute-lecture-saral-ai-democratising-scholarly-work-transforming-accessible-multilingual"/>
+    <id>tag:www.iitb.ac.in,2026:node/6903</id>
+    <published>2026-10-14T16:30:00+05:30</published>
+    <updated>2026-10-15T09:00:00Z</updated>
+  </entry>
+  <entry>
+    <title>5th Japan–India Forum</title>
+    <link rel="alternate" href="https://www.iitb.ac.in/event/5th-japan-india-forum#register"/>
+    <id>tag:www.iitb.ac.in,2026:node/6896</id>
+    <updated>2026-10-10T05:00:00Z</updated>
+  </entry>
+</feed>

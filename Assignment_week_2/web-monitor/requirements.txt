@@ -5,6 +5,8 @@
 requests==2.34.2
 beautifulsoup4==4.15.0
 certifi==2026.7.22   # scripts/build_ca_bundle.py builds certs/iitb_ca_bundle.pem from this version
+feedparser==6.0.14   # Week 3 1A: RSS/Atom parsing (content only, never given a URL)
+defusedxml==0.7.1    # Week 3 1A: safe XML parsing for sitemaps
 
 # tests
 pytest==9.1.1

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:schema="http://schema.org/" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" version="2.0" xml:base="https://www.iitb.ac.in/">
+  <channel>
+    <title>भारतीय प्रौद्योगिकी संस्थान मुंबई - Indian Institute of Technology Bombay</title>
+    <link>https://www.iitb.ac.in/</link>
+    <description/>
+    <language>en</language>
+    
+    <item>
+  <title>CMC for Helios 05 UC (Focused Ion  Beam – Scanning electron Microscope  (FIB-SEM))</title>
+  <link>https://www.iitb.ac.in/tenders/cmc-helios-05-uc-focused-ion-beam-scanning-electron-microscope-fib-sem</link>
+  <description>[trimmed for the fixture]</description>
+  <pubDate>Fri, 16 Oct 2026 09:44:35 +0000</pubDate>
+    <dc:creator>30005359</dc:creator>
+    <guid isPermaLink="false">6917 at https://www.iitb.ac.in</guid>
+    </item>
+    <item>
+  <title>Prof. Indu J.</title>
+  <link>https://www.iitb.ac.in/employee/prof-indu-j</link>
+  <description>[trimmed for the fixture]</description>
+  <pubDate>Fri, 16 Oct 2026 04:58:25 +0000</pubDate>
+    <dc:creator>pro</dc:creator>
+    <guid isPermaLink="false">6916 at https://www.iitb.ac.in</guid>
+    </item>
+    <item>
+  <title>The National Geomatics Award – Applications for the year 2026</title>
+  <link>https://www.iitb.ac.in/award/national-geomatics-award-applications-year-2026</link>
+  <description>[trimmed for the fixture]</description>
+  <pubDate>Fri, 16 Oct 2026 04:53:14 +0000</pubDate>
+    <dc:creator>pro</dc:creator>
+    <guid isPermaLink="false">6915 at https://www.iitb.ac.in</guid>
+    </item>
+  </channel>
+</rss>

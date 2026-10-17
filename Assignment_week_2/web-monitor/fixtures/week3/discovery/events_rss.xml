@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SYNTHETIC fixture modelled on IIT Bombay /event/<slug> pages (www.iitb.ac.in has no event feed; see
+     assignments/week3/01_discovery/findings.md). RFC 822 dates in three offset styles; links carry tracking
+     parameters and fragments the way newsletter/feed tools add them. -->
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>IIT Bombay events (fixture)</title>
+    <link>https://www.iitb.ac.in/events</link>
+    <description>Fixture feed</description>
+    <item>
+      <title>Institute Lecture on "Taming Turbulence"</title>
+      <link>https://www.iitb.ac.in/event/institute-lecture-taming-turbulence?utm_source=rss&amp;utm_medium=feed#main-content</link>
+      <guid isPermaLink="false">6737 at https://www.iitb.ac.in</guid>
+      <pubDate>Mon, 24 Aug 2026 10:15:00 +0530</pubDate>
+    </item>
+    <item>
+      <title>International Conference on Quantum Dynamics</title>
+      <link>https://WWW.IITB.AC.IN:443/event/international-conference-quantum-dynamics?fbclid=IwAR0abc</link>
+      <guid isPermaLink="false">6600 at https://www.iitb.ac.in</guid>
+      <pubDate>Tue, 01 Sep 2026 06:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Van Mahotsav 2026</title>
+      <link>/event/van-mahotsav-2026</link>
+      <guid isPermaLink="false">6783 at https://www.iitb.ac.in</guid>
+      <pubDate>Thu, 27 Aug 2026 09:30:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>Item with no date</title>
+      <link>https://www.iitb.ac.in/event/no-date-fixture</link>
+    </item>
+  </channel>
+</rss>
