@@ -9,8 +9,8 @@ Entities (Week 3):            init_entity_tables, write_entity_links (inside sto
                               entity_counts, query
 Discovered items (Week 3):    init_discovered_items_table, upsert_discovered_items (run transaction),
                               get_discovered_item
-Run records (scheduler):      init_runs_table, start_run, finish_run, abandon_running_runs,
-                              run_history, list_runs
+Run records (scheduler):      init_runs_table, start_run, finish_run (+ Week 3 run metrics columns),
+                              abandon_running_runs, run_history, get_run, list_runs, last_runs
 Legacy API (Sections 1-4A):   init_db, store_item/store_all, get_item_by_url, count_items (table `items`)
 """
 
@@ -620,6 +620,12 @@ def get_discovered_item(db_path: str, url: str) -> Optional[dict]:
 # ---------------------------------------------------------------------------
 
 RUN_STATUSES = ("running", "success", "failed", "skipped")
+RUN_METRIC_COLUMNS = (
+    ("http_status", "INTEGER"), ("pages_fetched", "INTEGER"), ("items_discovered", "INTEGER"),
+    ("items_parsed", "INTEGER"), ("not_seen_count", "INTEGER"), ("parse_failures", "INTEGER"),
+    ("detail_failures", "INTEGER"), ("people_extracted", "INTEGER"), ("organizations_extracted", "INTEGER"),
+    ("pct_with_date", "REAL"), ("pct_with_speaker", "REAL"), ("pct_with_org", "REAL"),
+)
 
 
 def init_runs_table(db_path: str) -> None:
@@ -651,6 +657,11 @@ def _migrate_runs_table(conn: sqlite3.Connection) -> None:
     columns = {row[1] for row in conn.execute("PRAGMA table_info(runs)")}
     if "existing_count" in columns and "unchanged_count" not in columns:
         conn.execute("ALTER TABLE runs RENAME COLUMN existing_count TO unchanged_count")
+    # Week 3 Section 9: run metrics live on the same runs table (no second run table). Added in place, NULL for
+    # older rows and for the Week 2 listing pipeline where a metric does not apply.
+    for column, sql_type in RUN_METRIC_COLUMNS:
+        if column not in columns:
+            conn.execute(f"ALTER TABLE runs ADD COLUMN {column} {sql_type}")
 
 
 def start_run(db_path: str, source_id: str, status: str = "running", error: Optional[str] = None) -> str:
@@ -666,15 +677,34 @@ def start_run(db_path: str, source_id: str, status: str = "running", error: Opti
 
 
 def finish_run(db_path: str, run_id: str, status: str, counts: Optional[dict] = None,
-               failed_count: int = 0, error: Optional[str] = None) -> None:
+               failed_count: int = 0, error: Optional[str] = None, metrics: Optional[dict] = None) -> None:
+    """metrics: any of RUN_METRIC_COLUMNS (Week 3 Section 9); unknown keys are ignored, missing ones stay NULL."""
     counts = counts or {}
+    metrics = {k: v for k, v in (metrics or {}).items() if k in dict(RUN_METRIC_COLUMNS)}
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    extra = "".join(f", {column} = ?" for column in metrics)
     with _connect(db_path) as conn:
-        conn.execute("""UPDATE runs SET finished_at = ?, status = ?, new_count = ?, unchanged_count = ?,
-                        changed_count = ?, failed_count = ?, error = ? WHERE run_id = ?""",
+        conn.execute(f"""UPDATE runs SET finished_at = ?, status = ?, new_count = ?, unchanged_count = ?,
+                         changed_count = ?, failed_count = ?, error = ?{extra} WHERE run_id = ?""",
                      (now_iso, status, counts.get("new"), counts.get("unchanged"), counts.get("changed"),
-                      failed_count, error, run_id))
+                      failed_count, error, *metrics.values(), run_id))
         conn.commit()
+
+
+def last_runs(db_path: str, source_id: Optional[str] = None, status: Optional[str] = None,
+              limit: int = 1) -> list[dict]:
+    """Most recent finished (non-running, non-skipped) runs first, optionally for one source / status."""
+    init_runs_table(db_path)
+    where, args = ["status NOT IN ('running', 'skipped')"], []
+    if source_id:
+        where.append("source_id = ?"); args.append(source_id)
+    if status:
+        where.append("status = ?"); args.append(status)
+    with _connect(db_path) as conn:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(f"SELECT * FROM runs WHERE {' AND '.join(where)} ORDER BY started_at DESC, rowid DESC "
+                            f"LIMIT ?", (*args, limit)).fetchall()
+    return [dict(r) for r in rows]
 
 
 def abandon_running_runs(db_path: str, source_id: str, reason: str) -> int:

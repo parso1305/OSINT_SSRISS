@@ -131,3 +131,7 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 ## D26 · 8 · Router order and target patterns
 - **Decision:** external host → PDF (Content-Type, else extension) → category label (config map) → URL pattern (config) → unknown. Target patterns from the real URLs seen: event `/event/`, `/events/`; announcement `/breaking-news/`, `/announcement-staff/`, `/announcements/`; faculty `/employee/`, `/faculty/`. `/node/N`, `/tenders/`, `/award/`, `/research-highlight/` deliberately unmapped (unknown).
 - **Reverse:** edit `router` in config/sources.json.
+
+## D27 · 9 · Generic change G8: metrics columns on the existing runs table
+- **Decision:** 12 nullable columns added to `runs` (created for new DBs, `ALTER TABLE ADD COLUMN` for existing ones); `finish_run` takes an optional `metrics` dict; `last_runs()` reads the latest finished runs. new/changed/failed counts stay; unchanged_count comes from Section 4.
+- **Reverse:** the columns are nullable and unused by Week 2 code; revert the commit (SQLite ≥ 3.35 can DROP COLUMN if needed).
