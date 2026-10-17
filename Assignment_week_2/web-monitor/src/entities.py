@@ -212,7 +212,7 @@ def extract_mentions(lines: Iterable[str], labels: dict) -> tuple[list[PersonMen
             person = parse_person(part, role, source_text)
             if person and (name_key(person.name), person.role) not in {(name_key(p.name), p.role) for p in people}:
                 people.append(person)
-    return people, orgs
+    return people, resolve_page_acronyms(orgs)
 
 
 def speakers_field(people: Iterable[PersonMention]) -> list[dict]:
@@ -243,3 +243,30 @@ def name_key(name: str) -> str:
     text = unicodedata.normalize("NFKC", name or "").casefold()
     text = _DECORATIVE_RE.sub(" ", text)
     return " ".join(text.split())
+
+
+# -- rows for storage (Section 6) -------------------------------------------------------------------------------
+
+def resolve_page_acronyms(orgs: list[OrgMention]) -> list[OrgMention]:
+    """A bare acronym is an alias ONLY on the page that defines it ("Centre for Policy Research (CPR)"): there,
+    a mention named "CPR" is the defined organization. On any other page a bare "CPR" stays "CPR" (Section 7)."""
+    defined = {o.acronym: o.name for o in orgs if o.acronym}
+    resolved = []
+    for org in orgs:
+        if org.name in defined and not org.acronym:
+            org = OrgMention(name=defined[org.name], role=org.role, org_type=org_type_of(defined[org.name]),
+                             parent_raw=org.parent_raw, url=org.url, source_text=org.source_text, acronym=org.name)
+        if (org.name, org.role) not in {(o.name, o.role) for o in resolved}:
+            resolved.append(org)
+    return resolved
+
+
+def mention_rows(people: Iterable[PersonMention], orgs: Iterable[OrgMention]) -> tuple[list[dict], list[dict]]:
+    """Mentions -> rows for storage.write_entity_links, keyed by name_key (the honorific is already split off)."""
+    people_rows = [{"normalized_name": name_key(p.name), "display_name": p.name, "honorific": p.honorific,
+                    "profile_url": p.profile_url, "role": p.role, "affiliation_raw": p.affiliation_raw,
+                    "source_text": p.source_text} for p in people if name_key(p.name)]
+    org_rows = [{"normalized_name": name_key(o.name), "display_name": o.name, "org_type": o.org_type, "url": o.url,
+                 "role": o.role, "source_text": o.source_text} for o in resolve_page_acronyms(list(orgs))
+                if name_key(o.name)]
+    return people_rows, org_rows
