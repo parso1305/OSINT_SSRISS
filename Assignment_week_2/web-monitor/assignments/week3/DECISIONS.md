@@ -122,3 +122,12 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 ## D24 · 8 · Generic change G7: discovered_items table
 - **Decision:** columns exactly as specified; `discovery_methods` stored as JSON; written inside the run's single transaction; `first_discovered_at` kept on update. Out-of-scope candidates are stored too (in_scope=0 with scope_reason), so every scope and routing decision is auditable.
 - **Reverse:** drop the table and the three helpers.
+
+## D25 · 8 · ITEM_TYPES stays ("event",); announcements stay in discovered_items
+- **Decision:** no announcement parser was built this week, so `announcement` is not added to ITEM_TYPES. `/breaking-news/` items are discovered, scoped and routed (`content_class = announcement`) and kept in discovered_items.
+- **Why:** the brief allows widening only for classes with a parser that writes to records; building a news parser and its schema rules would be new scope.
+- **Reverse:** add an announcement parser to the adapter, widen ITEM_TYPES, route `announcement` to it.
+
+## D26 · 8 · Router order and target patterns
+- **Decision:** external host → PDF (Content-Type, else extension) → category label (config map) → URL pattern (config) → unknown. Target patterns from the real URLs seen: event `/event/`, `/events/`; announcement `/breaking-news/`, `/announcement-staff/`, `/announcements/`; faculty `/employee/`, `/faculty/`. `/node/N`, `/tenders/`, `/award/`, `/research-highlight/` deliberately unmapped (unknown).
+- **Reverse:** edit `router` in config/sources.json.

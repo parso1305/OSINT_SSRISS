@@ -92,6 +92,35 @@
         "max_listing_pages": 1,
         "max_detail_items": 20,
         "max_discovered_items": 40
+      },
+      "router": {
+        "hosts": [
+          "www.iitb.ac.in"
+        ],
+        "category_map": {
+          "Seminar/Talk": "event",
+          "Conference/Symposium": "event",
+          "CEP Course/School/Workshop": "event",
+          "Academic Event": "event",
+          "Social/Cultural": "event",
+          "Breaking News": "announcement",
+          "Announcement": "announcement"
+        },
+        "url_patterns": {
+          "event": [
+            "/event/",
+            "/events/"
+          ],
+          "announcement": [
+            "/breaking-news/",
+            "/announcement-staff/",
+            "/announcements/"
+          ],
+          "faculty": [
+            "/employee/",
+            "/faculty/"
+          ]
+        }
       }
     }
   ]
