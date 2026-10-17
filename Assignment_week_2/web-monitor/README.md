@@ -1,15 +1,31 @@
-# web-monitor: academic event monitor (Week 2)
+# web-monitor: academic event monitor (Weeks 2–3)
 
-Monitors institutional event listings, such as IIT Bombay HSS "Seminars and Talks", on a schedule. A **generic
-pipeline** (`src/`) fetches politely, paginates, enriches from detail pages, validates against a shared schema and
-stores changes in SQLite. Each site contributes only an **adapter** (`sources/<name>.py`, selectors and cleaning
-rules) and a **config entry** (`config/sources.json`).
+Monitors institutional event sources on a schedule. A **generic pipeline** (`src/`) fetches politely, validates
+against a shared schema and stores changes in SQLite. Each site contributes only an **adapter**
+(`sources/<name>.py`: selectors, label patterns and cleaning rules) and a **config entry** (`config/sources.json`).
+The config's `pipeline` key picks one of two pipelines. Both run under the same scheduler, lock, run records and
+logs.
+
+**Week 2, `"pipeline": "listing"`** (`src/runner.py`): one department listing, e.g. IIT Bombay HSS
+"Seminars and Talks".
 
 ```
 fetch listing (robots.txt, delay, timeout, TLS verified) -> adapter.parse_listing -> [pagination]
   -> [detail pages: adapter.parse_detail, merged into the listing record] -> adapter.normalize
   -> assemble shared-schema record -> validate -> store (one transaction; new / changed / unchanged,
      then not_seen_this_run)
+```
+
+**Week 3, `"pipeline": "aggregator"`** (`src/aggregator.py`): a central aggregator. The target is the IIT Bombay
+institute events calendar (`sources/iit_bombay_events.py`; target choice D1, pending review).
+
+```
+config entry -> discovery (html / rss / atom / sitemap -> DiscoveryRecord, canonical URLs)
+  -> scope filter -> dedup on the canonical URL -> content router (event / announcement / faculty / pdf_document /
+     external_link / unknown) -> capped detail fetch -> router again (Content-Type) -> adapter.parse_event_detail
+  -> assemble + validate -> entity mentions (people, organizations; labelled roles only)
+  -> ONE transaction: records + entity links + review queue + discovered_items -> not_seen_this_run
+  -> run metrics (summary block, RUN_SUMMARY log line, runs-table columns, coverage-drop warning)
 ```
 
 ## Setup
@@ -22,7 +38,8 @@ python -m venv venv
 venv\Scripts\python -m pip install -r requirements.txt
 ```
 
-`requirements.txt` pins the direct dependencies (`requests`, `beautifulsoup4`, `certifi`, `pytest`, `pytest-cov`).
+`requirements.txt` pins the direct dependencies (`requests`, `beautifulsoup4`, `certifi`, `feedparser`,
+`defusedxml`, `pytest`, `pytest-cov`).
 
 Keep the checkout path short on Windows. Some saved fixture names are long, and a clone under a deep folder
 (roughly 100+ characters) exceeds the 260-character path limit; git then fails with `Filename too long`.
@@ -38,6 +55,11 @@ policy).
 | `python -m src.scheduler` | Loop mode: checks every 60 s (`--tick-s`). For demos. |
 | `python scripts/fixture_site.py --port 8765` | Serves the saved HSS HTML on 127.0.0.1. The disabled `local_fixture` source points here, so `python -m src.scheduler --once --source local_fixture --db data/demo.db` runs the full pipeline with no network. |
 | `python scripts/run_fixtures.py --show-records 2` | Runs the HSS config against the fixture site directly (no scheduler) into a temp DB. |
+| `python -m scripts.aggregator_fixture_site --port 8766` | **Week 3 offline aggregator**: serves the saved IIT Bombay events pages on 127.0.0.1:8766 (`--variant changed` for the next-day site; `--broken listing\|detail\|http\|speaker_label` for failure demos). |
+| `python -m src.scheduler --once --source local_aggregator_fixture --force --db data/week3_demo.db` | Runs the aggregator **once, offline**, against that site (`assignments/week3/10_aggregator/demo_offline.md`). |
+| `python -m src.scheduler --once --source iit_bombay_events --force --db data/week3_live.db` | Runs the aggregator **once, live**, against www.iitb.ac.in: about 22 requests, 3 s apart (`assignments/week3/10_aggregator/live_runs.md`). |
+| `python -m src.metrics --last --db <path> [--source <id>]` | Prints the last run's summary (Week 3 Section 9). |
+| `python -m assignments.week3.10_aggregator.inspect_db --db <path>` | Duplicate checks and an inventory of an aggregator DB. |
 
 Other flags: `--db <path>` (default `data/events.db`), `--locks-dir <dir>`, `--config <path>`.
 
@@ -56,7 +78,9 @@ fails (the whole run's writes roll back). Per-item problems do not fail the run:
 (`VALIDATION_FAILURE`, not stored). Neither a failed detail fetch nor an unparseable value ever erases stored data.
 
 **Output**: table `records` (one row per canonical `item_url`, shared schema in `src/schema.py`) and table `runs`
-(one row per run: status, counts, error), both in the `--db` file. `data/events.db` is created on the first run
+(one row per run: status, counts, error, and the Week 3 run metrics), both in the `--db` file. Aggregator sources
+also write `discovered_items`, `people`, `organizations`, `item_people`, `item_organizations` and
+`entity_alias_candidates`. `data/events.db` is created on the first run
 (the local databases were reset for the shared-schema rename below, so no row predates it).
 Logs go to stdout as `YYYY-MM-DD HH:MM:SS [LEVEL] logger=<name> EVENT key=value …` (examples:
 [`assignments/01_logging/failure_examples.md`](assignments/01_logging/failure_examples.md)).
@@ -133,6 +157,70 @@ Week 3 discovery turns every way of finding an item (HTML listing, RSS, Atom, si
 sitemap `<loc>` gets the same `discovered_url` (`tests/test_discovery_record.py::test_same_item_same_url_across_methods`).
 A discovery record is a candidate, not an event record (`assignments/week3/01_discovery/findings.md`).
 
+## URL scope rules
+
+`src/scope.py::scope_decision(url, cfg) -> (allowed, reason)` runs on canonical URLs. Its rules apply in this order:
+1. **Scheme:** http/https only. `mailto:`, `javascript:`, `tel:` and `data:` are never items.
+2. **Host:** an exact match against `allowed_hosts`. A subdomain is allowed only when its parent is listed in
+   `allowed_subdomains_of`, checked on a dot boundary (`notiitb.ac.in` never matches). Other hosts are rejected
+   unless `allow_external`.
+3. **Excluded path prefixes:** login, search, admin and user pages.
+4. **Excluded query keys:** the calendar, search and filter explosion (`?month=`, `?view=`, `?page=`,
+   `?search_api_fulltext=`, …), rejected even under an allowed prefix.
+5. **Allowed path prefixes**, stored with a trailing slash, so `/events/` never matches `/events-archive/`.
+
+A PDF inside an allowed prefix is in scope, but it is routed as `pdf_document` and never detail-fetched as HTML. The
+per-run caps (`max_listing_pages`, `max_discovered_items`, `max_detail_items`) live in the same `scope` config block.
+Out-of-scope candidates are kept in `discovered_items` with their reason.
+Cases: `assignments/week3/02_scope/scope_cases.md` (one test per row in `tests/test_scope.py`).
+
+## Content-hash fields
+
+`content_hash` = sha256 over `schema.CONTENT_FIELDS` only:
+- `item_type`, `title`
+- `event_start`, `event_end`, `timezone`
+- `speakers`, `location`, `is_online`
+- `event_type`, `organizations`, `description`
+
+List fields are sorted before hashing (speakers by (name, affiliation), organizations alphabetically), so a reorder
+on the page is not a change. Stored values keep the page order.
+
+Never hashed:
+- `fetched_at`, `discovered_at`
+- `http_status`
+- `detail_*`
+- `raw_text`
+- `extras` (where relative "posted 3 days ago" text, view counts and tokens would go)
+- identity and provenance (`item_url`, `source_name`, `source_url`, `institution`)
+
+Record states:
+- **new:** an unseen canonical URL;
+- **changed:** a different hash;
+- **unchanged:** the same hash (was `existing` in Week 2);
+- **not_seen_this_run:** a query, not a write (`last_seen_at` older than the run's start). Nothing is ever deleted.
+
+Details: `assignments/week3/04_incremental/run_state_notes.md`.
+
+## Entity matching policy
+
+People and organizations come only from **labelled** lines (`Speaker:`, `Chair:`, `Organized by:`, …; the patterns
+are the adapter's), with `source_text` kept verbatim. An affiliation is recorded only when it is written next to the
+name.
+
+Identity is `name_key()` and nothing else: NFKC, casefold, decorative punctuation removed, whitespace collapsed, with
+the honorific removed first and stored separately. It never expands initials, reorders names, drops parts or
+fuzzy-matches.
+
+Decisions:
+- **Equal keys** are one row (`people.normalized_name` UNIQUE; an accepted identity claim, D5).
+- **Review, never merged:** an initial compatible with a full name plus an identical other part (`A. Rao` /
+  `Ananya Rao`), and Centre/Center spelling variants. These go to `entity_alias_candidates` with
+  `status = 'needs_review'`.
+- **A bare acronym** is an alias only on the page that defines it (`Centre for Policy Research (CPR)`).
+
+A false merge is worse than a false split: a merge silently gives one person another's events, while a split is
+visible and fixable. Table of every decided pair: `assignments/week3/07_resolution/entity_matching_policy.md`.
+
 ## Changes to the generic layer
 
 Week 3 changed the generic layer only where a Week 3 requirement needed it. Existing tests stayed green without
@@ -179,6 +267,13 @@ edits, except the Section 4 state/column rename. Every change also has an entry 
 | `lock_max_age_minutes` | a lock older than this is stale and removed |
 | `allow_empty_listing` | default `false`: 0 parsed items fails the run |
 | `ca_bundle` | PEM file for TLS verification, relative to the project root (see below) |
+| `pipeline` | `listing` (default, Week 2 runner) or `aggregator` (Week 3) |
+| `discovery`, `discovery_urls` | aggregator: method(s) `html` / `rss` / `atom` / `sitemap`, and `{method: [urls]}` (`html` defaults to `[listing_url]`) |
+| `scope` | aggregator: `src.scope.ScopeConfig` keys (hosts, prefixes, excluded query keys, caps) |
+| `router` | aggregator: `hosts`, `category_map` (card label → class), `url_patterns` (class → path prefixes) |
+
+An **aggregator adapter** provides `LISTING_SELECTORS` (for `src/discovery/html.py`), the label patterns, and
+`parse_event_detail(html, item_url) -> {fields, people, orgs, parse_warnings}`. See `sources/iit_bombay_events.py`.
 
 3. **Tests**: save real pages under `fixtures/<site>/`, test the adapter on them (see
    `tests/test_adapter_iit_bombay.py`), and serve them through `scripts/fixture_site.py` for an end-to-end run.
@@ -215,11 +310,15 @@ every cycle, so no restart and no code change is needed.
 ## Tests
 
 ```powershell
-venv\Scripts\python -m pytest                                  # main suite (tests/), no network
+venv\Scripts\python scripts\offline_pytest.py                          # main suite, outbound HTTP blocked
+venv\Scripts\python scripts\offline_pytest.py assignments\week2_audit\tests   # audit suite, HTTP blocked
 venv\Scripts\python -m pytest --cov=src --cov=sources          # with coverage
 $env:LIVE_TESTS = "1"; venv\Scripts\python -m pytest tests\test_enrichment.py   # + the live HSS test
-venv\Scripts\python -m pytest assignments\week2_audit\tests    # audit behaviour tests (see FIXES.md)
 ```
+
+`scripts/offline_pytest.py` sets `HTTP_PROXY` / `HTTPS_PROXY` to a dead local port (`NO_PROXY=localhost,127.0.0.1`)
+before pytest starts, so any test that tries the real network fails instead of passing online. It also sends the
+audit suite's evidence files to a temp dir, so the frozen Week 2 evidence is never overwritten.
 
 By default the suite never touches the network: every end-to-end test runs the real Fetcher, robots.txt handling,
 pagination, enrichment, validation, SQLite and scheduler against a local HTTP(S) server (`scripts/fixture_site.py`)
@@ -251,7 +350,8 @@ It adds only the one missing intermediate and trusts nothing beyond that.
 
 ```
 web-monitor/
-├── config/sources.json        source registry: one entry per source (HSS live + local_fixture demo)
+├── config/sources.json        source registry: HSS live + local_fixture (Week 2); iit_bombay_events (live aggregator)
+│                              + local_aggregator_fixture (offline aggregator) (Week 3)
 ├── src/                       GENERIC layer: no institution-specific code (enforced by tests/test_architecture.py)
 │   ├── config.py              SourceConfig, JSON loader, adapter contract check
 │   ├── fetcher.py             the only `requests` user: session, robots.txt, per-host delay, timeout, TLS, FETCH logs
@@ -259,8 +359,13 @@ web-monitor/
 │   ├── enrich.py              detail-page fetch loop + listing/detail merge rule
 │   ├── schema.py              shared record schema, assemble_record, validate_record (+ legacy Section 1-4A types)
 │   ├── storage.py             the only `sqlite3` user: records (one transaction per run), content_hash, runs table
-│   ├── runner.py              run_source(config): the pipeline
-│   ├── scheduler.py           due/retry logic, per-source lock, run records, --once / loop CLI
+│   ├── runner.py              run_source(config): the Week 2 listing pipeline
+│   ├── aggregator.py          run_aggregator(config): the Week 3 central-aggregator pipeline + entity/route helpers
+│   ├── scope.py               URL scope filter (scope_decision, ScopeConfig)
+│   ├── router.py              content router (classify_with_reason)
+│   ├── entities.py            PersonMention / OrgMention, labelled-line extraction, name_key, matching policy
+│   ├── metrics.py             run summary, coverage-drop warning, `python -m src.metrics --last`
+│   ├── scheduler.py           due/retry logic, per-source lock, run records, pipeline dispatch, --once / loop CLI
 │   ├── urls.py                resolve_item_url (the one canonicalizer) + synthetic_item_url
 │   ├── logging_config.py      the only log-handler setup + one helper per log event
 │   └── discovery/             Week 3: content -> DiscoveryRecord (never fetches)
@@ -268,14 +373,20 @@ web-monitor/
 │       ├── html.py            selector-driven listing parser (selectors come from the adapter)
 │       ├── feed.py            RSS 2.0 / Atom via feedparser (bytes only, never a URL)
 │       ├── sitemap.py         urlset / sitemapindex via defusedxml (+ capped child walk)
-│       └── timestamps.py      to_utc_z: RFC 822 / ISO 8601 -> "...Z"
+│       ├── timestamps.py      to_utc_z: RFC 822 / ISO 8601 -> "...Z"
+│       └── discover.py        discover_items(source_config, client): methods from config, scope, dedup
 ├── sources/
 │   ├── iit_bombay.py          HSS "Seminars and Talks" adapter (live source)
+│   ├── iit_bombay_events.py   Week 3 aggregator adapter: IIT Bombay events calendar (selectors, labels, detail parser)
 │   └── iit_bombay_legacy.py   Section 1-4A adapter for the hand-written fixtures (tests only, not in config)
 ├── scripts/                   fixture_site.py (local HTTP(S) server), run_fixtures.py, run_scheduler_once.bat,
-│                              build_ca_bundle.py, failure_examples_run.py, live_pagination_run.py, detail_enrichment_run.py
+│                              build_ca_bundle.py, failure_examples_run.py, live_pagination_run.py, detail_enrichment_run.py,
+│                              offline_pytest.py, aggregator_fixture_site.py, make_week3_site_fixtures.py,
+│                              make_week3_synthetic_fixtures.py
 ├── certs/                     CA bundle for HSS (see TLS above)
-├── fixtures/                  iit_bombay_hss/ (real saved HTML + manifest), iit_bombay/ (legacy hand-written), tls/ (test-only certs)
+├── fixtures/                  iit_bombay_hss/ (real saved HTML + manifest), iit_bombay/ (legacy hand-written), tls/ (test-only certs),
+│                              week3/discovery/ (feed/sitemap/listing fixtures), week3/iitb_events/ (real homepage + detail
+│                              pages, offline site files)
 ├── tests/                     main suite (see Tests)
 ├── assignments/               write-ups and evidence per assignment (below); Week 3 work in assignments/week3/<NN_name>/
 ├── data/  locks/  logs/       runtime state (git-ignored)
@@ -293,4 +404,31 @@ web-monitor/
 | 6: schema | [`06_schema/schema_review.md`](assignments/06_schema/schema_review.md), [`06_schema/records_inspected.json`](assignments/06_schema/records_inspected.json) |
 | 7: shared template | [`07_template/iit_bombay_adapter_notes.md`](assignments/07_template/iit_bombay_adapter_notes.md) (+ `step5_fixture_run.log`, `step7_logging_run.log`) |
 | 8: scheduling | [`08_schedule/schedule_notes.md`](assignments/08_schedule/schedule_notes.md) (+ `demo1_2_loop.log`, `demo3_overlap.log`) |
-| Week 2 audit | [`week2_audit/AUDIT_REPORT.md`](assignments/week2_audit/AUDIT_REPORT.md) (audit of 2026-09-26, kept as evidence) and [`week2_audit/FIXES.md`](assignments/week2_audit/FIXES.md) (each problem → fixing commit → proving test; open items) 
+| Week 2 audit | [`week2_audit/AUDIT_REPORT.md`](assignments/week2_audit/AUDIT_REPORT.md) (audit of 2026-09-26, kept as evidence) and [`week2_audit/FIXES.md`](assignments/week2_audit/FIXES.md) (each problem → fixing commit → proving test; open items) |
+| Week 3 status | [`week3/WEEK3_STATUS.md`](assignments/week3/WEEK3_STATUS.md), [`week3/DEFENSE_NOTES.md`](assignments/week3/DEFENSE_NOTES.md), [`week3/DECISIONS.md`](assignments/week3/DECISIONS.md), [`week3/OPEN_QUESTIONS.md`](assignments/week3/OPEN_QUESTIONS.md), [`week3/PROGRESS.md`](assignments/week3/PROGRESS.md), [`week3/live_requests.md`](assignments/week3/live_requests.md) |
+| W3 0: candidates | [`week3/00_candidates/iit_bombay_aggregators.md`](assignments/week3/00_candidates/iit_bombay_aggregators.md) (+ `evidence/`, `recon.py`, `count_samples.py`) |
+| W3 1: discovery | [`week3/01_discovery/findings.md`](assignments/week3/01_discovery/findings.md) (+ `inspect_feed.py`, `inspect_sitemap.py`) |
+| W3 2: scope | [`week3/02_scope/scope_cases.md`](assignments/week3/02_scope/scope_cases.md) |
+| W3 3: discovery interface | [`week3/03_discovery_interface/notes.md`](assignments/week3/03_discovery_interface/notes.md) |
+| W3 4: incremental | [`week3/04_incremental/run_state_notes.md`](assignments/week3/04_incremental/run_state_notes.md) |
+| W3 5: extraction | [`week3/05_extraction/notes.md`](assignments/week3/05_extraction/notes.md) (+ `fetch_sample.py`) |
+| W3 6: entities | [`week3/06_entities/entity_schema.md`](assignments/week3/06_entities/entity_schema.md) (+ `build_fixture_db.py`) |
+| W3 7: matching | [`week3/07_resolution/entity_matching_policy.md`](assignments/week3/07_resolution/entity_matching_policy.md) |
+| W3 8: router | [`week3/08_router/router_rules.md`](assignments/week3/08_router/router_rules.md) |
+| W3 9: metrics | [`week3/09_metrics/failure_signatures.md`](assignments/week3/09_metrics/failure_signatures.md) (+ `failure_signatures_run.py`) |
+| W3 10: aggregator | [`week3/10_aggregator/README.md`](assignments/week3/10_aggregator/README.md), [`demo_offline.md`](assignments/week3/10_aggregator/demo_offline.md), [`live_runs.md`](assignments/week3/10_aggregator/live_runs.md) |
+| W3 11: review | [`week3/11_review/self_review.md`](assignments/week3/11_review/self_review.md), [`review_template.md`](assignments/week3/11_review/review_template.md) |
+
+## Out of scope
+
+This was deliberately not built (Week 3 brief):
+- AI, LLM or NLP extraction: entities come only from labelled lines;
+- fuzzy matching: identity is exact `name_key` equality, everything else goes to a review queue;
+- sentiment, ideology, political or topic classification: the router uses structure only;
+- proxies, CAPTCHA or anti-bot workarounds, login bypass, distributed crawling;
+- dashboards and email alerts.
+
+Also not built this week, with the reasons logged in `assignments/week3/DECISIONS.md`:
+- an announcement/news parser (announcements stay in `discovered_items`, D25);
+- the full calendar-JSON listing (D11, Q2);
+- deleting or expiring items that disappear (absence is only counted).

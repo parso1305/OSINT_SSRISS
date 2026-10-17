@@ -150,3 +150,7 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 ## D30 · 11 · Review questions derived from the Week 3 requirements
 - **Decision:** the 10 Section 11 questions were not in the brief; used 10 derived from Sections 1–10, logged as Q4. The TISS review template is left blank (the brief says not to review his code).
 - **Reverse:** replace the headings with the official list.
+
+## D31 · 12 · Definition-of-Done items derived from the sections; Assignment 9 swap not attempted
+- **Decision:** DEFENSE_NOTES.md answers one DoD item per Week 3 section (0–12) because the brief did not list the DoD items verbatim (same gap as Q4). The "Week 2 Assignment 9 template swap" is listed as Needs Parth: the run had no instructions or template for it.
+- **Reverse:** re-key DEFENSE_NOTES.md to the official DoD list.
