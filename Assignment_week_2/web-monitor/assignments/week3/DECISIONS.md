@@ -59,3 +59,9 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Decision:** besides "absolute http(s)", `__post_init__` checks `resolve_item_url(url, "") == url`, so no code path can build a record with an un-canonicalized URL.
 - **Why:** the focus area: one item, one key, regardless of discovery method.
 - **Reverse:** drop that check in `src/discovery/record.py`.
+
+## D13 · 2, 3, 10 · Generic change G2: SourceConfig gains optional Week 3 keys
+- **Decision:** `pipeline` ("listing" default | "aggregator"), `discovery` (method or list), `discovery_urls` ({method: [urls]}), `scope` (dict), `router` (dict). Validated in `__post_init__`; unknown keys are still rejected by the loader.
+- **Why:** Section 3 requires the discovery method to come from the source's registry entry; Section 2 requires scope config and caps in the entry; Section 10 requires the scheduler to choose the aggregator path from config.
+- **Alternatives:** a separate config file for aggregators (two registries to keep in sync).
+- **Reverse:** remove the five fields and the validation block; Week 2 sources never set them.

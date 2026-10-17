@@ -132,6 +132,17 @@ Week 3 discovery turns every way of finding an item (HTML listing, RSS, Atom, si
 sitemap `<loc>` gets the same `discovered_url` (`tests/test_discovery_record.py::test_same_item_same_url_across_methods`).
 A discovery record is a candidate, not an event record (`assignments/week3/01_discovery/findings.md`).
 
+## Changes to the generic layer
+
+Week 3 changed the generic layer only where a Week 3 requirement needed it. Existing tests stayed green without
+edits, except the Section 4 state/column rename. Every change also has an entry in
+`assignments/week3/DECISIONS.md`.
+
+| # | Commit | What | Why (Week 3 requirement) |
+|---|---|---|---|
+| G1 | `7d83a56` | `src/fetcher.py`: `FetchResult.content_type` (optional, default `None`), filled from the response header | Recon evidence needs content-type; the router (Section 8) prefers Content-Type over the file extension |
+| G2 | `generic: config accepts Week 3 aggregator keys` | `src/config.py`: optional `pipeline`, `discovery`, `discovery_urls`, `scope`, `router` keys, validated | Section 3 (discovery method from the registry entry, never hardcoded), Section 2 (scope config and caps in the source entry), Section 10 (scheduler picks the pipeline from config) |
+
 ## Adding a source (adapter + config only)
 
 1. **Adapter** `sources/<name>.py` (no network, database or logging setup; `tests/test_architecture.py` enforces this):

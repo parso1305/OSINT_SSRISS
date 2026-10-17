@@ -17,6 +17,8 @@ DEFAULT_CONFIG_PATH = PROJECT_ROOT / "config" / "sources.json"
 
 # Adapter contract: parse_listing and normalize are required; parse_detail when supports_detail.
 REQUIRED_ADAPTER_FUNCTIONS = ("parse_listing", "normalize")
+PIPELINES = ("listing", "aggregator")
+DISCOVERY_METHODS = ("html", "rss", "atom", "sitemap")   # same set as src.discovery.record.DISCOVERY_METHODS
 
 
 @dataclass
@@ -41,6 +43,13 @@ class SourceConfig:
     allow_empty_listing: bool = False         # False: HTTP 200 with 0 parsed items fails the run
     ca_bundle: Optional[str] = None           # PEM file for TLS verification (relative to the project root);
                                               # None = default trust store. Verification is never disabled.
+    # -- Week 3 central-aggregator keys (all optional; defaults keep a Week 2 listing source unchanged) ----------
+    pipeline: str = "listing"                 # "listing" = runner.run_source (Week 2); "aggregator" =
+                                              # aggregator.run_aggregator (discovery -> scope -> router -> ...)
+    discovery: Union[str, list, None] = None  # aggregator: "html" | "rss" | "atom" | "sitemap", or a list of them
+    discovery_urls: Optional[dict] = None     # aggregator: {method: [url, ...]}; default {"html": [listing_url]}
+    scope: Optional[dict] = None              # aggregator: src.scope.ScopeConfig keys (hosts, prefixes, caps)
+    router: Optional[dict] = None             # aggregator: src.router keys (url_patterns, category_map)
 
     def __post_init__(self) -> None:
         parts = urlsplit(self.listing_url.strip()) if isinstance(self.listing_url, str) else None
@@ -64,6 +73,20 @@ class SourceConfig:
             raise ValueError(f"{self.source_id}: retry_minutes must be > 0")
         if self.lock_max_age_minutes <= 0:
             raise ValueError(f"{self.source_id}: lock_max_age_minutes must be > 0")
+        if self.pipeline not in PIPELINES:
+            raise ValueError(f"{self.source_id}: pipeline must be one of {PIPELINES}, got {self.pipeline!r}")
+        if self.pipeline == "aggregator":
+            methods = self.discovery_methods()
+            unknown = [m for m in methods if m not in DISCOVERY_METHODS]
+            if not methods or unknown:
+                raise ValueError(f"{self.source_id}: discovery must be one or more of {DISCOVERY_METHODS}, "
+                                 f"got {self.discovery!r}")
+
+    def discovery_methods(self) -> tuple:
+        """The configured discovery method(s) as a tuple, in config order."""
+        if self.discovery is None:
+            return ()
+        return (self.discovery,) if isinstance(self.discovery, str) else tuple(self.discovery)
 
 
 def load_adapter(adapter: Union[str, ModuleType, Any], supports_detail: bool = False) -> Any:
