@@ -5,7 +5,8 @@ Shared-schema API (runner):   init_records_table, store_records / store_records_
                               count_not_seen, content_hash. Record states: new / changed / unchanged
                               (+ not_seen_this_run, a query; nothing is ever deleted)
 Entities (Week 3):            init_entity_tables, write_entity_links (inside store_records_detailed's
-                              transaction via extra_writes), entity_counts, query
+                              transaction via extra_writes), list_entities, add_alias_candidates (review queue),
+                              entity_counts, query
 Run records (scheduler):      init_runs_table, start_run, finish_run, abandon_running_runs,
                               run_history, list_runs
 Legacy API (Sections 1-4A):   init_db, store_item/store_all, get_item_by_url, count_items (table `items`)
@@ -458,6 +459,16 @@ ENTITY_DDL = (
     )""",
     # normalized_name is UNIQUE, which already gives each table an index on it (sqlite_autoindex_*); these two
     # serve the reverse lookups "every event of this person / organization".
+    # Section 7 review queue: pairs that MIGHT be one entity. Never merged by code; a reviewer sets status.
+    """CREATE TABLE IF NOT EXISTS entity_alias_candidates (
+        kind TEXT NOT NULL CHECK (kind IN ('person', 'organization')),
+        a_id INTEGER NOT NULL,
+        b_id INTEGER NOT NULL,
+        reason TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'needs_review',
+        PRIMARY KEY (kind, a_id, b_id),
+        CHECK (a_id < b_id)
+    )""",
     "CREATE INDEX IF NOT EXISTS idx_item_people_person ON item_people(person_id)",
     "CREATE INDEX IF NOT EXISTS idx_item_organizations_org ON item_organizations(organization_id)",
 )
@@ -510,6 +521,23 @@ def write_entity_links(conn: sqlite3.Connection, item_url: str, people: Iterable
     after_p = conn.execute("SELECT COUNT(*) FROM item_people WHERE item_url = ?", (item_url,)).fetchone()[0]
     after_o = conn.execute("SELECT COUNT(*) FROM item_organizations WHERE item_url = ?", (item_url,)).fetchone()[0]
     return {"people_links": after_p - before_p, "organization_links": after_o - before_o}
+
+
+def list_entities(conn: sqlite3.Connection, kind: str) -> list[tuple[int, str]]:
+    """[(id, display_name)] of every person ('person') or organization ('organization')."""
+    table = {"person": "people", "organization": "organizations"}[kind]
+    return [(row[0], row[1]) for row in conn.execute(f"SELECT id, display_name FROM {table} ORDER BY id")]
+
+
+def add_alias_candidates(conn: sqlite3.Connection, kind: str, pairs: Iterable[tuple[int, int, str]]) -> int:
+    """Queues (a_id, b_id, reason) pairs for review; an existing pair (and its status) is left as it is.
+    Returns the number of new candidates. Nothing is merged."""
+    added = 0
+    for a_id, b_id, reason in pairs:
+        cursor = conn.execute("INSERT OR IGNORE INTO entity_alias_candidates (kind, a_id, b_id, reason) "
+                              "VALUES (?, ?, ?, ?)", (kind, min(a_id, b_id), max(a_id, b_id), reason))
+        added += cursor.rowcount
+    return added
 
 
 def entity_counts(db_path: str) -> dict:

@@ -109,3 +109,7 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Re-run semantics:** an item whose detail page was parsed this run gets its links REPLACED by what the page says now (a removed speaker does not linger); if the detail fetch failed, links are kept (same rule as `_carry_forward` for content). Either way the composite key means a re-run never duplicates a link.
 - **display_name:** first form seen wins (`ON CONFLICT DO NOTHING`); per-event spellings stay in item_people.source_text.
 - **Reverse:** revert the `generic: entity tables …` commit; the PRAGMA is one line in `_open()`.
+
+## D22 · 7 · Generic change G6: entity_alias_candidates review table
+- **Decision:** `entity_alias_candidates(kind, a_id, b_id, reason, status DEFAULT 'needs_review', PK(kind, a_id, b_id), CHECK a_id < b_id)`; `add_alias_candidates` uses INSERT OR IGNORE so re-runs never duplicate a pair or reset a reviewer's status. No code path merges entities.
+- **Reverse:** drop the table and the two helpers.
