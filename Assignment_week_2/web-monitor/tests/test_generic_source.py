@@ -61,8 +61,8 @@ def test_new_source_needs_only_adapter_and_config(tmp_path):
         first = run_source(config, db_path=db)
         second = run_source(config, db_path=db)
 
-    assert first["counts"] == {"new": 2, "existing": 0, "changed": 0}
-    assert second["counts"] == {"new": 0, "existing": 2, "changed": 0}
+    assert first["counts"] == {"new": 2, "unchanged": 0, "changed": 0}
+    assert second["counts"] == {"new": 0, "unchanged": 2, "changed": 0}
     assert count_records(db, source_name="fake_university_talks") == 2
     stored = get_record(db, site.url + "/talks/quantum-2026")
     assert stored["title"] == "Quantum Algorithms for Cryptanalysis"
@@ -106,8 +106,8 @@ def test_source_without_item_links_and_with_a_date_only_event(tmp_path):
         db = str(tmp_path / "nolinks.db")
         first = run_source(config, db_path=db)
         again = run_source(SourceConfig(**{**config.__dict__, "listing_url": site.url + "/seminars?page=2"}), db_path=db)
-    assert first["invalid"] == [] and first["counts"] == {"new": 2, "existing": 0, "changed": 0}
-    assert again["counts"] == {"new": 0, "existing": 2, "changed": 0}          # page param does not change identity
+    assert first["invalid"] == [] and first["counts"] == {"new": 2, "unchanged": 0, "changed": 0}
+    assert again["counts"] == {"new": 0, "unchanged": 2, "changed": 0}          # page param does not change identity
     starts = sorted(r["event_start"] for r in first["records"])
     assert starts == ["2026-10-02", "2026-10-05T15:00:00Z"]
     assert all(r["item_url"].startswith(site.url + "/seminars#/item/") for r in first["records"])

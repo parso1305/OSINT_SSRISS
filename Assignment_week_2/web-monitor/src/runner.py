@@ -3,7 +3,7 @@
 run_source(config):
   fetch listing -> adapter.parse_listing -> [pagination if supports_pagination]
   -> [detail enrichment if supports_detail: adapter.parse_detail + merge_listing_and_detail]
-  -> adapter.normalize -> assemble shared-schema record -> validate_record -> storage
+  -> adapter.normalize -> assemble shared-schema record -> validate_record -> storage (new / changed / unchanged + not_seen_this_run)
 """
 
 import sys
@@ -15,6 +15,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 import logging
 import time
+from datetime import datetime, timezone
 from typing import Optional
 
 from src.config import SourceConfig, load_adapter, load_source_configs, DEFAULT_CONFIG_PATH
@@ -22,10 +23,10 @@ from src.enrich import enrich_items
 from src.fetcher import Fetcher, FetchError
 from src.pagination import collect_listing
 from src.schema import assemble_record, validate_record
-from src.storage import store_records
+from src.storage import count_not_seen, store_records_detailed
 from src.logging_config import (
     setup_logger, log_start, log_end, log_parse, log_paginate, log_normalize, log_validate,
-    log_validation_failure, log_store, log_warning_item, log_failure, log_parse_warning,
+    log_validation_failure, log_store, log_warning_item, log_failure, log_parse_warning, log_rediscovered,
 )
 
 DEFAULT_DB_PATH = PROJECT_ROOT / "data" / "events.db"
@@ -40,8 +41,17 @@ def run_source(
     db_path: Optional[str] = None,
     logger: Optional[logging.Logger] = None,
     fetcher: Optional[Fetcher] = None,
+    run_id: Optional[str] = None,
+    run_started_at: Optional[str] = None,
+    rediscovery_cutoff: Optional[str] = None,
 ) -> dict:
-    """Runs one configured source end to end. A listing-level failure on page 1 raises."""
+    """Runs one configured source end to end. A listing-level failure on page 1 raises.
+
+    run_id / run_started_at / rediscovery_cutoff come from the scheduler (runs table): every stored row gets
+    last_seen_at = run_started_at, so not_seen_this_run = rows of this source with last_seen_at < run_started_at
+    (D6), and a row whose last_seen_at predates the previous run's start (rediscovery_cutoff) is REDISCOVERED.
+    """
+    run_started_at = run_started_at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     logger = logger or setup_logger()
     adapter = load_adapter(config.adapter, supports_detail=config.supports_detail)
     fetcher = fetcher or Fetcher(timeout_s=config.timeout_s, delay_s=config.request_delay_s,
@@ -118,13 +128,19 @@ def run_source(
             valid.append(record)
     log_validate(logger, valid=len(valid), invalid=len(invalid))
 
-    # 6. STORE
+    # 6. STORE (one transaction; states new / changed / unchanged, then not_seen_this_run as a query)
     try:
-        counts = store_records(target_db, valid, unparsed_fields=unparsed)
+        stored = store_records_detailed(target_db, valid, unparsed_fields=unparsed, now_iso=run_started_at,
+                                        rediscovery_cutoff=rediscovery_cutoff)
+        not_seen = count_not_seen(target_db, config.source_id, run_started_at)
     except Exception as e:
         log_failure(logger, source_id=config.source_id, url=config.listing_url, stage="store", error=e)
         raise
-    log_store(logger, new_count=counts["new"], existing_count=counts["existing"], changed_count=counts["changed"])
+    counts = stored.counts
+    for url in stored.rediscovered:
+        log_rediscovered(logger, config.source_id, url, stored.states[url], run_id)
+    log_store(logger, new_count=counts["new"], unchanged_count=counts["unchanged"], changed_count=counts["changed"],
+              not_seen_count=not_seen, run_id=run_id)
 
     duration_ms = int((time.perf_counter() - t_start) * 1000)
     log_end(logger, source_id=config.source_id, duration_ms=duration_ms)
@@ -135,6 +151,8 @@ def run_source(
         "stop_reason": listing["stop_reason"],
         "detail_status": {s: sum(m["detail_fetch_status"] == s for m in merged) for s in ("ok", "failed", "not_attempted")},
         "counts": counts,
+        "not_seen_this_run": not_seen,
+        "rediscovered": stored.rediscovered,
         "records": valid,
         "invalid": invalid,
         "duration_ms": duration_ms,

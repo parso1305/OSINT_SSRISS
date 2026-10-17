@@ -190,7 +190,7 @@ def test_storage_dedups_on_canonical_url_not_raw_href(tmp_path):
     ]
     assert records[0]["item_url"] == records[1]["item_url"] == HSS_ITEM_CANONICAL
 
-    assert store_records(db, records) == {"new": 1, "existing": 1, "changed": 0}
+    assert store_records(db, records) == {"new": 1, "unchanged": 1, "changed": 0}
     assert count_records(db) == 1
     assert get_record(db, HSS_ITEM_CANONICAL)["item_url"] == HSS_ITEM_CANONICAL
     assert get_record(db, href_of(HSS_LISTING_CARD_LINK)) is None

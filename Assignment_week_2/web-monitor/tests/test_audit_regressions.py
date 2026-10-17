@@ -97,7 +97,7 @@ def test_case08_allow_empty_listing_accepts_an_empty_page_with_a_warning(tmp_pat
     with FixtureSite(overrides={LISTING_PATH: listing_html().replace("event-card-wrapper", "event-card-box")}) as site:
         config = write_config(tmp_path, site, allow_empty_listing=True)
         result = run_once(config, db, locks, source_ids=[SOURCE_ID], force=True, logger=LOG)[0]
-    assert result["status"] == "success" and result["counts"] == {"new": 0, "existing": 0, "changed": 0}
+    assert result["status"] == "success" and result["counts"] == {"new": 0, "unchanged": 0, "changed": 0}
     assert f"[WARNING] logger=web_monitor WARNING source_id={SOURCE_ID}" in log_stream.getvalue()
 
 
@@ -136,7 +136,7 @@ def test_case09_unparseable_detail_dates_never_erase_stored_values(tmp_path, log
     log = log_stream.getvalue()[mark:]
 
     assert second["detail_status"]["ok"] == 10
-    assert second["counts"] == {"new": 0, "existing": 10, "changed": 0}   # was changed=10
+    assert second["counts"] == {"new": 0, "unchanged": 10, "changed": 0}   # was changed=10
     erased = [u for u in urls if before[u]["event_end"] and not after[u]["event_end"]]
     assert erased == []                                                    # was 10/10
     assert sum(before[u]["event_end"] is not None for u in urls) == 10

@@ -135,7 +135,7 @@ def test_repeat_scheduled_runs_create_no_duplicates(tmp_path, log_stream):
         first = run_once(config_path, db, locks, source_ids=[SOURCE], force=True)
         second = run_once(config_path, db, locks, source_ids=[SOURCE], force=True)
     assert first[0]["counts"]["new"] == 20
-    assert second[0]["counts"] == {"new": 0, "existing": 20, "changed": 0}
+    assert second[0]["counts"] == {"new": 0, "unchanged": 20, "changed": 0}
     assert count_records(db) == 20
     assert [r["status"] for r in list_runs(db)] == ["success", "success"]
     assert log_stream.getvalue().count("RUN_START") == 2 and log_stream.getvalue().count("RUN_END") == 2

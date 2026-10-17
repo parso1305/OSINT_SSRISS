@@ -82,3 +82,9 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Decision:** `discover_items` returns every unique candidate with `in_scope`/`scope_reason`; the over-cap remainder is marked out of scope with "over max_discovered_items cap (N)".
 - **Why:** Section 8 requires every candidate to be persisted with its reason; dropping them would make scope decisions invisible.
 - **Reverse:** filter `result.candidates` on `in_scope` in `discover_items`.
+
+## D17 · 4 · Generic changes G3/G4: four record states, sorted list fields in the hash
+- **Decision:** `existing` → `unchanged` in storage return values, `runs.unchanged_count` (migrated in place with `ALTER TABLE runs RENAME COLUMN`), and log keys (`STORE … unchanged=`, `RUN_END … unchanged=`). `not_seen_this_run` is a query, `count_not_seen(db, source, run_started_at)`, per D6; every stored row gets `last_seen_at = run started_at` (the scheduler passes the run row's `started_at`), so the D6 comparison is exact. `REDISCOVERED … rediscovered=true state=<hash state>` is logged when a row's last_seen_at predates the previous run's start. `content_hash` sorts `speakers` by (name, affiliation) and `organizations` alphabetically before hashing. The upsert became one `INSERT … ON CONFLICT(item_url) DO UPDATE` (first_seen_at only on insert) inside the existing one-transaction-per-run.
+- **Kept as is:** the legacy `items` path (`store_item`/`store_all`) still returns `existing` (legacy is out of bounds); `store_records()` still returns a 3-key dict (`not_seen_this_run` is reported separately, so the only test edits are the renames).
+- **Hash reset note:** sorting only changes the hash of rows whose list fields were stored out of order; single-speaker/single-organization rows hash the same as before.
+- **Reverse:** revert the `generic: record states …` commit (the column rename is reversible with `RENAME COLUMN unchanged_count TO existing_count`).

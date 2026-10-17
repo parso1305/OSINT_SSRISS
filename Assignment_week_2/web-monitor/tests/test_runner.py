@@ -75,7 +75,7 @@ def test_end_to_end_on_fixtures_all_records_valid(tmp_path, log_stream):
 
     assert (result["pages_crawled"], result["stop_reason"]) == (2, "max_pages_reached")
     assert result["detail_status"] == {"ok": 10, "failed": 0, "not_attempted": 10}
-    assert result["counts"] == {"new": 20, "existing": 0, "changed": 0}
+    assert result["counts"] == {"new": 20, "unchanged": 0, "changed": 0}
     assert result["invalid"] == []
     assert all(validate_record(r) == [] for r in result["records"])
     assert count_records(db, source_name=SOURCE_ID) == 20
@@ -91,7 +91,7 @@ def test_end_to_end_on_fixtures_all_records_valid(tmp_path, log_stream):
     assert f"logger=web_monitor END source_id={SOURCE_ID}" in log
     assert "logger=web_monitor.fetcher FETCH url=" in log
     assert "logger=web_monitor ENRICH ok=10 failed=0 not_attempted=10" in log
-    assert "logger=web_monitor STORE new=20 existing=0 changed=0" in log
+    assert "logger=web_monitor STORE new=20 unchanged=0 changed=0" in log
 
 
 def test_second_run_is_idempotent(tmp_path):
@@ -99,7 +99,7 @@ def test_second_run_is_idempotent(tmp_path):
     with FixtureSite() as site:
         run_source(site_config(site), db_path=db)
         second = run_source(site_config(site), db_path=db)
-    assert second["counts"] == {"new": 0, "existing": 20, "changed": 0}
+    assert second["counts"] == {"new": 0, "unchanged": 20, "changed": 0}
     assert count_records(db) == 20
 
 
@@ -137,13 +137,13 @@ def test_failed_refetch_of_enriched_item_is_not_a_change_and_keeps_content(tmp_p
         after_recover = get_record(db, site.url + ISLANDS)
 
     assert second["detail_status"]["failed"] == 1
-    assert second["counts"] == {"new": 0, "existing": 20, "changed": 0}
+    assert second["counts"] == {"new": 0, "unchanged": 20, "changed": 0}
     assert after_fail["detail_fetch_status"] == "failed" and after_fail["detail_http_status"] == 404
     for field in CONTENT_FIELDS:
         assert after_fail[field] == before[field], field
     assert after_fail["description"].startswith("The Andaman and Nicobar Islands")
     assert after_fail["content_hash"] == before["content_hash"]
-    assert third["counts"] == {"new": 0, "existing": 20, "changed": 0}
+    assert third["counts"] == {"new": 0, "unchanged": 20, "changed": 0}
     assert after_recover["detail_fetch_status"] == "ok"
 
 
@@ -155,7 +155,7 @@ def test_real_content_change_is_detected(tmp_path):
         site.overrides[ISLANDS] = edited
         second = run_source(site_config(site), db_path=db)
         stored = get_record(db, site.url + ISLANDS)
-    assert second["counts"] == {"new": 0, "existing": 19, "changed": 1}
+    assert second["counts"] == {"new": 0, "unchanged": 19, "changed": 1}
     assert stored["location"] == "LT 102"
 
 
@@ -240,7 +240,7 @@ def test_zero_items_fails_the_run_unless_allowed(tmp_path, log_stream):
         allowed = run_source(site_config(site, allow_empty_listing=True), db_path=str(tmp_path / "p.db"))
     assert f"[ERROR] logger=web_monitor FAILURE source_id=iit_bombay_hss_seminars url={site.listing_url} stage=parse " \
            "error_type=EmptyListingError" in failed_log
-    assert allowed["counts"] == {"new": 0, "existing": 0, "changed": 0}
+    assert allowed["counts"] == {"new": 0, "unchanged": 0, "changed": 0}
     assert "[WARNING] logger=web_monitor WARNING source_id=iit_bombay_hss_seminars" in log_stream.getvalue()
 
 

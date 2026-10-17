@@ -57,7 +57,7 @@ def test_01_full_pipeline_on_fixtures(tmp_path, log_stream, evidence):
     for r in stored[:5]:
         evidence(r)
     evidence("--- full log ---", log_stream.getvalue())
-    assert result["counts"] == {"new": 20, "existing": 0, "changed": 0}
+    assert result["counts"] == {"new": 20, "unchanged": 0, "changed": 0}
     assert len(stored) == 20 and all(not e for e in errors.values())
 
 
@@ -359,7 +359,7 @@ def test_13_real_detail_change_is_detected(tmp_path, evidence):
         second = run_source(cfg, db_path=db)
         after = get_record(db, site.url + target)
     evidence(f"run2 counts={second['counts']}", f"stored description now: {after['description'][:90]!r}")
-    assert second["counts"] == {"new": 0, "existing": 9, "changed": 1}
+    assert second["counts"] == {"new": 0, "unchanged": 9, "changed": 1}
     assert "constitute a unique system" in after["description"]
 
 

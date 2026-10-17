@@ -1,7 +1,9 @@
 """SQLite storage: the only module that touches sqlite3.
 
-Shared-schema API (runner):   init_records_table, store_records (one transaction per run), get_record,
-                              count_records, content_hash
+Shared-schema API (runner):   init_records_table, store_records / store_records_detailed (one
+                              transaction per run, INSERT ... ON CONFLICT upsert), get_record, count_records,
+                              count_not_seen, content_hash. Record states: new / changed / unchanged
+                              (+ not_seen_this_run, a query; nothing is ever deleted)
 Run records (scheduler):      init_runs_table, start_run, finish_run, abandon_running_runs,
                               run_history, list_runs
 Legacy API (Sections 1-4A):   init_db, store_item/store_all, get_item_by_url, count_items (table `items`)
@@ -12,11 +14,17 @@ import uuid
 import hashlib
 import json
 from contextlib import contextmanager
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Iterator, Literal, Optional, Union
+from typing import Any, Callable, Iterable, Iterator, Literal, Optional, Union
 
 from src.schema import CONTENT_FIELDS, IDENTIFIER_FIELDS, PROVENANCE_FIELDS
+
+
+def _open(db_path: str, **kwargs) -> sqlite3.Connection:
+    """Every connection in this module is opened here, so per-connection settings live in one place."""
+    return sqlite3.connect(db_path, **kwargs)
 
 
 @contextmanager
@@ -26,7 +34,7 @@ def _connect(db_path: str) -> Iterator[sqlite3.Connection]:
     sqlite3's own `with sqlite3.connect(...)` only manages the transaction; it never closes the connection
     (open handles keep the file locked on Windows and raise ResourceWarning).
     """
-    conn = sqlite3.connect(db_path)
+    conn = _open(db_path)
     try:
         with conn:
             yield conn
@@ -197,10 +205,27 @@ def _is_empty(value: Any) -> bool:
     return value is None or value == "" or value == [] or value == {}
 
 
+def _speaker_sort_key(speaker: Any) -> tuple:
+    if isinstance(speaker, dict):
+        return (str(speaker.get("name") or ""), str(speaker.get("affiliation") or ""))
+    return (str(speaker), "")
+
+
+def _hash_view(record: dict) -> dict:
+    """The CONTENT fields as hashed. List fields are sorted (Week 3 Section 4): speakers by (name, affiliation),
+    organizations alphabetically, so a page that only reorders them is not a change. Stored values keep the
+    page's order; only the hash input is sorted."""
+    view = {field: record.get(field) for field in CONTENT_FIELDS}
+    if isinstance(view.get("speakers"), list):
+        view["speakers"] = sorted(view["speakers"], key=_speaker_sort_key)
+    if isinstance(view.get("organizations"), list):
+        view["organizations"] = sorted(view["organizations"], key=str)
+    return view
+
+
 def content_hash(record: dict) -> str:
-    """sha256 over CONTENT fields only (schema.CONTENT_FIELDS). Provenance never feeds the hash."""
-    payload = json.dumps({field: record.get(field) for field in CONTENT_FIELDS},
-                         sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    """sha256 over CONTENT fields only (schema.CONTENT_FIELDS), list fields sorted. Provenance never feeds the hash."""
+    payload = json.dumps(_hash_view(record), sort_keys=True, ensure_ascii=False, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
@@ -276,9 +301,23 @@ def _carry_forward(record: dict, existing: dict, unparsed_fields: Iterable[str] 
     return kept
 
 
-def _upsert(conn: sqlite3.Connection, record: dict, now_iso: str,
-            unparsed_fields: Iterable[str] = ()) -> Literal["new", "existing", "changed"]:
-    """Upserts one record on an open connection (inside the caller's transaction)."""
+RECORD_STATES = ("new", "changed", "unchanged")   # + not_seen_this_run, which is a query (count_not_seen), not a write
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _upsert(conn: sqlite3.Connection, record: dict, now_iso: str, unparsed_fields: Iterable[str] = (),
+            rediscovery_cutoff: Optional[str] = None) -> tuple[str, bool]:
+    """Upserts one record on an open connection (inside the caller's transaction).
+
+    Returns (state, rediscovered): state is "new" | "changed" | "unchanged" by content hash;
+    rediscovered = the row existed but its last_seen_at is older than rediscovery_cutoff (the previous run's
+    started_at for this source, D6): it was absent from at least one run and is back. It is still counted by its
+    hash (unchanged or changed), never as new.
+    One INSERT ... ON CONFLICT(item_url) DO UPDATE statement: first_seen_at is written only on insert.
+    """
     item_url = record.get("item_url")
     if not item_url:
         raise ValueError("Cannot store a record without a canonical item_url")
@@ -295,47 +334,84 @@ def _upsert(conn: sqlite3.Connection, record: dict, now_iso: str,
     if values["is_online"] is not None:
         values["is_online"] = int(values["is_online"])
 
+    cols = list(values) + ["content_hash", "first_seen_at", "last_seen_at"]
+    updates = ", ".join(f"{c} = excluded.{c}" for c in cols if c not in ("item_url", "first_seen_at"))
+    conn.execute(f"INSERT INTO records ({', '.join(cols)}) VALUES ({', '.join('?' * len(cols))}) "
+                 f"ON CONFLICT(item_url) DO UPDATE SET {updates}",
+                 [*values.values(), digest, now_iso, now_iso])
     if not existing:
-        cols = list(values) + ["content_hash", "first_seen_at", "last_seen_at"]
-        conn.execute(f"INSERT INTO records ({', '.join(cols)}) VALUES ({', '.join('?' * len(cols))})",
-                     [*values.values(), digest, now_iso, now_iso])
-        return "new"
-    assignments = ", ".join(f"{c} = ?" for c in values if c != "item_url")
-    conn.execute(f"UPDATE records SET {assignments}, content_hash = ?, last_seen_at = ? WHERE item_url = ?",
-                 [*(v for c, v in values.items() if c != "item_url"), digest, now_iso, item_url])
-    return "existing" if existing["content_hash"] == digest else "changed"
+        return "new", False
+    rediscovered = bool(rediscovery_cutoff and existing.get("last_seen_at")
+                        and existing["last_seen_at"] < rediscovery_cutoff)
+    return ("unchanged" if existing["content_hash"] == digest else "changed"), rediscovered
 
 
-def store_records(db_path: str, records: list[dict],
-                  unparsed_fields: Optional[dict[str, Iterable[str]]] = None) -> dict[str, int]:
+@dataclass
+class StoreResult:
+    counts: dict                                         # {"new", "unchanged", "changed"}
+    states: dict = field(default_factory=dict)           # item_url -> state
+    rediscovered: list = field(default_factory=list)     # item_urls back after an absence (D6)
+
+
+def store_records_detailed(db_path: str, records: list[dict],
+                           unparsed_fields: Optional[dict[str, Iterable[str]]] = None,
+                           now_iso: Optional[str] = None, rediscovery_cutoff: Optional[str] = None,
+                           extra_writes: Optional[Callable[[sqlite3.Connection], None]] = None) -> StoreResult:
     """
-    Stores a run's records in ONE transaction; returns {'new', 'existing', 'changed'} counts.
-    Any exception rolls back every write of this call, so a failed run leaves the table as it was.
-    unparsed_fields: {item_url: fields the adapter could not parse}; their stored values are kept.
+    Stores a run's records in ONE transaction (BEGIN IMMEDIATE ... COMMIT); any exception rolls back every
+    write of this call, so a failed run leaves the tables as they were.
+      unparsed_fields     {item_url: fields the adapter could not parse}; their stored values are kept
+      now_iso             the run's timestamp for first_seen_at / last_seen_at (default: now). The scheduler
+                          passes the run's started_at, so not_seen_this_run = last_seen_at < started_at (D6)
+      rediscovery_cutoff  previous run's started_at for this source (D6, rediscovered)
+      extra_writes        callback run on the same connection inside the same transaction (the aggregator's
+                          discovered_items and entity rows), so records and their links commit or roll back together
     """
     unparsed_fields = unparsed_fields or {}
     init_records_table(db_path)
-    counts = {"new": 0, "existing": 0, "changed": 0}
-    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    conn = sqlite3.connect(db_path, isolation_level=None)  # explicit BEGIN/COMMIT below
+    result = StoreResult(counts={state: 0 for state in ("new", "unchanged", "changed")})
+    now_iso = now_iso or _utc_now()
+    conn = _open(db_path, isolation_level=None)  # explicit BEGIN/COMMIT below
     conn.row_factory = sqlite3.Row
     try:
         conn.execute("BEGIN IMMEDIATE")
         for record in records:
-            counts[_upsert(conn, record, now_iso, unparsed_fields.get(record.get("item_url"), ()))] += 1
+            state, rediscovered = _upsert(conn, record, now_iso, unparsed_fields.get(record.get("item_url"), ()),
+                                          rediscovery_cutoff)
+            result.counts[state] += 1
+            result.states[record["item_url"]] = state
+            if rediscovered:
+                result.rediscovered.append(record["item_url"])
+        if extra_writes is not None:
+            extra_writes(conn)
         conn.execute("COMMIT")
     except BaseException:
         conn.execute("ROLLBACK")
         raise
     finally:
         conn.close()
-    return counts
+    return result
 
 
-def store_record(db_path: str, record: dict) -> Literal["new", "existing", "changed"]:
+def store_records(db_path: str, records: list[dict],
+                  unparsed_fields: Optional[dict[str, Iterable[str]]] = None) -> dict[str, int]:
+    """Stores a run's records in ONE transaction; returns {'new', 'unchanged', 'changed'} counts."""
+    return store_records_detailed(db_path, records, unparsed_fields).counts
+
+
+def store_record(db_path: str, record: dict) -> Literal["new", "unchanged", "changed"]:
     """Upserts one shared-schema record (its own transaction)."""
     counts = store_records(db_path, [record])
     return next(outcome for outcome, n in counts.items() if n)  # type: ignore[return-value]
+
+
+def count_not_seen(db_path: str, source_name: str, run_started_at: str) -> int:
+    """not_seen_this_run (D6): rows of this source whose last_seen_at is older than this run's started_at.
+    Nothing is deleted: absence from one listing does not prove an item is gone."""
+    init_records_table(db_path)
+    with _connect(db_path) as conn:
+        return conn.execute("SELECT COUNT(*) FROM records WHERE source_name = ? AND last_seen_at < ?",
+                            (source_name, run_started_at)).fetchone()[0]
 
 
 # ---------------------------------------------------------------------------
@@ -358,13 +434,22 @@ def init_runs_table(db_path: str) -> None:
                 finished_at TEXT,
                 status TEXT NOT NULL CHECK (status IN {RUN_STATUSES}),
                 new_count INTEGER,
-                existing_count INTEGER,
+                unchanged_count INTEGER,
                 changed_count INTEGER,
                 failed_count INTEGER,
                 error TEXT
             )
         """)
+        _migrate_runs_table(conn)
         conn.commit()
+
+
+def _migrate_runs_table(conn: sqlite3.Connection) -> None:
+    """Brings a runs table created by older code up to date in place (no data loss).
+    Week 3 Section 4: the state 'existing' was renamed 'unchanged', so existing_count -> unchanged_count."""
+    columns = {row[1] for row in conn.execute("PRAGMA table_info(runs)")}
+    if "existing_count" in columns and "unchanged_count" not in columns:
+        conn.execute("ALTER TABLE runs RENAME COLUMN existing_count TO unchanged_count")
 
 
 def start_run(db_path: str, source_id: str, status: str = "running", error: Optional[str] = None) -> str:
@@ -384,9 +469,9 @@ def finish_run(db_path: str, run_id: str, status: str, counts: Optional[dict] = 
     counts = counts or {}
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     with _connect(db_path) as conn:
-        conn.execute("""UPDATE runs SET finished_at = ?, status = ?, new_count = ?, existing_count = ?,
+        conn.execute("""UPDATE runs SET finished_at = ?, status = ?, new_count = ?, unchanged_count = ?,
                         changed_count = ?, failed_count = ?, error = ? WHERE run_id = ?""",
-                     (now_iso, status, counts.get("new"), counts.get("existing"), counts.get("changed"),
+                     (now_iso, status, counts.get("new"), counts.get("unchanged"), counts.get("changed"),
                       failed_count, error, run_id))
         conn.commit()
 
@@ -420,6 +505,14 @@ def run_history(db_path: str, source_id: str) -> dict:
         failures += 1
     return {"last_started_at": rows[0][0] if rows else None, "last_status": rows[0][1] if rows else None,
             "consecutive_failures": failures}
+
+
+def get_run(db_path: str, run_id: str) -> Optional[dict]:
+    init_runs_table(db_path)
+    with _connect(db_path) as conn:
+        conn.row_factory = sqlite3.Row
+        row = conn.execute("SELECT * FROM runs WHERE run_id = ?", (run_id,)).fetchone()
+        return dict(row) if row else None
 
 
 def list_runs(db_path: str, source_id: Optional[str] = None) -> list[dict]:

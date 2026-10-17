@@ -108,9 +108,18 @@ def log_validate(logger: logging.Logger, valid: int, invalid: int) -> None:
     logger.info("VALIDATE valid=%d invalid=%d", valid, invalid)
 
 
-def log_store(logger: logging.Logger, new_count: int, existing_count: int, changed_count: int) -> None:
-    """Logs store step counts."""
-    logger.info("STORE new=%d existing=%d changed=%d", new_count, existing_count, changed_count)
+def log_store(logger: logging.Logger, new_count: int, unchanged_count: int, changed_count: int,
+              not_seen_count: Optional[int] = None, run_id: Optional[str] = None) -> None:
+    """Logs store step counts: the four record states (Week 3 Section 4; 'existing' was renamed 'unchanged')."""
+    logger.info("STORE new=%d unchanged=%d changed=%d not_seen_this_run=%s run_id=%s", new_count, unchanged_count,
+                changed_count, "none" if not_seen_count is None else not_seen_count, run_id or "none")
+
+
+def log_rediscovered(logger: logging.Logger, source_id: str, item_url: str, state: str,
+                     run_id: Optional[str] = None) -> None:
+    """An item absent from at least one previous run is listed again (D6); counted by its hash, not as new."""
+    logger.info("REDISCOVERED run_id=%s source_id=%s item_url=%s rediscovered=true state=%s",
+                run_id or "none", source_id, item_url, state)
 
 
 def log_end(logger: logging.Logger, source_id: str, duration_ms: int) -> None:
@@ -152,9 +161,10 @@ def log_run_end(logger: logging.Logger, run_id: str, source_id: str, status: str
                 counts: Optional[dict] = None, failed_count: int = 0, error: Optional[str] = None) -> None:
     counts = counts or {}
     logger.log(logging.INFO if status == "success" else logging.ERROR,
-               "RUN_END run_id=%s source=%s status=%s duration_ms=%d new=%s existing=%s changed=%s failed=%d error=\"%s\"",
-               run_id, source_id, status, duration_ms, counts.get("new", 0), counts.get("existing", 0),
-               counts.get("changed", 0), failed_count, (error or "").replace('"', "'").replace("\n", " "))
+               "RUN_END run_id=%s source=%s status=%s duration_ms=%d new=%s unchanged=%s changed=%s "
+               "not_seen_this_run=%s failed=%d error=\"%s\"",
+               run_id, source_id, status, duration_ms, counts.get("new", 0), counts.get("unchanged", 0),
+               counts.get("changed", 0), counts.get("not_seen_this_run", 0), failed_count, (error or "").replace('"', "'").replace("\n", " "))
 
 
 def log_run_skipped(logger: logging.Logger, source_id: str, reason: str, holder: str = "") -> None:

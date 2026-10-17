@@ -8,7 +8,8 @@ rules) and a **config entry** (`config/sources.json`).
 ```
 fetch listing (robots.txt, delay, timeout, TLS verified) -> adapter.parse_listing -> [pagination]
   -> [detail pages: adapter.parse_detail, merged into the listing record] -> adapter.normalize
-  -> assemble shared-schema record -> validate -> store (one transaction; new / existing / changed)
+  -> assemble shared-schema record -> validate -> store (one transaction; new / changed / unchanged,
+     then not_seen_this_run)
 ```
 
 ## Setup
@@ -142,6 +143,8 @@ edits, except the Section 4 state/column rename. Every change also has an entry 
 |---|---|---|---|
 | G1 | `7d83a56` | `src/fetcher.py`: `FetchResult.content_type` (optional, default `None`), filled from the response header | Recon evidence needs content-type; the router (Section 8) prefers Content-Type over the file extension |
 | G2 | `generic: config accepts Week 3 aggregator keys` | `src/config.py`: optional `pipeline`, `discovery`, `discovery_urls`, `scope`, `router` keys, validated | Section 3 (discovery method from the registry entry, never hardcoded), Section 2 (scope config and caps in the source entry), Section 10 (scheduler picks the pipeline from config) |
+| G3 | `generic: record states new/changed/unchanged/not_seen_this_run` | `src/storage.py`, `src/runner.py`, `src/scheduler.py`, `src/logging_config.py`: state `existing` renamed `unchanged` everywhere (counts, `runs.existing_count` → `unchanged_count` with an in-place `ALTER TABLE … RENAME COLUMN` migration, log keys `existing=` → `unchanged=`); `not_seen_this_run` = `count_not_seen()` query (D6); `REDISCOVERED` log line; `run_id=` on the STORE line; rows get `last_seen_at = run started_at`; upsert is one `INSERT … ON CONFLICT(item_url) DO UPDATE` | Section 4 (four states, D6, upsert in one transaction with run_id on log lines) |
+| G4 | same commit | `content_hash`: list fields sorted before hashing (speakers by (name, affiliation), organizations alphabetically); stored order unchanged | Section 4 (a reorder on the page is not a change) |
 
 ## Adding a source (adapter + config only)
 

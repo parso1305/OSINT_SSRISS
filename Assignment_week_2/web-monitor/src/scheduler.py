@@ -41,7 +41,7 @@ from src.logging_config import (
     setup_logger, log_schedule, log_run_start, log_run_end, log_run_skipped, log_stale_lock,
 )
 from src.runner import run_source, DEFAULT_DB_PATH
-from src.storage import start_run, finish_run, abandon_running_runs, run_history
+from src.storage import start_run, finish_run, abandon_running_runs, run_history, get_run
 
 DEFAULT_LOCK_DIR = PROJECT_ROOT / "locks"
 DEFAULT_TICK_S = 60.0
@@ -197,11 +197,14 @@ def run_scheduled(config: SourceConfig, db_path: str, lock_dir: Path, logger: lo
     try:
         if lock.recovered_stale:
             abandon_running_runs(db_path, config.source_id, f"abandoned: stale lock {lock.holder}")
+        previous_started_at = run_history(db_path, config.source_id)["last_started_at"]   # before this run's row
         run_id = start_run(db_path, config.source_id)
+        run_started_at = get_run(db_path, run_id)["started_at"]
         log_run_start(logger, run_id, config.source_id)
         t_start = time.perf_counter()
         try:
-            result = run_source(config, db_path=db_path, logger=logger)
+            result = run_source(config, db_path=db_path, logger=logger, run_id=run_id,
+                                run_started_at=run_started_at, rediscovery_cutoff=previous_started_at)
         except Exception as e:
             error = f"{type(e).__name__}: {e}"
             finish_run(db_path, run_id, "failed", error=error)
@@ -210,7 +213,8 @@ def run_scheduled(config: SourceConfig, db_path: str, lock_dir: Path, logger: lo
         failed = result["detail_status"]["failed"] + len(result["invalid"])
         finish_run(db_path, run_id, "success", counts=result["counts"], failed_count=failed)
         log_run_end(logger, run_id, config.source_id, "success", int((time.perf_counter() - t_start) * 1000),
-                    counts=result["counts"], failed_count=failed)
+                    counts={**result["counts"], "not_seen_this_run": result["not_seen_this_run"]},
+                    failed_count=failed)
         return {"run_id": run_id, "source_id": config.source_id, "status": "success", "counts": result["counts"]}
     finally:
         lock.release()
