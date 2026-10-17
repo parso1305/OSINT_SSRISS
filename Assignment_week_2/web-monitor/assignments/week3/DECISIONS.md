@@ -141,3 +141,8 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Ordering note:** `src/aggregator.py` and `src/metrics.py` are committed here (before "week3: 9 run metrics") because the Section 9 broken-fixture tests need a pipeline to break. Section 9's commit adds the metric tests, the CLI check and failure_signatures.md; Section 10's adds the fixture site demo and live runs.
 - **Detail order:** detail pages are fetched in listing order up to the cap (page order is stable, so run 2 re-fetches the same pages and is "unchanged"). Alternative considered: prioritising never-enriched items, which converges coverage but makes every second run report the previously listing-only items as "changed". Documented in 10_aggregator.
 - **Reverse:** set `"pipeline": "listing"` on a source, or revert the commit.
+
+## D29 · 9 · Metric definitions, coverage threshold, DISCOVER_EMPTY
+- **Decision:** items_parsed = detail pages parsed into a valid record; FAILED = parse failures + detail-fetch failures + invalid records; coverage % over items_parsed; http_status = the first discovery page's status even when it failed. COVERAGE_DROP when a % falls ≥ 30 points vs the previous successful run (only runs with items_parsed > 0 compared). A discovery page answering 200 with 0 items logs `DISCOVER_EMPTY` (WARNING) even if another method found items, so a second method cannot hide a broken listing.
+- **Found while testing:** the first version reported the first *successful* page's status (a 503 listing showed http_status=200 when the feed worked); fixed in `discover()`.
+- **Reverse:** `src/metrics.py` (COVERAGE_DROP_POINTS) and `src/discovery/discover.py`.

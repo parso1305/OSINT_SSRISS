@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SYNTHETIC feed for local_aggregator_fixture -->
+<rss version="2.0"><channel><title>Events (fixture)</title><link>/events</link><description>fixture</description>
+    <item><title>Institute Lecture on &quot;Taming Turbulence&quot;</title><link>/event/institute-lecture-taming-turbulence?utm_source=rss&amp;utm_medium=feed#main-content</link><pubDate>Mon, 24 Aug 2026 10:15:00 +0530</pubDate></item>
+    <item><title>International Conference on Quantum Dynamics</title><link>/event/international-conference-quantum-dynamics?utm_source=rss&amp;utm_medium=feed#main-content</link><pubDate>Tue, 01 Sep 2026 06:00:00 GMT</pubDate></item>
+    <item><title>Institute Lecture on &quot;Saral AI&quot;</title><link>/event/institute-lecture-saral-ai-democratising-scholarly-work-transforming-accessible-multilingual?utm_source=rss&amp;utm_medium=feed#main-content</link><pubDate>Wed, 14 Oct 2026 11:00:00 +0000</pubDate></item>
+</channel></rss>

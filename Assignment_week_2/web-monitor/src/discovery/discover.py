@@ -120,16 +120,24 @@ def discover(config, client, logger: Optional[logging.Logger] = None,
                 response = client.get(url)
             except FetchError as e:
                 errors.append(e)
+                if result.http_status is None and not result.failures and result.pages_fetched == 0:
+                    result.http_status = e.status          # the FIRST discovery page's status, even when it failed
                 result.failures.append((url, f"{e.error_type}: {e.reason}"))
                 logger.warning("DISCOVER_FAILURE source_id=%s method=%s url=%s status=%s error=\"%s\"",
                                config.source_id, method, url, e.status, e.reason.replace('"', "'"))
                 continue
-            result.pages_fetched += 1
-            if result.http_status is None:
+            if result.http_status is None and not result.failures and result.pages_fetched == 0:
                 result.http_status = response.status
+            result.pages_fetched += 1
             items, children = _parse(method, response.text, response.final_url or url, config, adapter, discovered_at)
             logger.info("DISCOVER source_id=%s method=%s url=%s status=%s found=%d", config.source_id, method,
                         url, response.status, len(items))
+            if not items and not children:
+                # HTTP 200 and nothing found: a selector miss or a really empty page. Another method may still find
+                # items, which would hide this in the totals, so it is a WARNING of its own.
+                logger.warning("DISCOVER_EMPTY source_id=%s method=%s url=%s status=%s found=0 "
+                               "hint=\"selector miss or really empty page\"", config.source_id, method, url,
+                               response.status)
             for record, label in items:
                 found.setdefault(record.discovered_url, []).append((record, label, url))
             result.raw_count += len(items)
