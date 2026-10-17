@@ -270,3 +270,72 @@ def mention_rows(people: Iterable[PersonMention], orgs: Iterable[OrgMention]) ->
                  "role": o.role, "source_text": o.source_text} for o in resolve_page_acronyms(list(orgs))
                 if name_key(o.name)]
     return people_rows, org_rows
+
+
+# -- matching policy (Section 7) --------------------------------------------------------------------------------
+# Three outcomes only. Nothing is ever merged automatically except an identical name_key (which storage already
+# treats as one row, D5); "review" pairs go to entity_alias_candidates with status needs_review.
+
+SAFE = "safe automatic match"
+REVIEW = "possible match requiring review"
+NO_MATCH = "do not match automatically"
+
+_BARE_ACRONYM_RE = re.compile(r"^[A-Z][A-Z0-9&.-]{1,15}$")
+
+
+def _compatible_token(a: str, b: str) -> bool:
+    """'a' (an initial) is compatible with 'ananya'; equal tokens are compatible; nothing else is."""
+    if a == b:
+        return True
+    short, long_ = (a, b) if len(a) <= len(b) else (b, a)
+    return len(short) == 1 and long_.startswith(short)
+
+
+def person_match(a: str, b: str) -> tuple[str, str]:
+    """Decision for two person names as written (honorific allowed; it is removed first, stored separately)."""
+    ka, kb = name_key(split_honorific(a)[1]), name_key(split_honorific(b)[1])
+    if ka == kb:
+        return SAFE, f"same name_key {ka!r} once the honorific is removed (only honorific/punctuation differ)"
+    ta, tb = ka.split(), kb.split()
+    if len(ta) != len(tb):
+        return NO_MATCH, "different number of name parts; no rule adds or drops a name part"
+    if all(_compatible_token(x, y) for x, y in zip(ta, tb)):
+        if any(x == y and len(x) > 1 for x, y in zip(ta, tb)):
+            return REVIEW, ("an initial is compatible with a full name part and another part is identical; "
+                            "could be the same person, could be a namesake: a reviewer decides")
+        return NO_MATCH, "no full name part in common (both forms abbreviated): too weak even for review"
+    return NO_MATCH, "a name part differs"
+
+
+def _acronym_split(name: str) -> tuple[str, Optional[str]]:
+    m = _ACRONYM_DEF_RE.match(collapse(name))
+    return (m.group("name").strip(), m.group("acronym")) if m else (collapse(name), None)
+
+
+def org_match(a: str, b: str) -> tuple[str, str]:
+    """Decision for two organization names as written. A bare acronym matches nothing automatically: it is an alias
+    only on the page that defines it (resolve_page_acronyms), never across pages."""
+    (base_a, acr_a), (base_b, acr_b) = _acronym_split(a), _acronym_split(b)
+    if _BARE_ACRONYM_RE.match(base_a) or _BARE_ACRONYM_RE.match(base_b):
+        return NO_MATCH, ("a bare acronym never matches automatically; it is an alias only on the page that "
+                          "defines it, e.g. 'Centre for Policy Research (CPR)'")
+    ka, kb = name_key(base_a), name_key(base_b)
+    if ka == kb:
+        if acr_a or acr_b:
+            return SAFE, "same name; the parenthesis only defines its acronym on that page"
+        return SAFE, "same name_key"
+    if re.sub(r"\bcenter\b", "centre", ka) == re.sub(r"\bcenter\b", "centre", kb):
+        return REVIEW, "Centre/Center spelling variant: probably the same, but spelling is never normalized automatically"
+    return NO_MATCH, "different names"
+
+
+def review_pairs(entities: Iterable[tuple[int, str]], decide) -> list[tuple[int, int, str]]:
+    """(a_id, b_id, reason) for every pair whose decision is REVIEW (a_id < b_id). Never merges anything."""
+    items = sorted(entities)
+    pairs = []
+    for i, (a_id, a_name) in enumerate(items):
+        for b_id, b_name in items[i + 1:]:
+            decision, reason = decide(a_name, b_name)
+            if decision == REVIEW:
+                pairs.append((a_id, b_id, reason))
+    return pairs

@@ -113,3 +113,8 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 ## D22 · 7 · Generic change G6: entity_alias_candidates review table
 - **Decision:** `entity_alias_candidates(kind, a_id, b_id, reason, status DEFAULT 'needs_review', PK(kind, a_id, b_id), CHECK a_id < b_id)`; `add_alias_candidates` uses INSERT OR IGNORE so re-runs never duplicate a pair or reset a reviewer's status. No code path merges entities.
 - **Reverse:** drop the table and the two helpers.
+
+## D23 · 7 · Matching outcomes per pair
+- **Decision:** people: identical name_key after honorific removal = safe (one row, D5); same number of name parts, every part equal or initial-compatible, and at least one full part identical = review; otherwise (incl. two abbreviated forms like "A. Rao" vs "Ananya R.") = do not match. Organizations: identical key (a parenthesised acronym is only a same-page definition) = safe; Centre/Center = review; any bare acronym = do not match across pages (same-page definition resolves it inside one item only).
+- **Why:** a false merge is invisible and contaminates every later query; a false split is visible and fixable.
+- **Reverse:** `person_match` / `org_match` in `src/entities.py`.

@@ -14,4 +14,5 @@ Live requests before this run: 28 (Section 0 recon, separate budget).
 | 3 discovery interface | done | 8fe8ed0 | 232 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 4 |
 | 4 incremental collection | done | b68ef39 (generic) + e6afaad | 237 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 4 |
 | 5 entity extraction | done | 97e5a67 | 280 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 17 |
-| 6 entity storage | done | a01c7d6 (generic) + (this commit) | 287 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 17 |
+| 6 entity storage | done | a01c7d6 (generic) + 8e56933 | 287 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 17 |
+| 7 matching policy | done | d1bbdb0 (generic) + (this commit) | 312 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 17 |

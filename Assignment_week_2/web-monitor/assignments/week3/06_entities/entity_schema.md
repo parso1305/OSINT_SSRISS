@@ -65,8 +65,8 @@ transaction (`store_records_detailed(extra_writes=…)`).
 Running the builder twice gives:
 
 ```
-stored: {'new': 22, 'unchanged': 0, 'changed': 0} links added this run: {'people_links': 20, 'organization_links': 3} totals: {'people': 19, 'organizations': 3, 'item_people': 20, 'item_organizations': 3}
-stored: {'new': 0, 'unchanged': 22, 'changed': 0} links added this run: {'people_links': 0, 'organization_links': 0} totals: {'people': 19, 'organizations': 3, 'item_people': 20, 'item_organizations': 3}
+stored: {'new': 22, 'unchanged': 0, 'changed': 0} links added this run: {'people_links': 20, 'organization_links': 3} review candidates added: 2 totals: {'people': 19, 'organizations': 3, 'item_people': 20, 'item_organizations': 3}
+stored: {'new': 0, 'unchanged': 22, 'changed': 0} links added this run: {'people_links': 0, 'organization_links': 0} review candidates added: 0 totals: {'people': 19, 'organizations': 3, 'item_people': 20, 'item_organizations': 3}
 ```
 
 (22 records = the 20 real pages, including the 2 no-speaker pages left out of the extraction set, plus the 2
