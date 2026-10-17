@@ -34,3 +34,11 @@ def test_sitemaps_use_defusedxml_not_the_stdlib_parser():
     source = (ROOT / "src" / "discovery" / "sitemap.py").read_text(encoding="utf-8")
     assert "from defusedxml.ElementTree import fromstring" in source
     assert not re.search(r"^\s*(import|from)\s+xml\.etree\.ElementTree\s+import\s+(?!ParseError)", source, re.M)
+
+
+def test_new_generic_code_has_no_institution_specific_strings():
+    """tests/test_architecture.py checks src/*.py; this extends the same rule to src/ subpackages (src/discovery)."""
+    from tests.test_architecture import INSTITUTION_MARKERS
+    hits = [f"{p.relative_to(ROOT)}:{n}" for p in sorted(ROOT.glob("src/**/*.py"))
+            for n, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1) if INSTITUTION_MARKERS.search(line)]
+    assert hits == []

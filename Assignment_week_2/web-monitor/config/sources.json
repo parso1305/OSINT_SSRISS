@@ -34,6 +34,65 @@
       "timeout_s": 10,
       "interval_minutes": 3,
       "lock_max_age_minutes": 30
+    },
+    {
+      "source_id": "iit_bombay_events",
+      "institution": "IIT Bombay",
+      "organizer": null,
+      "content_type": "event",
+      "adapter": "sources.iit_bombay_events",
+      "listing_url": "https://www.iitb.ac.in/",
+      "enabled": false,
+      "supports_detail": true,
+      "detail_limit": 20,
+      "request_delay_s": 3.0,
+      "timeout_s": 15,
+      "interval_minutes": 1440,
+      "lock_max_age_minutes": 60,
+      "ca_bundle": "certs/iitb_ca_bundle.pem",
+      "pipeline": "aggregator",
+      "discovery": "html",
+      "discovery_urls": {
+        "html": [
+          "https://www.iitb.ac.in/"
+        ]
+      },
+      "scope": {
+        "allowed_hosts": [
+          "www.iitb.ac.in"
+        ],
+        "allowed_subdomains_of": [],
+        "allowed_prefixes": [
+          "/event/",
+          "/events/",
+          "/breaking-news/",
+          "/sites/default/files/"
+        ],
+        "excluded_prefixes": [
+          "/user/",
+          "/search/",
+          "/iitb-search/",
+          "/admin/",
+          "/node/add/",
+          "/comment/reply/"
+        ],
+        "allow_external": false,
+        "excluded_query_keys": [
+          "search_api_fulltext",
+          "page",
+          "month",
+          "year",
+          "date",
+          "view",
+          "start",
+          "end",
+          "q",
+          "keys"
+        ],
+        "max_listing_pages": 1,
+        "max_detail_items": 20,
+        "max_discovered_items": 40
+      }
     }
   ]
 }

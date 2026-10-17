@@ -65,3 +65,9 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Why:** Section 3 requires the discovery method to come from the source's registry entry; Section 2 requires scope config and caps in the entry; Section 10 requires the scheduler to choose the aggregator path from config.
 - **Alternatives:** a separate config file for aggregators (two registries to keep in sync).
 - **Reverse:** remove the five fields and the validation block; Week 2 sources never set them.
+
+## D14 · 2 · Target scope: no department subdomains; listing pages and pager URLs are not items
+- **Decision:** `allowed_hosts=["www.iitb.ac.in"]`, `allowed_subdomains_of=[]`; allowed prefixes `/event/`, `/events/`, `/breaking-news/`, `/sites/default/files/`; the allowed-prefix match is strict (`/events` itself is a listing, not an item); `page` and `search_api_fulltext` are excluded query keys (observed on the target), plus the standard calendar keys.
+- **Why:** department sites are separate sources with their own adapters; a central-calendar link to one must not pull a whole department site in.
+- **Alternatives:** `allowed_subdomains_of=["iitb.ac.in"]` (would admit every department site, unbounded).
+- **Reverse:** edit the `scope` block in `config/sources.json`.
