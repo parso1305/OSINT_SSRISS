@@ -7,6 +7,8 @@ Shared-schema API (runner):   init_records_table, store_records / store_records_
 Entities (Week 3):            init_entity_tables, write_entity_links (inside store_records_detailed's
                               transaction via extra_writes), list_entities, add_alias_candidates (review queue),
                               entity_counts, query
+Discovered items (Week 3):    init_discovered_items_table, upsert_discovered_items (run transaction),
+                              get_discovered_item
 Run records (scheduler):      init_runs_table, start_run, finish_run, abandon_running_runs,
                               run_history, list_runs
 Legacy API (Sections 1-4A):   init_db, store_item/store_all, get_item_by_url, count_items (table `items`)
@@ -551,6 +553,66 @@ def query(db_path: str, sql: str, params: tuple = ()) -> list[tuple]:
     """Read-only helper for docs, CLIs and tests (storage stays the only sqlite3 user)."""
     with _connect(db_path) as conn:
         return conn.execute(sql, params).fetchall()
+
+
+# ---------------------------------------------------------------------------
+# Discovered items (Week 3 Section 8): every discovery candidate, in scope or not, with its routing decision
+# ---------------------------------------------------------------------------
+
+DISCOVERED_ITEMS_DDL = """CREATE TABLE IF NOT EXISTS discovered_items (
+    discovered_url TEXT PRIMARY KEY,           -- canonical (resolve_item_url)
+    source_name TEXT NOT NULL,
+    discovery_methods TEXT NOT NULL,           -- JSON list, e.g. ["html", "rss"]
+    discovered_title TEXT,
+    source_timestamp TEXT,
+    source_timestamp_raw TEXT,
+    first_discovered_at TEXT NOT NULL,
+    last_discovered_at TEXT NOT NULL,
+    in_scope INTEGER NOT NULL,
+    scope_reason TEXT NOT NULL,
+    content_class TEXT NOT NULL,               -- event | announcement | faculty | pdf_document | external_link | unknown
+    class_reason TEXT NOT NULL
+)"""
+DISCOVERED_ITEM_COLUMNS = ("discovered_url", "source_name", "discovery_methods", "discovered_title",
+                           "source_timestamp", "source_timestamp_raw", "first_discovered_at", "last_discovered_at",
+                           "in_scope", "scope_reason", "content_class", "class_reason")
+
+
+def init_discovered_items_table(db_path: str) -> None:
+    with _connect(db_path) as conn:
+        conn.execute(DISCOVERED_ITEMS_DDL)
+        conn.commit()
+
+
+def upsert_discovered_items(conn: sqlite3.Connection, rows: Iterable[dict]) -> int:
+    """Upserts candidates on an open connection (inside the run transaction). first_discovered_at is kept from the
+    first time a URL was seen; every other column reflects this run. Returns the number of rows written."""
+    conn.execute(DISCOVERED_ITEMS_DDL)
+    cols = DISCOVERED_ITEM_COLUMNS
+    updates = ", ".join(f"{c} = excluded.{c}" for c in cols if c not in ("discovered_url", "first_discovered_at"))
+    n = 0
+    for row in rows:
+        values = dict(row)
+        values["discovery_methods"] = json.dumps(list(values.get("discovery_methods") or []))
+        values["in_scope"] = int(bool(values.get("in_scope")))
+        values.setdefault("first_discovered_at", values.get("last_discovered_at"))
+        conn.execute(f"INSERT INTO discovered_items ({', '.join(cols)}) VALUES ({', '.join('?' * len(cols))}) "
+                     f"ON CONFLICT(discovered_url) DO UPDATE SET {updates}", [values.get(c) for c in cols])
+        n += 1
+    return n
+
+
+def get_discovered_item(db_path: str, url: str) -> Optional[dict]:
+    init_discovered_items_table(db_path)
+    with _connect(db_path) as conn:
+        conn.row_factory = sqlite3.Row
+        row = conn.execute("SELECT * FROM discovered_items WHERE discovered_url = ?", (url,)).fetchone()
+    if row is None:
+        return None
+    item = dict(row)
+    item["discovery_methods"] = json.loads(item["discovery_methods"])
+    item["in_scope"] = bool(item["in_scope"])
+    return item
 
 
 # ---------------------------------------------------------------------------

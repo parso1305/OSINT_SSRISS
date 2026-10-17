@@ -147,6 +147,7 @@ edits, except the Section 4 state/column rename. Every change also has an entry 
 | G4 | same commit | `content_hash`: list fields sorted before hashing (speakers by (name, affiliation), organizations alphabetically); stored order unchanged | Section 4 (a reorder on the page is not a change) |
 | G5 | `generic: entity tables and PRAGMA foreign_keys=ON` | `src/storage.py`: tables `people`, `organizations`, `item_people`, `item_organizations` (FKs to `records(item_url)`, composite primary keys), `write_entity_links` (runs inside the run's single transaction), and `PRAGMA foreign_keys = ON` on every connection (one `_open()` helper) | Section 6 (entity storage, FK enforcement, re-runs never duplicate links) |
 | G6 | `generic: entity_alias_candidates review table` | `src/storage.py`: table `entity_alias_candidates(kind, a_id, b_id, reason, status='needs_review')`, `add_alias_candidates` (INSERT OR IGNORE, keeps a reviewer's status), `list_entities` | Section 7 (review pairs are written to entity_alias_candidates and never merged) |
+| G7 | `generic: discovered_items table` | `src/storage.py`: table `discovered_items` (every candidate with scope and routing decision), `upsert_discovered_items` (inside the run transaction; `first_discovered_at` kept), `get_discovered_item` | Section 8 (persist every candidate; unknown/unsupported items stay with their reason, never dropped, never forced into records) |
 
 ## Adding a source (adapter + config only)
 

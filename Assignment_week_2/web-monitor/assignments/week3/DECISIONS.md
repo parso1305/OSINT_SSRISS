@@ -118,3 +118,7 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Decision:** people: identical name_key after honorific removal = safe (one row, D5); same number of name parts, every part equal or initial-compatible, and at least one full part identical = review; otherwise (incl. two abbreviated forms like "A. Rao" vs "Ananya R.") = do not match. Organizations: identical key (a parenthesised acronym is only a same-page definition) = safe; Centre/Center = review; any bare acronym = do not match across pages (same-page definition resolves it inside one item only).
 - **Why:** a false merge is invisible and contaminates every later query; a false split is visible and fixable.
 - **Reverse:** `person_match` / `org_match` in `src/entities.py`.
+
+## D24 · 8 · Generic change G7: discovered_items table
+- **Decision:** columns exactly as specified; `discovery_methods` stored as JSON; written inside the run's single transaction; `first_discovered_at` kept on update. Out-of-scope candidates are stored too (in_scope=0 with scope_reason), so every scope and routing decision is auditable.
+- **Reverse:** drop the table and the three helpers.
