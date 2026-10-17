@@ -1,4 +1,5 @@
-"""Generic scheduler: runs each configured source through runner.run_source on its own interval.
+"""Generic scheduler: runs each configured source on its own interval, through the pipeline its config names
+(config.pipeline: "listing" = runner.run_source, Week 2; "aggregator" = aggregator.run_aggregator, Week 3).
 
 Knows only source_ids and config (config/sources.json): no adapters, selectors or URLs.
 
@@ -40,9 +41,14 @@ from src.config import SourceConfig, load_source_configs, DEFAULT_CONFIG_PATH
 from src.logging_config import (
     setup_logger, log_schedule, log_run_start, log_run_end, log_run_skipped, log_stale_lock,
 )
+from src.aggregator import run_aggregator
+from src.metrics import runs_row
 from src.runner import run_source, DEFAULT_DB_PATH
 from src.storage import start_run, finish_run, abandon_running_runs, run_history, get_run
 
+# config.pipeline -> the function that runs one source (Week 3 Section 10). Both take the same arguments and
+# return the same result shape, so locking, run rows and RUN_START / RUN_END are identical for both.
+PIPELINES = {"listing": run_source, "aggregator": run_aggregator}
 DEFAULT_LOCK_DIR = PROJECT_ROOT / "locks"
 DEFAULT_TICK_S = 60.0
 _TS = "%Y-%m-%dT%H:%M:%SZ"
@@ -202,20 +208,28 @@ def run_scheduled(config: SourceConfig, db_path: str, lock_dir: Path, logger: lo
         run_started_at = get_run(db_path, run_id)["started_at"]
         log_run_start(logger, run_id, config.source_id)
         t_start = time.perf_counter()
+        pipeline = PIPELINES[config.pipeline]     # chosen by the source's config, never by the source's name
         try:
-            result = run_source(config, db_path=db_path, logger=logger, run_id=run_id,
-                                run_started_at=run_started_at, rediscovery_cutoff=previous_started_at)
+            result = pipeline(config, db_path=db_path, logger=logger, run_id=run_id,
+                              run_started_at=run_started_at, rediscovery_cutoff=previous_started_at)
         except Exception as e:
             error = f"{type(e).__name__}: {e}"
-            finish_run(db_path, run_id, "failed", error=error)
+            summary = getattr(e, "summary", None)      # an aggregator run's metrics survive its failure
+            finish_run(db_path, run_id, "failed", error=error,
+                       failed_count=summary["failed"] if summary else 0,
+                       metrics=runs_row(summary) if summary else None)
             log_run_end(logger, run_id, config.source_id, "failed", int((time.perf_counter() - t_start) * 1000), error=error)
-            return {"run_id": run_id, "source_id": config.source_id, "status": "failed", "error": error}
+            return {"run_id": run_id, "source_id": config.source_id, "status": "failed", "error": error,
+                    "summary": summary}
         failed = result["detail_status"]["failed"] + len(result["invalid"])
-        finish_run(db_path, run_id, "success", counts=result["counts"], failed_count=failed)
+        metrics = runs_row(result["summary"]) if "summary" in result else {
+            "not_seen_count": result["not_seen_this_run"], "pages_fetched": result.get("pages_crawled")}
+        finish_run(db_path, run_id, "success", counts=result["counts"], failed_count=failed, metrics=metrics)
         log_run_end(logger, run_id, config.source_id, "success", int((time.perf_counter() - t_start) * 1000),
                     counts={**result["counts"], "not_seen_this_run": result["not_seen_this_run"]},
                     failed_count=failed)
-        return {"run_id": run_id, "source_id": config.source_id, "status": "success", "counts": result["counts"]}
+        return {"run_id": run_id, "source_id": config.source_id, "status": "success", "counts": result["counts"],
+                "not_seen_this_run": result["not_seen_this_run"], "summary": result.get("summary")}
     finally:
         lock.release()
 

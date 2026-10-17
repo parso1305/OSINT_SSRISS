@@ -135,3 +135,9 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 ## D27 · 9 · Generic change G8: metrics columns on the existing runs table
 - **Decision:** 12 nullable columns added to `runs` (created for new DBs, `ALTER TABLE ADD COLUMN` for existing ones); `finish_run` takes an optional `metrics` dict; `last_runs()` reads the latest finished runs. new/changed/failed counts stay; unchanged_count comes from Section 4.
 - **Reverse:** the columns are nullable and unused by Week 2 code; revert the commit (SQLite ≥ 3.35 can DROP COLUMN if needed).
+
+## D28 · 9, 10 · Generic change G9: config-driven pipeline dispatch; aggregator code lands before the Section 9 commit
+- **Decision:** `run_scheduled` picks `PIPELINES[config.pipeline]` (listing → `run_source`, aggregator → `run_aggregator`); both take the same arguments (run_id, run_started_at, rediscovery_cutoff) and return the same result shape, so lock, run row, RUN_START/RUN_END and exit codes are shared. A failed aggregator run raises `AggregatorRunError` carrying its summary; the scheduler stores those metrics on the failed run row.
+- **Ordering note:** `src/aggregator.py` and `src/metrics.py` are committed here (before "week3: 9 run metrics") because the Section 9 broken-fixture tests need a pipeline to break. Section 9's commit adds the metric tests, the CLI check and failure_signatures.md; Section 10's adds the fixture site demo and live runs.
+- **Detail order:** detail pages are fetched in listing order up to the cap (page order is stable, so run 2 re-fetches the same pages and is "unchanged"). Alternative considered: prioritising never-enriched items, which converges coverage but makes every second run report the previously listing-only items as "changed". Documented in 10_aggregator.
+- **Reverse:** set `"pipeline": "listing"` on a source, or revert the commit.
