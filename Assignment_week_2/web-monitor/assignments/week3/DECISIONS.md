@@ -103,3 +103,9 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Decision:** see `05_extraction/notes.md`. Real affiliations contain `;`, `&`, ` and ` and line breaks, so splitting on every separator would invent people ("Padma Shri Awardee", "Professor, Computer Science…"). Plain comma never splits.
 - **Cost:** an unlabelled-honorific list with affiliations ("Ananya Rao, IITB; Ravi Sen, TISS") stays one person (under-split, never a false person). Logged as the conservative failure mode.
 - **Reverse:** change `split_people` in `src/entities.py`.
+
+## D21 · 6 · Generic change G5: entity tables + PRAGMA foreign_keys=ON on every connection
+- **Decision:** DDL as specified (people / organizations with UNIQUE normalized_name; item_people / item_organizations keyed (item_url, entity_id, role), REFERENCES records(item_url) per D4). All storage connections go through `_open()`, which sets `PRAGMA foreign_keys = ON`. Indexes: the UNIQUE constraints already index normalized_name (sqlite_autoindex), plus indexes on person_id / organization_id for reverse lookups.
+- **Re-run semantics:** an item whose detail page was parsed this run gets its links REPLACED by what the page says now (a removed speaker does not linger); if the detail fetch failed, links are kept (same rule as `_carry_forward` for content). Either way the composite key means a re-run never duplicates a link.
+- **display_name:** first form seen wins (`ON CONFLICT DO NOTHING`); per-event spellings stay in item_people.source_text.
+- **Reverse:** revert the `generic: entity tables …` commit; the PRAGMA is one line in `_open()`.

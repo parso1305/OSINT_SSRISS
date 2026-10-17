@@ -4,6 +4,8 @@ Shared-schema API (runner):   init_records_table, store_records / store_records_
                               transaction per run, INSERT ... ON CONFLICT upsert), get_record, count_records,
                               count_not_seen, content_hash. Record states: new / changed / unchanged
                               (+ not_seen_this_run, a query; nothing is ever deleted)
+Entities (Week 3):            init_entity_tables, write_entity_links (inside store_records_detailed's
+                              transaction via extra_writes), entity_counts, query
 Run records (scheduler):      init_runs_table, start_run, finish_run, abandon_running_runs,
                               run_history, list_runs
 Legacy API (Sections 1-4A):   init_db, store_item/store_all, get_item_by_url, count_items (table `items`)
@@ -23,8 +25,14 @@ from src.schema import CONTENT_FIELDS, IDENTIFIER_FIELDS, PROVENANCE_FIELDS
 
 
 def _open(db_path: str, **kwargs) -> sqlite3.Connection:
-    """Every connection in this module is opened here, so per-connection settings live in one place."""
-    return sqlite3.connect(db_path, **kwargs)
+    """Every connection in this module is opened here, so per-connection settings live in one place.
+
+    PRAGMA foreign_keys=ON (Week 3 Section 6): SQLite enforces REFERENCES clauses only when this is set on the
+    connection, and it is off by default. With it, an entity link to an item_url that is not in records is
+    rejected instead of silently stored."""
+    conn = sqlite3.connect(db_path, **kwargs)
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
 
 
 @contextmanager
@@ -412,6 +420,109 @@ def count_not_seen(db_path: str, source_name: str, run_started_at: str) -> int:
     with _connect(db_path) as conn:
         return conn.execute("SELECT COUNT(*) FROM records WHERE source_name = ? AND last_seen_at < ?",
                             (source_name, run_started_at)).fetchone()[0]
+
+
+# ---------------------------------------------------------------------------
+# Entities (Week 3 Section 6): people / organizations + links to records(item_url) (D4, D5)
+# ---------------------------------------------------------------------------
+
+ENTITY_DDL = (
+    """CREATE TABLE IF NOT EXISTS people (
+        id INTEGER PRIMARY KEY,
+        normalized_name TEXT NOT NULL UNIQUE,      -- name_key(name without honorific): the identity claim (D5)
+        display_name TEXT NOT NULL,                -- as first seen
+        honorific TEXT,
+        profile_url TEXT
+    )""",
+    """CREATE TABLE IF NOT EXISTS organizations (
+        id INTEGER PRIMARY KEY,
+        normalized_name TEXT NOT NULL UNIQUE,
+        display_name TEXT NOT NULL,
+        org_type TEXT,
+        url TEXT
+    )""",
+    """CREATE TABLE IF NOT EXISTS item_people (
+        item_url TEXT NOT NULL REFERENCES records(item_url),
+        person_id INTEGER NOT NULL REFERENCES people(id),
+        role TEXT NOT NULL,
+        affiliation_raw TEXT,                      -- per event, as written next to the name (D5)
+        source_text TEXT NOT NULL,
+        PRIMARY KEY (item_url, person_id, role)
+    )""",
+    """CREATE TABLE IF NOT EXISTS item_organizations (
+        item_url TEXT NOT NULL REFERENCES records(item_url),
+        organization_id INTEGER NOT NULL REFERENCES organizations(id),
+        role TEXT NOT NULL,
+        source_text TEXT NOT NULL,
+        PRIMARY KEY (item_url, organization_id, role)
+    )""",
+    # normalized_name is UNIQUE, which already gives each table an index on it (sqlite_autoindex_*); these two
+    # serve the reverse lookups "every event of this person / organization".
+    "CREATE INDEX IF NOT EXISTS idx_item_people_person ON item_people(person_id)",
+    "CREATE INDEX IF NOT EXISTS idx_item_organizations_org ON item_organizations(organization_id)",
+)
+
+
+def init_entity_tables(db_path: str) -> None:
+    init_records_table(db_path)
+    with _connect(db_path) as conn:
+        for statement in ENTITY_DDL:
+            conn.execute(statement)
+        conn.commit()
+
+
+def _entity_id(conn: sqlite3.Connection, table: str, normalized_name: str, display_name: str,
+               extra: dict) -> int:
+    """Inserts the entity if its normalized_name is new (first display form wins), returns its id."""
+    cols = ["normalized_name", "display_name", *extra]
+    conn.execute(f"INSERT INTO {table} ({', '.join(cols)}) VALUES ({', '.join('?' * len(cols))}) "
+                 f"ON CONFLICT(normalized_name) DO NOTHING", [normalized_name, display_name, *extra.values()])
+    return conn.execute(f"SELECT id FROM {table} WHERE normalized_name = ?", (normalized_name,)).fetchone()[0]
+
+
+def write_entity_links(conn: sqlite3.Connection, item_url: str, people: Iterable[dict], orgs: Iterable[dict],
+                       replace: bool = True) -> dict:
+    """Writes one item's people / organization links on an open connection (inside the caller's transaction).
+
+    people: {normalized_name, display_name, honorific, profile_url, role, affiliation_raw, source_text}
+    orgs:   {normalized_name, display_name, org_type, url, role, source_text}
+    replace=True (the item's detail page was parsed this run): the item's previous links are replaced by what the
+    page states now, so a removed speaker does not linger. replace=False (detail fetch failed): existing links are
+    kept and only missing ones added. Links are keyed (item_url, entity_id, role): a re-run never duplicates them.
+    Returns {"people_links": rows added, "organization_links": rows added} (net of the replaced ones).
+    """
+    before_p = conn.execute("SELECT COUNT(*) FROM item_people WHERE item_url = ?", (item_url,)).fetchone()[0]
+    before_o = conn.execute("SELECT COUNT(*) FROM item_organizations WHERE item_url = ?", (item_url,)).fetchone()[0]
+    if replace:
+        conn.execute("DELETE FROM item_people WHERE item_url = ?", (item_url,))
+        conn.execute("DELETE FROM item_organizations WHERE item_url = ?", (item_url,))
+    for p in people:
+        person_id = _entity_id(conn, "people", p["normalized_name"], p["display_name"],
+                               {"honorific": p.get("honorific"), "profile_url": p.get("profile_url")})
+        conn.execute("INSERT OR IGNORE INTO item_people (item_url, person_id, role, affiliation_raw, source_text) "
+                     "VALUES (?, ?, ?, ?, ?)", (item_url, person_id, p["role"], p.get("affiliation_raw"),
+                                                p["source_text"]))
+    for o in orgs:
+        org_id = _entity_id(conn, "organizations", o["normalized_name"], o["display_name"],
+                            {"org_type": o.get("org_type"), "url": o.get("url")})
+        conn.execute("INSERT OR IGNORE INTO item_organizations (item_url, organization_id, role, source_text) "
+                     "VALUES (?, ?, ?, ?)", (item_url, org_id, o["role"], o["source_text"]))
+    after_p = conn.execute("SELECT COUNT(*) FROM item_people WHERE item_url = ?", (item_url,)).fetchone()[0]
+    after_o = conn.execute("SELECT COUNT(*) FROM item_organizations WHERE item_url = ?", (item_url,)).fetchone()[0]
+    return {"people_links": after_p - before_p, "organization_links": after_o - before_o}
+
+
+def entity_counts(db_path: str) -> dict:
+    init_entity_tables(db_path)
+    with _connect(db_path) as conn:
+        return {table: conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+                for table in ("people", "organizations", "item_people", "item_organizations")}
+
+
+def query(db_path: str, sql: str, params: tuple = ()) -> list[tuple]:
+    """Read-only helper for docs, CLIs and tests (storage stays the only sqlite3 user)."""
+    with _connect(db_path) as conn:
+        return conn.execute(sql, params).fetchall()
 
 
 # ---------------------------------------------------------------------------
