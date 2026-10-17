@@ -146,3 +146,7 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Decision:** items_parsed = detail pages parsed into a valid record; FAILED = parse failures + detail-fetch failures + invalid records; coverage % over items_parsed; http_status = the first discovery page's status even when it failed. COVERAGE_DROP when a % falls ≥ 30 points vs the previous successful run (only runs with items_parsed > 0 compared). A discovery page answering 200 with 0 items logs `DISCOVER_EMPTY` (WARNING) even if another method found items, so a second method cannot hide a broken listing.
 - **Found while testing:** the first version reported the first *successful* page's status (a 503 listing showed http_status=200 when the feed worked); fixed in `discover()`.
 - **Reverse:** `src/metrics.py` (COVERAGE_DROP_POINTS) and `src/discovery/discover.py`.
+
+## D30 · 11 · Review questions derived from the Week 3 requirements
+- **Decision:** the 10 Section 11 questions were not in the brief; used 10 derived from Sections 1–10, logged as Q4. The TISS review template is left blank (the brief says not to review his code).
+- **Reverse:** replace the headings with the official list.

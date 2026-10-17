@@ -19,3 +19,9 @@ titles/event types; (c) choose rank 2. Your call with D1.
 ## Q3 · D1 · Enable `iit_bombay_events` for scheduled runs?
 It is `enabled: false`, so Task Scheduler's plain `--once` does not run it. **Meanwhile:** both live demo runs used
 `--source iit_bombay_events --force`. Flip `enabled` to true after confirming the target.
+
+## Q4 · 11 · The official Section 11 review questions
+The brief for the unattended run referred to "the 10 Section 11 review questions" without listing them.
+**Meanwhile:** `11_review/self_review.md` and `review_template.md` use 10 questions derived from Sections 1–10
+(politeness, canonical URLs, scope, layer separation, dedup, run states, entity extraction, matching, failure
+visibility, reproducibility/generic changes). Swap in the official wording if it differs; the evidence still applies.

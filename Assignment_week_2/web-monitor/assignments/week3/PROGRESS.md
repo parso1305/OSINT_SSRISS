@@ -18,4 +18,5 @@ Live requests before this run: 28 (Section 0 recon, separate budget).
 | 7 matching policy | done | d1bbdb0 (generic) + 6504fb5 | 312 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 17 |
 | 8 content router | done | a414ee4 (generic) + d0ed193 | 323 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 17 |
 | 9 run metrics | done | f3fb696 + 9fa9870 (generic) + 56a27b1 | 337 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 17 |
-| 10 central aggregator | done (offline + live) | (this commit) | 341 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 61 |
+| 10 central aggregator | done (offline + live) | 2f6bdbf | 341 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 61 |
+| 11 cross-review prep | done (questions derived, Q4) | (this commit) | 341 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 61 |
