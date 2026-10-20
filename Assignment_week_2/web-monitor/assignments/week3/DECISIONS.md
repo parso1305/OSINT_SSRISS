@@ -154,3 +154,8 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 ## D31 · 12 · Definition-of-Done items derived from the sections; Assignment 9 swap not attempted
 - **Decision:** DEFENSE_NOTES.md answers one DoD item per Week 3 section (0–12) because the brief did not list the DoD items verbatim (same gap as Q4). The "Week 2 Assignment 9 template swap" is listed as Needs Parth: the run had no instructions or template for it.
 - **Reverse:** re-key DEFENSE_NOTES.md to the official DoD list.
+
+## D32 · R1 · Generic change G10: html discovery can call an adapter listing hook (config `listing_options`)
+- **Decision:** a source may set `listing_options = {"hook": "<adapter function>", ...}`; html discovery then calls `adapter.<hook>(text, page_url, options, now_iso)` instead of the CSS selectors. The hook returns plain entries (href, title, raw/UTC timestamp, category); `discover.py` builds the DiscoveryRecords itself (`make_record` → `resolve_item_url`), so scope, dedup, merge rule and caps are untouched. Filter values live in `listing_options`, never in code.
+- **Why:** R1: the target's calendar items exist only as JSON inside `drupal-settings-json`; decoding that is site-specific (adapter), calling it is generic (discovery).
+- **Reverse:** remove `listing_options` from the config entry (the selector path is unchanged) or revert the commit.

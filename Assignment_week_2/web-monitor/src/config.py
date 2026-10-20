@@ -50,6 +50,9 @@ class SourceConfig:
     discovery_urls: Optional[dict] = None     # aggregator: {method: [url, ...]}; default {"html": [listing_url]}
     scope: Optional[dict] = None              # aggregator: src.scope.ScopeConfig keys (hosts, prefixes, caps)
     router: Optional[dict] = None             # aggregator: src.router keys (url_patterns, category_map)
+    listing_options: Optional[dict] = None    # aggregator html discovery: {"hook": <adapter function>, ...filter
+                                              # values}. The hook decodes a site-specific listing (e.g. JSON
+                                              # embedded in the page); the filter values live here, not in code
 
     def __post_init__(self) -> None:
         parts = urlsplit(self.listing_url.strip()) if isinstance(self.listing_url, str) else None
@@ -81,6 +84,8 @@ class SourceConfig:
             if not methods or unknown:
                 raise ValueError(f"{self.source_id}: discovery must be one or more of {DISCOVERY_METHODS}, "
                                  f"got {self.discovery!r}")
+        if self.listing_options is not None and not isinstance((self.listing_options or {}).get("hook"), str):
+            raise ValueError(f"{self.source_id}: listing_options needs a 'hook' (the adapter function's name)")
 
     def discovery_methods(self) -> tuple:
         """The configured discovery method(s) as a tuple, in config order."""

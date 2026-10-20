@@ -30,7 +30,8 @@ from typing import Any, Optional
 
 from src.discovery.feed import feed_records
 from src.discovery.html import HtmlListingConfig, parse_listing_items
-from src.discovery.record import DiscoveryRecord, utc_now
+from src.discovery.record import DiscoveryRecord, make_record, utc_now
+from src.discovery.timestamps import to_utc_z
 from src.discovery.sitemap import DEFAULT_MAX_CHILD_SITEMAPS, sitemap_records
 from src.fetcher import FetchError
 from src.scope import ScopeConfig, scope_decision
@@ -78,6 +79,9 @@ def discovery_urls(config) -> dict:
 def _parse(method: str, content: str, url: str, config, adapter, discovered_at: str):
     """Returns ([(record, category_label)], child sitemap URLs)."""
     if method == "html":
+        options = getattr(config, "listing_options", None)
+        if options:
+            return _hook_items(content, url, config, adapter, options, discovered_at), []
         selectors = HtmlListingConfig.from_dict(getattr(adapter, "LISTING_SELECTORS"))
         items = parse_listing_items(content, url, selectors, config.source_id, discovered_at)
         return [(i.record, i.category_label) for i in items], []
@@ -86,6 +90,27 @@ def _parse(method: str, content: str, url: str, config, adapter, discovered_at: 
         return [(r, None) for r in records], []
     records, children = sitemap_records(content.encode("utf-8"), config.source_id, url, discovered_at)
     return [(r, None) for r in records], children
+
+
+def _hook_items(content: str, url: str, config, adapter, options: dict, discovered_at: str) -> list:
+    """HTML discovery through an adapter listing hook (config listing_options = {"hook": name, ...}).
+
+    For a listing whose items are not in the page markup (e.g. a calendar drawn by JavaScript from JSON embedded in
+    the HTML), the adapter decodes it: hook(text, page_url, options, now_iso) -> [{"href", "title",
+    "timestamp_raw", "timestamp" (UTC Z or None), "category"}], already filtered and ordered with the option values
+    from config. Everything generic stays here: records are built with make_record (resolve_item_url), so dedup,
+    scope and caps treat these items exactly like selector-found ones."""
+    hook = getattr(adapter, options["hook"], None)
+    if not callable(hook):
+        raise ValueError(f"{config.source_id}: adapter has no listing hook {options['hook']!r}")
+    items = []
+    for entry in hook(content, url, options, discovered_at):
+        timestamp = entry.get("timestamp") or to_utc_z(entry.get("timestamp_raw"), options.get("utc_offset"))
+        record = make_record(config.source_id, entry.get("href"), url, "html", entry.get("title"), timestamp,
+                             entry.get("timestamp_raw"), discovered_at)
+        if record is not None:
+            items.append((record, entry.get("category")))
+    return items
 
 
 def merge_records(records: list) -> DiscoveryRecord:

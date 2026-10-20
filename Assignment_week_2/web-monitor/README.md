@@ -238,6 +238,7 @@ edits, except the Section 4 state/column rename. Every change also has an entry 
 | G7 | `generic: discovered_items table` | `src/storage.py`: table `discovered_items` (every candidate with scope and routing decision), `upsert_discovered_items` (inside the run transaction; `first_discovered_at` kept), `get_discovered_item` | Section 8 (persist every candidate; unknown/unsupported items stay with their reason, never dropped, never forced into records) |
 | G8 | `generic: run metrics columns on the runs table` | `src/storage.py`: `runs` gains `http_status`, `pages_fetched`, `items_discovered`, `items_parsed`, `not_seen_count`, `parse_failures`, `detail_failures`, `people_extracted`, `organizations_extracted`, `pct_with_date`, `pct_with_speaker`, `pct_with_org` (added in place with `ALTER TABLE ADD COLUMN`; NULL for older rows); `finish_run(..., metrics=)`; `last_runs()` | Section 9 (extend the existing runs table, no second run table) |
 | G9 | `generic: scheduler dispatches the aggregator pipeline from config` | `src/scheduler.py`: `PIPELINES = {"listing": run_source, "aggregator": run_aggregator}` chosen by `config.pipeline`; the run row stores the run's metrics (`finish_run(metrics=…)`), also for a failed aggregator run (`AggregatorRunError.summary`). New generic modules `src/aggregator.py` (the pipeline) and `src/metrics.py` (summary). `src/runner.py` is unchanged apart from G3. | Section 10 (the scheduler chooses the aggregator path from the source's config; reuse the Week 2 scheduler, lock and run records), Section 9 (a failed run still writes a summary) |
+| G10 | `generic: html discovery can call an adapter listing hook` | `src/config.py`: optional `listing_options` (`{"hook": <adapter function>, …filter values}`); `src/discovery/discover.py::_hook_items`: html discovery calls the named adapter hook instead of CSS selectors and builds the records itself (`make_record` → `resolve_item_url`), so scope, dedup and caps are unchanged | Repair R1 (the target's calendar items are JSON inside the page; decoding it is site-specific, the filter values belong in config) |
 
 ## Adding a source (adapter + config only)
 
@@ -271,6 +272,7 @@ edits, except the Section 4 state/column rename. Every change also has an entry 
 | `discovery`, `discovery_urls` | aggregator: method(s) `html` / `rss` / `atom` / `sitemap`, and `{method: [urls]}` (`html` defaults to `[listing_url]`) |
 | `scope` | aggregator: `src.scope.ScopeConfig` keys (hosts, prefixes, excluded query keys, caps) |
 | `router` | aggregator: `hosts`, `category_map` (card label → class), `url_patterns` (class → path prefixes) |
+| `listing_options` | aggregator html discovery through an adapter hook: `{"hook": "calendar_entries", …filter values}` (G10) |
 
 An **aggregator adapter** provides `LISTING_SELECTORS` (for `src/discovery/html.py`), the label patterns, and
 `parse_event_detail(html, item_url) -> {fields, people, orgs, parse_warnings}`. See `sources/iit_bombay_events.py`.
