@@ -1,6 +1,6 @@
-# OSINT SSRISS: academic web monitoring (Naaravance.ai internship)
+# OSINT SSRISS: academic web monitoring 
 
-This repository contains my work for the Naaravance.ai OSINT web-monitoring internship. The target is IIT Bombay's
+This repository contains my work for the SSRISS OSINT web-monitoring internship. The target is IIT Bombay's
 public academic pages, starting with the Humanities and Social Sciences (HSS) department's "Seminars and Talks"
 listing. Week 1 covers the basics: HTTP inspection, site recon, DOM mapping, fetching and normalization. Week 2
 builds a monitoring system. On a schedule, it fetches the listing politely (robots.txt, delays, timeouts, verified
