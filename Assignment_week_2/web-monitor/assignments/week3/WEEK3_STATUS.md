@@ -1,20 +1,57 @@
 # Week 3 status
 
-Branch `week3-auto` (not pushed). Unattended run on 2026-10-17. Status values are **Done**, **Partial** and
-**Needs Parth**.
+Branch `week3-auto`, **pushed to GitHub** (`origin/week3-auto`); not merged into `master`. First unattended run:
+2026-10-17. Repair pass R1–R8: 2026-10-20 (the commits are listed below). The official spec is
+[`WEEK3_SPEC.md`](WEEK3_SPEC.md); the spec index is [`README.md`](README.md). Status values are **Done**,
+**Partial** and **Needs Parth**.
 
-**Final test totals,** with outbound HTTP blocked (`scripts/offline_pytest.py`):
+**Test totals,** with outbound HTTP blocked (`scripts/offline_pytest.py`):
 
-| Suite | Before Week 3 | After Week 3 |
-|---|---|---|
-| Main (`tests/`) | 136 passed, 1 skipped | **341 passed, 1 skipped, 1 xfailed** |
-| Audit (`assignments/week2_audit/tests`) | 43 passed, 3 xfailed | **43 passed, 3 xfailed** |
+| Suite | Before Week 3 | After the first run (2026-10-17) | **After the repair pass (2026-10-20)** |
+|---|---|---|---|
+| Main (`tests/`) | 136 passed, 1 skipped | 341 passed, 1 skipped, 1 xfailed | **361 passed, 1 skipped** |
+| Audit (`assignments/week2_audit/tests`) | 43 passed, 3 xfailed | 43 passed, 3 xfailed | **43 passed, 3 xfailed** |
 
 - The skip is the `LIVE_TESTS`-gated HSS test.
-- The xfail is the D2 query-order test (Q1).
+- The D2 xfail is gone: R2 replaced it with a sorted-form test.
 - The 3 audit xfails are the Week 2 known limitations M5, m11 and m2.
 
-**Live requests:** 61 of 80 (`live_requests.md`).
+**Live requests:**
+- **First run:** 61 of 80.
+- **Repair pass:** 44 of 60 (two live runs on the `/events` calendar).
+
+Ledger: [`live_requests.md`](live_requests.md).
+
+## Repair pass R1–R8 (2026-10-20)
+
+| Item | Result | Commit(s) | Evidence |
+|---|---|---|---|
+| R1 · discovery yield (Q2) | **Done.** Discovery reads the `/events` calendar JSON through the adapter hook `calendar_entries`, filtered by config to lecture-type titles, upcoming first, then the most recent past. Generic change G10. D11 superseded by D33. Offline calendar fixture plus 6 tests. Live, two runs on a fresh DB: 122 lecture-type URLs listed, 40 in scope, 20 parsed; run 1 has 40 new, run 2 has 40 unchanged; **16 speakers, `pct_with_speaker` 80.0** (was 5.0); 0 duplicates. Two name-parsing defects found live were fixed (D34). Evidence added that IITB event pages have no organizer field. | `ff5b225` (generic), `b1b6262`, `40187ef` | `10_aggregator/live_runs.md`, `tests/test_calendar_discovery.py`, `05_extraction/notes.md` |
+| R2 · query order (Q1) | **Done.** Sorted order kept; the xfail was replaced by `test_remaining_params_are_sorted_into_one_canonical_order`; D2 updated; Q1 closed. | `ed7ea3b` | `tests/test_week3_canonical.py` |
+| R3 · enable the source (Q3) | **Done.** `iit_bombay_events` has `"enabled": true` (daily via `--once`, 22 requests a run). | `a2b942b` | `config/sources.json`, D35 |
+| R4 · official review questions (Q4) | **Done.** `self_review.md` and `review_template.md` use the 10 questions in WEEK3_SPEC.md Section 11; the template has the comments table and the "at least 3 substantive comments" rule. | `1a38c6b` | `11_review/` |
+| R5 · repo front page | **Done.** Week 3 row and a "Headline results (Week 3)" table with evidence links in the root README. | `83cf3a0` | root `README.md` |
+| R6 · spec index | **Done.** Every spec path and the 16 Section 12 deliverables mapped to files. | `dace5bf` | [`README.md`](README.md) (this folder) |
+| R7 · defense notes and status | **Done.** DEFENSE_NOTES.md is organized around the 12 official DoD items; this file is updated. | `week3: R7 …` | [`DEFENSE_NOTES.md`](DEFENSE_NOTES.md) |
+| R8 · discovery-drop warning | **Done.** `WARNING DISCOVERY_DROP` when items_discovered falls to ≤ 50 % of the previous successful run (which found ≥ 10). | `4ed8de7` | `09_metrics/failure_signatures.md`, `tests/test_metrics.py` |
+
+**Open question from the repair pass:** Q5. Should the summary's ITEMS_DISCOVERED be capped at 40 too? Live it
+reports 122 lecture-type URLs, of which 40 are in scope. A one-line `max_entries` option would do it
+([`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md)).
+
+## Still needs Parth
+
+1. **Cross-review with Soumyadipta** (TISS aggregator): fill in `11_review/review_template.md` with at least 3
+   substantive comments.
+2. **Week 2 Assignment 9** (the template swap with a teammate's framework): not started; no template or instructions
+   were provided to these runs.
+3. **A test run with Wi-Fi actually off.** The runs here blocked HTTP through proxy environment variables
+   (`scripts/offline_pytest.py`), not at the network layer.
+4. **Merge `week3-auto` into `master`.** The branch is on GitHub. Local `master` is 4 ahead and 1 behind
+   `origin/master`, so reconcile that first.
+5. Review `DECISIONS.md` (D1–D36) and answer Q5.
+
+## Checklist (first run, updated by the repair pass)
 
 | # | Item | Status | Evidence |
 |---|---|---|---|
@@ -29,7 +66,7 @@ Branch `week3-auto` (not pushed). Unattended run on 2026-10-17. Status values ar
 | 1B | `html.py` selector-driven; only item containers; selectors in the adapter | Done | `src/discovery/html.py`, `sources/iit_bombay_events.py::LISTING_SELECTORS` |
 | 1B | `test_same_item_same_url_across_methods` | Done | `tests/test_discovery_record.py` |
 | D2 | Canonical URLs: fragment, tracking params, case, ports | Done | `tests/test_week3_canonical.py` |
-| D2 | Original param order | Partial (xfail: Week 2 tests require sorted order) | DECISIONS D2, OPEN_QUESTIONS Q1 |
+| D2 | Param order | Done: sorted, decided in R2 | `tests/test_week3_canonical.py::test_remaining_params_are_sorted_into_one_canonical_order` |
 | 2 | `scope.py` (`is_allowed_item_url`, `scope_decision`), exact hosts, prefix boundaries, query keys | Done | `src/scope.py` |
 | 2 | Target scope config + caps in `config/sources.json` | Done | `iit_bombay_events.scope` |
 | 2 | One test per case (13) + `scope_cases.md` with the calendar-explosion rule | Done | `tests/test_scope.py`, `02_scope/scope_cases.md` |
@@ -52,18 +89,18 @@ Branch `week3-auto` (not pushed). Unattended run on 2026-10-17. Status values ar
 | 9 | CLI `python -m src.metrics --last` | Done | `tests/test_metrics.py::test_cli_prints_the_last_summary` |
 | 9 | `failure_signatures.md` with real output from the broken-fixture tests | Done | `09_metrics/failure_signatures.md` |
 | 10 | Short target adapter; generic pipeline in `src/`; scheduler picks the aggregator from config | Done | `sources/iit_bombay_events.py`, `src/aggregator.py`, `src/scheduler.py` |
-| 10 | Target registered with discovery, scope, router and caps | Done | `config/sources.json` (`iit_bombay_events`, `enabled: false` → Q3) |
+| 10 | Target registered with discovery, scope, router and caps | Done (calendar hook since R1; enabled since R3) | `config/sources.json` (`iit_bombay_events`) |
 | 10 | Offline e2e: 2 runs, duplicate checks, changed site; `demo_offline.md` | Done | `10_aggregator/demo_offline.md`, `tests/test_aggregator_e2e.py` |
-| 10 | Live: 2 runs back to back via the scheduler, summaries + duplicate checks + adapter unchanged | Done (44 requests) | `10_aggregator/live_runs.md` |
-| 11 | `self_review.md` (10 questions, canonical URLs in depth) and `review_template.md` | Done (questions derived from the requirements → Q4) | `11_review/` |
+| 10 | Live: 2 runs back to back via the scheduler, summaries + duplicate checks + adapter unchanged | Done (redone on the calendar in R1, 44 requests) | `10_aggregator/live_runs.md` |
+| 11 | `self_review.md` (official 10 questions, canonical URLs in depth) and `review_template.md` (≥ 3 comments) | Done (R4) | `11_review/` |
 | 12 | README (architecture, tree, scope, hash fields, matching, discovery record, generic changes, commands, out of scope) | Done | `README.md` |
-| 12 | DEFENSE_NOTES.md, WEEK3_STATUS.md | Done | this folder |
-| — | Confirm the D1 target (and Q2: the people yield of the homepage block) | Needs Parth | DECISIONS D1, D11; OPEN_QUESTIONS Q2, Q3 |
-| — | Review DECISIONS.md (D1–D30) and OPEN_QUESTIONS.md (Q1–Q4) | Needs Parth | `DECISIONS.md`, `OPEN_QUESTIONS.md` |
+| 12 | DEFENSE_NOTES.md (12 official DoD items), WEEK3_STATUS.md, spec index README.md | Done (R6, R7) | this folder |
+| — | Q5: cap ITEMS_DISCOVERED itself at 40? | Needs Parth | OPEN_QUESTIONS Q5 |
+| — | Review DECISIONS.md (D1–D36); Q1–Q4 are closed | Needs Parth | `DECISIONS.md`, `OPEN_QUESTIONS.md` |
 | — | Week 2 Assignment 9 template swap | Needs Parth | not done in this run (no instructions or template were provided) |
 | — | Cross-review with Soumyadipta (TISS aggregator) | Needs Parth | `11_review/review_template.md` |
 | — | A pytest run with Wi-Fi actually off (this run only blocked HTTP via proxy env vars) | Needs Parth | `scripts/offline_pytest.py` |
-| — | Merge `week3-auto` and push | Needs Parth | `git log 3471522..week3-auto` |
+| — | Merge `week3-auto` into `master` (already on GitHub; local master 4 ahead / 1 behind origin/master) | Needs Parth | `git log 3471522..week3-auto` |
 
 ## Commits on `week3-auto`
 
@@ -87,5 +124,16 @@ f3fb696 generic: run metrics columns on the runs table
 56a27b1 week3: 9 run metrics
 2f6bdbf week3: 10 central aggregator
 aa76a3b week3: 11 cross-review prep
-(+ week3: 12 integration)
+d64efcb week3: 12 integration (README, defense notes, status)
+ce6e1c3 docs: add the mentor's official Week 3 spec (WEEK3_SPEC.md)
+ff5b225 generic: html discovery can call an adapter listing hook
+b1b6262 week3: R1 calendar discovery for iit_bombay_events (lecture-type, upcoming first; offline fixture + tests)
+40187ef week3: R1 live runs on the /events calendar + two name-parsing fixes found live
+ed7ea3b week3: R2 canonical query order is sorted (xfail replaced by a sorted-form test; Q1 closed)
+a2b942b week3: R3 enable iit_bombay_events (Q3 closed)
+1a38c6b week3: R4 self-review and review template on the official Section 11 questions (Q4 closed)
+4ed8de7 week3: R8 DISCOVERY_DROP warning when items_discovered falls sharply
+dace5bf week3: R6 spec index (every WEEK3_SPEC path and the 16 deliverables mapped to files)
+83cf3a0 week3: R5 repo front page: Week 3 row and headline results with evidence links
+(+ week3: R7 defense notes and status)
 ```

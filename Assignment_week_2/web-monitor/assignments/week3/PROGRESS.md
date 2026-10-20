@@ -20,4 +20,12 @@ Live requests before this run: 28 (Section 0 recon, separate budget).
 | 9 run metrics | done | f3fb696 + 9fa9870 (generic) + 56a27b1 | 337 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 17 |
 | 10 central aggregator | done (offline + live) | 2f6bdbf | 341 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 61 |
 | 11 cross-review prep | done (questions derived, Q4) | aa76a3b | 341 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 61 |
-| 12 integration | done | (this commit) | 341 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 61 |
+| 12 integration | done | d64efcb | 341 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | 61 |
+| R1 discovery yield (calendar) | done | ff5b225 (generic) + b1b6262 + 40187ef | 353 passed, 1 skipped, 1 xfailed | 43 passed, 3 xfailed | repair pass 44 / 60 |
+| R2 canonical query order | done | ed7ea3b | 354 passed, 1 skipped | 43 passed, 3 xfailed | 44 / 60 |
+| R3 enable source | done | a2b942b | 354 passed, 1 skipped | 43 passed, 3 xfailed | 44 / 60 |
+| R4 official review questions | done | 1a38c6b | 354 passed, 1 skipped | 43 passed, 3 xfailed | 44 / 60 |
+| R8 discovery-drop warning | done | 4ed8de7 | 361 passed, 1 skipped | 43 passed, 3 xfailed | 44 / 60 |
+| R6 spec index | done | dace5bf | 361 passed, 1 skipped | 43 passed, 3 xfailed | 44 / 60 |
+| R5 repo front page | done | 83cf3a0 | 361 passed, 1 skipped | 43 passed, 3 xfailed | 44 / 60 |
+| R7 defense notes + status | done | (this commit) | 361 passed, 1 skipped | 43 passed, 3 xfailed | 44 / 60 |

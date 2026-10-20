@@ -181,3 +181,6 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Decision:** `src/metrics.py::discovery_warnings` logs `WARNING DISCOVERY_DROP` when a successful run's items_discovered is ≤ 50 % of the previous successful run of the same source, provided that run discovered ≥ 10. Same place and style as COVERAGE_DROP (compared against the previous successful run, emitted with the summary); a ratio rather than points because counts differ in scale between sources.
 - **Why:** R8: a broken listing must not hide behind another discovery method that still works (DISCOVER_EMPTY names the page; DISCOVERY_DROP flags the run).
 - **Reverse:** remove `discovery_warnings` from `emit`.
+
+## D37 · R7 · DEFENSE_NOTES.md keyed to the official 12 DoD items
+- **Decision:** D31's derived DoD list is superseded: DEFENSE_NOTES.md now answers the 12 items of WEEK3_SPEC.md "Week 3 Definition of Done", each with proof paths.
