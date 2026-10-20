@@ -11,11 +11,16 @@ From REAL saved pages only:
       tracking parameters and #fragments (relative links), so discovery dedup across html + rss is exercised
   fixtures/week3/iitb_events/site/detail_changed/institute-lecture-taming-turbulence.html   venue changed
   fixtures/week3/iitb_events/site/detail_changed/synthetic-new-workshop.html                 the new event
+  fixtures/week3/iitb_events/site/events_calendar.html  the real /events page (2026-10-16) with its FullCalendar JSON
+      (drupal-settings-json) replaced by one entry per saved detail page, plus a recurring duplicate and an entry
+      with no start (repair R1: calendar discovery offline)
 
     venv\\Scripts\\python scripts/make_week3_site_fixtures.py
 """
 
 import html
+import json
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -27,6 +32,7 @@ ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / "fixtures" / "week3" / "iitb_events"
 DETAIL, SITE = BASE / "detail", BASE / "site"
 HOME_REAL = BASE / "home_2026-10-16.html"
+CALENDAR_REAL = BASE / "events_calendar_2026-10-16.html"
 GONE = ("van-mahotsav-2026", "birth-anniversary-gandhi-ji-and-shastri-ji-1")
 TEMPLATE = DETAIL / "seminar-cum-workshop-staggered-difference-differences-designs.html"
 NOTE = "<!-- {kind} fixture for local_aggregator_fixture (scripts/make_week3_site_fixtures.py) -->\n"
@@ -78,6 +84,30 @@ def changed_detail(slug: str, old: str, new: str) -> str:
     return NOTE.format(kind="CHANGED") + page.replace(old, new)
 
 
+def calendar_page(events: list[tuple]) -> str:
+    """The real /events page with calendar_options.events replaced by entries for the given events, in the real
+    entry shape (title, id, eid, url, des, start in local IST without an offset, colours)."""
+    page = CALENDAR_REAL.read_text(encoding="utf-8")
+    soup = BeautifulSoup(page, "html.parser")
+    script = soup.find("script", attrs={"data-drupal-selector": "drupal-settings-json"})
+    settings = json.loads(script.string)
+    options = json.loads(settings["fullCalendarView"][0]["calendar_options"])
+    entries = []
+    for n, (start, _end, title, href) in enumerate(sorted(events)):
+        local = (datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ") + timedelta(hours=5, minutes=30)).strftime("%Y-%m-%dT%H:%M:%S")
+        entries.append({"title": html.escape(title, quote=True), "id": f"{n}-0", "eid": str(9000 + n), "url": href,
+                        "des": f'<a href="{href}" hreflang="en">{html.escape(title)}</a>', "editable": False,
+                        "start": local, "durationEditable": False, "backgroundColor": "#3a87ad", "borderColor": "#3a87ad"})
+    if entries:
+        entries.append(dict(entries[0], id="dup-1", start="2027-01-05T17:15:00"))   # a recurring entry: same URL
+    entries.append({"title": "Institute Lecture with no date", "id": "nodate-0", "eid": "8999",
+                    "url": "/event/institute-lecture-no-date", "start": None})
+    options["events"] = entries
+    settings["fullCalendarView"][0]["calendar_options"] = json.dumps(options)
+    script.string = json.dumps(settings)
+    return str(soup)
+
+
 def main() -> None:
     SITE.mkdir(parents=True, exist_ok=True)
     (SITE / "detail_changed").mkdir(exist_ok=True)
@@ -118,7 +148,10 @@ def main() -> None:
         '<?xml version="1.0" encoding="utf-8"?>\n<!-- SYNTHETIC feed for local_aggregator_fixture -->\n'
         '<rss version="2.0"><channel><title>Events (fixture)</title><link>/events</link><description>fixture</description>\n'
         + "\n".join(rss_items) + "\n</channel></rss>\n", encoding="utf-8")
-    print(f"events in home.html: {len(events)}; in home_changed.html: {len(changed_events)}")
+    (SITE / "events_calendar.html").write_text(NOTE.format(kind="REAL /events calendar, entries rebuilt") +
+                                               calendar_page(events), encoding="utf-8")
+    print(f"events in home.html: {len(events)}; in home_changed.html: {len(changed_events)}; "
+          f"calendar entries: {len(events) + 2}")
 
 
 if __name__ == "__main__":

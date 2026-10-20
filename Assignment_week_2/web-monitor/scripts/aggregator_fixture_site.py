@@ -6,6 +6,7 @@ scripts/make_week3_site_fixtures.py and the saved detail pages, with per-path Co
   /robots.txt                          404 (allow all)
   /                                    site/home.html             (variant "changed": site/home_changed.html)
   /events.rss                          site/events.rss            application/rss+xml
+  /events                              site/events_calendar.html  (the calendar: FullCalendar JSON in the page)
   /event/<slug>                        detail/<slug>.html         (variant "changed": site/detail_changed/ first)
   /events/brochure-iccms-2027.pdf      a tiny PDF                 application/pdf (the router never requests it)
   /breaking-news/<slug>                a small HTML page          (an announcement: never detail-fetched)
@@ -66,6 +67,11 @@ class AggregatorFixtureSite:
             page = (SITE / ("home_changed.html" if self.variant == "changed" else "home.html")).read_text(encoding="utf-8")
             if self.broken == "listing":
                 page = page.replace("homepage-events", "homepage-events-v2")   # a theme update renames the block
+            return 200, html, page.encode("utf-8")
+        if path == "/events":
+            page = (SITE / "events_calendar.html").read_text(encoding="utf-8")
+            if self.broken == "listing":
+                page = page.replace("fullCalendarView", "fullCalendarViewV2")     # a module update renames the key
             return 200, html, page.encode("utf-8")
         if path == "/events.rss":
             return 200, "application/rss+xml; charset=utf-8", (SITE / "events.rss").read_bytes()

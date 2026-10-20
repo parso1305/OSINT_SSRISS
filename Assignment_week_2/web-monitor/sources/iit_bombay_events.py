@@ -3,9 +3,12 @@
 Site-specific values only: listing selectors, label patterns, router patterns and the detail-page parser.
 Everything generic (discovery, scope, routing, fetching, storage, entity helpers, metrics) lives in src/.
 
-Discovery (HTML, D11): the homepage's events block, a server-rendered view of the same Drupal "events" view that
-/events draws client-side with FullCalendar (its items are only JSON in drupal-settings-json; see
-assignments/week3/00_candidates/iit_bombay_aggregators.md, C1 JS check).
+Discovery (HTML), two ways, chosen by the source's config:
+  * live source iit_bombay_events (repair R1, D33): the /events calendar. Its items exist only as JSON inside
+    drupal-settings-json (FullCalendar), decoded by calendar_entries() below; the lecture-type title filter and the
+    ordering come from the config's listing_options.
+  * offline source local_aggregator_fixture: LISTING_SELECTORS on the homepage events block (D11, superseded for the
+    live source).
 
 Detail pages (/event/<slug>): Drupal field classes for title, event type, date range and venue; people only in the
 body as labelled lines ("Speaker: Prof. X, Affiliation", "Organizer: Prof. Y — ...").
@@ -14,12 +17,14 @@ homepage block gives 11:45Z for the same 17:15 IST lecture). The trailing Z is d
 IST (+05:30, no DST) before converting to UTC.
 """
 
-import re
+import html as html_lib
+import json
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from bs4 import BeautifulSoup
 
+from src.discovery.timestamps import parse_utc_offset
 from src.entities import block_lines, collapse, extract_mentions, organizations_field, speakers_field
 
 TIMEZONE = "Asia/Kolkata"
@@ -97,3 +102,45 @@ def parse_event_detail(html: str, item_url: str) -> dict:
         "extras": {"event_datetime_raw": [raw_start, raw_end]},
     }
     return {"fields": fields, "people": people, "orgs": orgs, "parse_warnings": warnings}
+
+
+# -- calendar listing hook (repair R1; config listing_options, generic change G10) ------------------------------
+# /events draws its calendar with FullCalendar from JSON embedded in the page:
+#   <script type="application/json" data-drupal-selector="drupal-settings-json"> ... "fullCalendarView": [{
+#     "calendar_options": "{... \"timeZone\": \"Asia/Kolkata\", \"events\": [{title, url, start, eid, ...}] ...}"}]
+# Each entry has only title, url, start (local IST, no offset) and node id: no event type, speaker or organizer.
+
+def calendar_entries(html: str, page_url: str, options: dict, now_iso: str) -> list[dict]:
+    """Calendar entries whose title contains one of options["include_title_keywords"] (case-insensitive), one per
+    URL, ordered upcoming first (soonest first), then past ones (most recent first). Never fetches."""
+    script = BeautifulSoup(html, "html.parser").find("script", attrs={"data-drupal-selector": "drupal-settings-json"})
+    if script is None or not script.string:
+        raise ValueError("no drupal-settings-json script: calendar layout changed?")
+    settings = json.loads(script.string)
+    try:
+        calendar = json.loads(settings["fullCalendarView"][0]["calendar_options"])
+        events = calendar["events"]
+    except (KeyError, IndexError, TypeError, ValueError) as e:
+        raise ValueError(f"fullCalendarView events not found in drupal-settings-json: {e!r}") from e
+    keywords = [k.casefold() for k in options.get("include_title_keywords", [])]
+    offset = parse_utc_offset(options.get("utc_offset") or "+05:30")
+    upcoming, past = [], []
+    for event in events:
+        title = " ".join(html_lib.unescape(event.get("title") or "").split())
+        if keywords and not any(k in title.casefold() for k in keywords):
+            continue
+        raw = event.get("start")
+        try:
+            start = datetime.strptime(raw, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=offset).astimezone(timezone.utc)
+        except (TypeError, ValueError):
+            continue                                   # no readable start: not a schedulable calendar entry
+        entry = {"href": event.get("url"), "title": title, "timestamp_raw": raw,
+                 "timestamp": start.strftime("%Y-%m-%dT%H:%M:%SZ"), "category": None}
+        (upcoming if entry["timestamp"] >= now_iso else past).append(entry)
+    ordered = sorted(upcoming, key=lambda e: e["timestamp"]) + sorted(past, key=lambda e: e["timestamp"], reverse=True)
+    seen, unique = set(), []
+    for entry in ordered:                              # recurring entries share one URL: keep its first position
+        if entry["href"] not in seen:
+            seen.add(entry["href"])
+            unique.append(entry)
+    return unique

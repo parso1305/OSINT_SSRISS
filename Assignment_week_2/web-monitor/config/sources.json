@@ -41,7 +41,7 @@
       "organizer": null,
       "content_type": "event",
       "adapter": "sources.iit_bombay_events",
-      "listing_url": "https://www.iitb.ac.in/",
+      "listing_url": "https://www.iitb.ac.in/events",
       "enabled": false,
       "supports_detail": true,
       "detail_limit": 20,
@@ -54,8 +54,19 @@
       "discovery": "html",
       "discovery_urls": {
         "html": [
-          "https://www.iitb.ac.in/"
+          "https://www.iitb.ac.in/events"
         ]
+      },
+      "listing_options": {
+        "hook": "calendar_entries",
+        "include_title_keywords": [
+          "Institute Lecture",
+          "Lecture",
+          "Colloquium",
+          "Seminar",
+          "Talk"
+        ],
+        "utc_offset": "+05:30"
       },
       "scope": {
         "allowed_hosts": [

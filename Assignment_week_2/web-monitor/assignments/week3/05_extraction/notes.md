@@ -78,3 +78,35 @@ block gives `11:45:00Z` for the same 17:15 IST lecture, and the body says "Time:
 `Z`, reads the value as IST (+05:30; India has no DST) and stores `event_start = 2026-09-03T11:45:00Z` with
 `timezone = Asia/Kolkata`. A fixed offset is used because the Windows venv has no IANA tz database (`zoneinfo`
 cannot load `Asia/Kolkata`) and adding `tzdata` for one offset was not worth a dependency (DECISIONS.md D19).
+
+## Evidence: IIT Bombay event pages have no organizer field (repair R1)
+
+All 20 real `/event/<slug>` pages (the 18 extraction fixtures plus the 2 no-speaker pages) were checked for every
+Drupal field rendered inside `<article class="node--type-event">`:
+
+| Drupal field class | Pages |
+|---|---|
+| `field--name-title` | 20 / 20 |
+| `field--name-field-event-type` | 20 / 20 |
+| `field--name-field-event-date` | 20 / 20 |
+| `field--name-field-vanue` (the site's spelling of venue) | 20 / 20 |
+| `field--name-body` | 20 / 20 |
+| `field--name-field-event-image` | 1 / 20 |
+
+There is no organizer, department, host or speaker field: these pages are body, venue, event type and date. The
+calendar JSON on `/events` has no organizer either; each entry has only title, url, start and node id.
+
+So `organizations` (and `item_organizations`) can come only from a **labelled line in the body**: `Organized by:`,
+`Organiser:`, `Co-organized by:` and so on (`LABELS` in the adapter). Only 1 of the 20 real pages has such a label,
+`Organizer: Prof. Azizuddin Khan — …`, and it names a person, not an organization. Prose such as "The Department of
+Chemistry, IIT Bombay is organizing …" is **not** extracted, because roles come only from labels and there is no NLP.
+
+This is why real-data runs report `organizations_extracted = 0` and `pct_with_org` near 0. That number is true
+coverage, not a parser failure. The organization path is exercised by the synthetic fixture
+`synthetic-two-speakers-and-organizers` (3 organizations) and by `tests/test_entities_extraction.py::test_organizer_lines`.
+
+Reproduce:
+
+```
+venv\Scripts\python -c "import glob,collections; from bs4 import BeautifulSoup; c=collections.Counter(); [c.update({cl for d in BeautifulSoup(open(f,encoding='utf-8').read(),'html.parser').select_one('article.node--type-event').select('[class*=field--name-]') for cl in d['class'] if cl.startswith('field--name-')}) for f in glob.glob('fixtures/week3/iitb_events/detail/*.html') if 'synthetic' not in f]; print(dict(c))"
+```
