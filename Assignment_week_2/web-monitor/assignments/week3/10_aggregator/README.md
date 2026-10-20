@@ -49,6 +49,7 @@ The calendar path also runs offline: `tests/test_calendar_discovery.py::test_cal
 
 - `iit_bombay_events`: live; `pipeline: aggregator`, `discovery: "html"` on `/events` through the adapter hook
   `calendar_entries` (`listing_options`: lecture-type title keywords, `+05:30`; repair R1, D33), the scope block
-  (Section 2), the router block (Section 8), `max_discovered_items 40`, `max_detail_items 20`, `request_delay_s 3.0`.
+  (Section 2), the router block (Section 8), `max_discovered_items 40`, `max_detail_items 20`, `request_delay_s 3.0`, `enabled: true` (R3; daily via
+  Task Scheduler's `--once`).
 - `local_aggregator_fixture`: the same adapter, `discovery: ["html", "rss"]`, served by
   `scripts/aggregator_fixture_site.py` on `127.0.0.1:8766`.

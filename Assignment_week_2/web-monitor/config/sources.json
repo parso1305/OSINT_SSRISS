@@ -42,7 +42,7 @@
       "content_type": "event",
       "adapter": "sources.iit_bombay_events",
       "listing_url": "https://www.iitb.ac.in/events",
-      "enabled": false,
+      "enabled": true,
       "supports_detail": true,
       "detail_limit": 20,
       "request_delay_s": 3.0,

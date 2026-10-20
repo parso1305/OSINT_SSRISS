@@ -172,3 +172,7 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Decision:** `parse_person` keeps a bracketed nickname followed by more name inside the name ("Matthew (Mat) Collins"), and ends the name before post-nominal letters (FRS, FREng, FRSC, FNA, FASc, FNAE, FNASc, FAAAS, PhD) with the rest kept verbatim as affiliation_raw ("Michael L. Klein" + "FRS Laura H. Carnell Professor of Science, …"). Tests use the live source text verbatim.
 - **Not re-run live:** the fix came after both runs; a third run (22 requests) would exceed the 60 budget (44 used). The fixed code was re-applied offline to the 16 stored source_text lines (2 differ, 14 identical; `10_aggregator/live_runs.md`). The next live run corrects the stored links.
 - **Reverse:** remove `_NICKNAME_RE` / `_POSTNOMINAL_RE` from `src/entities.py`.
+
+## D35 · R3 · iit_bombay_events enabled
+- **Decision:** `"enabled": true` after R1 passed (both live runs succeeded, run 2 all unchanged, 0 duplicates). A plain `python -m src.scheduler --once` (Task Scheduler) now runs it when due: `interval_minutes 1440`, so at most one run a day, 22 requests each (robots.txt, /events, 20 details), 3 s apart.
+- **Reverse:** set `"enabled": false`.

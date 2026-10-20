@@ -19,7 +19,7 @@ calendar (`/events`, 643 entries as JSON inside drupal-settings-json; 36 "Instit
 it (monitoring what is upcoming); (b) add a calendar-JSON listing function to the adapter and filter to lecture-type
 titles/event types; (c) choose rank 2. Your call with D1.
 
-## Q3 · D1 · Enable `iit_bombay_events` for scheduled runs?
+## Q3 · D1 · Enable `iit_bombay_events` for scheduled runs? — **CLOSED (repair R3): enabled**
 It is `enabled: false`, so Task Scheduler's plain `--once` does not run it. **Meanwhile:** both live demo runs used
 `--source iit_bombay_events --force`. Flip `enabled` to true after confirming the target.
 
