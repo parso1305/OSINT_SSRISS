@@ -156,3 +156,26 @@ def test_labels_must_match_from_the_start_of_the_line():
     people, _ = extract_mentions(["About the Speaker: Dr. Q is a scientist", "A profile of the speaker: x",
                                   "Speaker: Dr. Q, Lab"], LABELS)
     assert [(p.name, p.source_text) for p in people] == [("Q", "Speaker: Dr. Q, Lab")]
+
+
+# -- repair R1: two name shapes first seen in the live calendar run of 2026-10-20 (source text copied verbatim) -----
+
+@pytest.mark.parametrize("line, honorific, name, affiliation_start", [
+    ("Speaker: Prof. Matthew (Mat) Collins, Head of the Department of Mathematics and Statistics, Joint Met Office "
+     "Chair in Climate Change, University of Exeter, UK; Field Chief Editor of Frontiers in Climate",
+     "Prof.", "Matthew (Mat) Collins", "Head of the Department of Mathematics and Statistics"),
+    ("Speaker: Prof. Michael L. Klein FRS Laura H. Carnell Professor of Science, Director, Institute for "
+     "Computational Molecular Science, College of Science and Technology at Temple University, Philadelphia, USA",
+     "Prof.", "Michael L. Klein", "FRS Laura H. Carnell Professor of Science, Director"),
+])
+def test_live_name_shapes_nickname_and_post_nominals(line, honorific, name, affiliation_start):
+    people, _ = extract_mentions([line], LABELS)
+    assert len(people) == 1
+    person = people[0]
+    assert (person.honorific, person.name) == (honorific, name)
+    assert person.affiliation_raw.startswith(affiliation_start) and person.source_text == line
+
+
+def test_bracketed_affiliation_is_still_not_part_of_the_name():
+    person = parse_person("Dr. X Sharma (IIT Bombay), Lab", "speaker", "s")
+    assert person.name == "X Sharma"

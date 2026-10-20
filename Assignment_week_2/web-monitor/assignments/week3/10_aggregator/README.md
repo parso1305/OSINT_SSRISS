@@ -33,7 +33,7 @@ There is no duplicated DB code: every SQL statement is in `src/storage.py`.
 ## The adapter stays short
 
 `sources/iit_bombay_events.py` holds:
-- `LISTING_SELECTORS`
+- `LISTING_SELECTORS` (homepage block) and `calendar_entries` (the `/events` calendar hook)
 - `LABELS` (the label patterns)
 - `TIMEZONE` and `UTC_OFFSET`
 - `_ist_to_utc`
@@ -41,13 +41,14 @@ There is no duplicated DB code: every SQL statement is in `src/storage.py`.
 
 It contains no fetching, storage, logging setup, scope, routing or dedup.
 `tests/test_aggregator_e2e.py::test_adapter_stays_short_and_has_no_generic_code` checks it. The same adapter
-serves the live source (`iit_bombay_events`) and the offline one (`local_aggregator_fixture`). Only the config
-differs: hosts, URLs and the discovery methods (html, or html + rss).
+serves the live source (`iit_bombay_events`, calendar hook) and the offline one (`local_aggregator_fixture`, homepage
+selectors). Only the config differs: hosts, URLs, `listing_options` and the discovery methods (html, or html + rss).
+The calendar path also runs offline: `tests/test_calendar_discovery.py::test_calendar_pipeline_end_to_end_offline`.
 
 ## Registered sources (`config/sources.json`)
 
-- `iit_bombay_events`: live; `pipeline: aggregator`, `discovery: "html"` (the homepage events block), the scope block
-  (Section 2), the router block (Section 8), `max_discovered_items 40`, `max_detail_items 20`,
-  `request_delay_s 3.0`. `enabled: false` until Parth confirms the target (OPEN_QUESTIONS.md Q3).
+- `iit_bombay_events`: live; `pipeline: aggregator`, `discovery: "html"` on `/events` through the adapter hook
+  `calendar_entries` (`listing_options`: lecture-type title keywords, `+05:30`; repair R1, D33), the scope block
+  (Section 2), the router block (Section 8), `max_discovered_items 40`, `max_detail_items 20`, `request_delay_s 3.0`.
 - `local_aggregator_fixture`: the same adapter, `discovery: ["html", "rss"]`, served by
   `scripts/aggregator_fixture_site.py` on `127.0.0.1:8766`.

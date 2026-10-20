@@ -166,3 +166,8 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Why:** Q2: the homepage block (40 nearest events, mostly observances) gave 1 labelled speaker in 20 parsed pages live; the lecture-type calendar entries are where IITB labels speakers (offline: 12 of 13 parsed fixtures).
 - **Offline check:** the real saved calendar (2026-10-16) yields 122 lecture-type entries of 643; first is the one upcoming lecture (Saral AI), then Taming Turbulence (2026-09-03), … (`tests/test_calendar_discovery.py`).
 - **Reverse:** remove `listing_options` and point `discovery_urls.html` back at `https://www.iitb.ac.in/` (D11 selectors are still in the adapter).
+
+## D34 · R1 · Two name-parsing fixes found by the live calendar run
+- **Decision:** `parse_person` keeps a bracketed nickname followed by more name inside the name ("Matthew (Mat) Collins"), and ends the name before post-nominal letters (FRS, FREng, FRSC, FNA, FASc, FNAE, FNASc, FAAAS, PhD) with the rest kept verbatim as affiliation_raw ("Michael L. Klein" + "FRS Laura H. Carnell Professor of Science, …"). Tests use the live source text verbatim.
+- **Not re-run live:** the fix came after both runs; a third run (22 requests) would exceed the 60 budget (44 used). The fixed code was re-applied offline to the 16 stored source_text lines (2 differ, 14 identical; `10_aggregator/live_runs.md`). The next live run corrects the stored links.
+- **Reverse:** remove `_NICKNAME_RE` / `_POSTNOMINAL_RE` from `src/entities.py`.

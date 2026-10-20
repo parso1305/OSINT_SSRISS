@@ -13,8 +13,10 @@ Splitting a labelled value into people:
     comma at all (a bare list of names: "Ananya Rao and Ravi Sen"). Affiliations are full of these characters
     ("Social Reformer & Environmentalist; Padma Shri Awardee", "Founder and CEO of ...; Formerly with ...") and a
     comma never separates two people on its own ("Dr. X, Centre for Y" is one name plus an affiliation);
-  * within one person: leading honorific(s) -> honorific; the name runs to the first ',', ' — ', ' – ', ' (' or ';';
-    the rest is affiliation_raw (email addresses removed: an email is contact data, not an affiliation).
+  * within one person: leading honorific(s) -> honorific; the name runs to the first ',', ' — ', ' – ', ' (' or ';',
+    except a bracketed nickname followed by more name ("Matthew (Mat) Collins"), and it stops before post-nominal
+    letters ("Michael L. Klein FRS ..."); the rest is affiliation_raw (email addresses removed: an email is contact
+    data, not an affiliation).
 """
 
 import re
@@ -28,6 +30,12 @@ HONORIFIC_RE = re.compile(r"^((?:(?:Dr|Prof|Mr|Ms|Mrs|Shri|Smt)\.?\s+)+)", re.IG
 _STARTS_WITH_HONORIFIC = re.compile(r"^\s*(?:Dr|Prof|Mr|Ms|Mrs|Shri|Smt)\.?\s+[A-Z]", re.IGNORECASE)
 _PERSON_SPLIT_RE = re.compile(r"\s*(?:;|\n|\s+and\s+|\s*&\s*)\s*")
 _NAME_END_RE = re.compile(r"\s*(?:,|\s—\s|\s–\s|\s-\s|\s\(|;)\s*")
+# A parenthesised nickname INSIDE a name: "Matthew (Mat) Collins, Head of ..." (the bracket is followed by another
+# capitalised name word, not by a comma): it stays part of the name.
+_NICKNAME_RE = re.compile(r"^([^,;()—–]+?\s\([^()]{1,30}\)\s+[A-Z][^\s,;()]*(?:\s+[A-Z][^\s,;()]*)*?)(?=\s*(?:,|;|$|\s—|\s–))")
+# Post-nominal letters written straight after a name with no comma ("Michael L. Klein FRS Laura H. Carnell Professor
+# ..."): the name ends before them; they and the rest are affiliation_raw, verbatim.
+_POSTNOMINAL_RE = re.compile(r"\s(?=(?:FRS|FREng|FRSC|FNA|FASc|FNAE|FNASc|FAAAS|PhD|Ph\.D\.)(?![A-Za-z]))")
 _EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 _ORG_HEADS = r"(?:the\s+)?(?:Department|Dept\.?|Centre|Center|School|Institute|Laboratory|Lab|Society|Office|Cell|" \
              r"University|College|Foundation|Agency|Division|Group|Council|Ministry|Association|Club)\b"
@@ -148,8 +156,15 @@ def _split_keep_separators(value: str) -> list[tuple[str, str]]:
 
 def parse_person(text: str, role: str, source_text: str, profile_url: Optional[str] = None) -> Optional[PersonMention]:
     honorific, rest = split_honorific(text)
-    m = _NAME_END_RE.search(rest)
-    name, affiliation = (rest[:m.start()], rest[m.end():]) if m else (rest, "")
+    nick = _NICKNAME_RE.match(rest)
+    if nick:
+        name, affiliation = nick.group(1), rest[nick.end():].lstrip(" ,;—–")
+    else:
+        m = _NAME_END_RE.search(rest)
+        name, affiliation = (rest[:m.start()], rest[m.end():]) if m else (rest, "")
+    post = _POSTNOMINAL_RE.search(name)
+    if post:
+        name, affiliation = name[:post.start()], (name[post.end():] + (", " + affiliation if affiliation else ""))
     name = collapse(name).strip(" ,:;")   # periods kept: "Ananya R." and "A. Rao" are written that way
     affiliation = collapse(_EMAIL_RE.sub("", affiliation)).strip(" ,;—–-") or None
     if not name or not re.search(r"[A-Za-z]", name):
