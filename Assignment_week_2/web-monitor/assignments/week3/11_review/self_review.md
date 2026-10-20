@@ -1,164 +1,192 @@
 # Section 11: self-review of the IIT Bombay events aggregator
 
-**About the questions.** The brief for this run did not include the text of the 10 Section 11 review questions, so the
-10 below were derived from the Week 3 requirements (Sections 1–10). If the official list differs, swap the headings;
-the evidence below still applies (OPEN_QUESTIONS.md Q4). Evidence is given as `file::function`, a test name, or
-command output already pasted in the section folders.
+The 10 questions are the official ones from `assignments/week3/WEEK3_SPEC.md`, Section 11 (repair R4). Evidence is
+given as `file::function`, a test name, or output already pasted in the section folders. Question 5 (canonical item
+URLs) is Parth's focus area and gets the most depth.
 
 ---
 
-## 1. Does every live request go through the generic client, politely?
+## 1. Is the target genuinely high-yield?
 
 **Yes.**
-- `src/fetcher.py::Fetcher.get` is the only code that sends requests. `tests/test_architecture.py::test_only_fetcher_uses_requests_and_only_storage_uses_sqlite`
-  covers `src/*.py`, and `tests/test_week3_architecture.py::test_discovery_never_touches_the_network_or_storage`
-  covers `src/discovery/`.
-- Robots.txt is checked per origin (RFC 9309), with an explicit timeout (15 s for the target), the honest
-  User-Agent, and a FETCH line per request.
-- `request_delay_s: 3.0` gives ≥ 3 s per host. The live log shows detail fetches about 3 s apart
-  (`10_aggregator/live_runs.md`).
-- feedparser never fetches: `tests/test_discovery_feed_sitemap.py::test_feed_parser_rejects_url_or_path_input` and
-  `test_feed_parser_never_calls_feedparser_with_a_url`.
-- Live budget: 61 of 80 requests (`live_requests.md`), with no 403, 429 or robots.txt refusal.
+- **The surface.** It is the institute-wide `/events` calendar: 643 entries, 614 distinct URLs, back to 2014, about
+  6–10 new events a month. One response carries the whole list (`00_candidates/iit_bombay_aggregators.md`, C1).
+- **What discovery keeps.** Since repair R1 it keeps the 122 lecture-type entries (Institute Lectures, Colloquia,
+  Seminar/Talk), upcoming first (D33).
+- **Live yield, 2026-10-20.** One listing request gave 40 in-scope events; 20 detail pages gave **16 named speakers**
+  (`pct_with_speaker 80.0`) from several institutions and departments (`10_aggregator/live_runs.md`).
+- **The comparison.** The homepage block used before R1 gave 1 speaker in 20 pages. The department page from Week 2
+  (HSS) covers one department.
+- **Weak point.** Organizations: IITB event pages have no organizer field, and 0 of 20 live bodies label one
+  (`05_extraction/notes.md`, R1 evidence). The yield is in people, not organizations.
 
-## 2. Is every discovered URL canonical, and the same for the same item across methods? *(focus area: in depth)*
+## 2. Is scope clearly bounded?
 
-**Yes, with one documented open point (query-parameter order, D2/Q1).**
+**Yes.**
 
-**Single point of canonicalization.** `src/urls.py::resolve_item_url` is the only `urljoin` call in the code base
-(`tests/test_week3_architecture.py::test_urljoin_is_called_only_in_resolve_item_url`). Every discovery parser calls
-it through `src/discovery/record.py::make_record`. `DiscoveryRecord.__post_init__` **rejects** a URL that is not
-already canonical (`resolve_item_url(u, "") == u`), so no code path can produce a record with a raw href
-(`tests/test_discovery_record.py::test_post_init_validation`: `?utm_source=x` and `#main-content` are rejected as
-"not canonical").
+The rules (`src/scope.py::scope_decision`):
+- exact host `www.iitb.ac.in`, with no subdomains;
+- allowed prefixes kept with a trailing slash (`/events/` ≠ `/events-archive/`);
+- login and search prefixes excluded;
+- calendar, search and pager query keys excluded (`month`, `view`, `page`, `search_api_fulltext`, …).
+
+The caps:
+- `max_listing_pages 1`;
+- `max_discovered_items 40` (the over-cap URLs are kept as out of scope with their reason);
+- `max_detail_items 20`.
+
+Evidence:
+- **The 13 brief cases:** one test each in `tests/test_scope.py`, and `test_every_scope_cases_md_row_has_a_test`
+  ties them to `02_scope/scope_cases.md`.
+- **Live:** 122 URLs listed, 40 in scope, exactly 20 detail fetches per run (`live_runs.md`).
+- **Router:** PDFs and external links are never fetched (`tests/test_aggregator_e2e.py::test_requests_made_by_one_run`).
+
+## 3. Could pagination loop indefinitely?
+
+**No.**
+- **The aggregator does not paginate.** `discover()` fetches exactly the URLs listed in the config's `discovery_urls`
+  (one page for this source) and never follows next-links.
+- **Sitemap indexes:** at most 2 children are followed (`DEFAULT_MAX_CHILD_SITEMAPS`,
+  `tests/test_discovery_interface.py::test_sitemap_discovery`).
+- **Calendar navigation:** URLs like `?month=…` and `?view=…` are rejected by the excluded query keys, even under an
+  allowed prefix (`tests/test_scope.py`, case "calendar ?month= variant").
+- **Week 2 listing pipeline** (`src/pagination.py::collect_listing`, still used by HSS) stops on any of:
+  - `max_pages`;
+  - a visited URL (`cycle_detected`);
+  - another host (`domain_mismatch`);
+  - an empty page;
+  - repeated items;
+  - a failed fetch.
+
+  Tests: `tests/test_pagination.py::test_collect_listing_stop_condition_*`.
+
+## 4. Are feeds/sitemaps treated as discovery rather than complete truth?
+
+**Yes.**
+- **Shape.** A feed entry or sitemap `<loc>` becomes a `DiscoveryRecord`: URL, title, timestamp. It never becomes a
+  record.
+- **Path to a record.** A record exists only after the detail page is fetched, parsed and validated
+  (`src/aggregator.py::run_aggregator`). This is the 1A checkpoint in `01_discovery/findings.md`.
+- **lastmod is never trusted for change detection.** The one IITB-family sitemap has all 500 lastmods identical
+  (`2024-02-14T06:57:38`). Lastmod is kept only as a source timestamp, the lowest priority in the merge rule (D15).
+  Change detection uses the content hash.
+- **Feeds.** The target's real `/rss.xml` holds 0 events. It is not used for discovery, only as a parsing fixture.
+- **Raw values are kept.** Feed parsing keeps the raw timestamp string, and a date-only lastmod becomes `None` rather
+  than a guessed instant (`tests/test_discovery_feed_sitemap.py`).
+
+## 5. Are item URLs canonicalized consistently? *(focus area: in depth)*
+
+**Yes.**
+
+**One function.** `src/urls.py::resolve_item_url` is the only `urljoin` call in the code base
+(`tests/test_week3_architecture.py::test_urljoin_is_called_only_in_resolve_item_url`).
+
+**Every discovery path uses it**, including the R1 calendar hook:
+- the adapter returns raw hrefs;
+- `src/discovery/discover.py::_hook_items` builds every record with `make_record`, which calls `resolve_item_url`.
+
+**A non-canonical record cannot exist.** `DiscoveryRecord.__post_init__` rejects any `discovered_url` that is not
+already canonical (`tests/test_discovery_record.py::test_post_init_validation`).
 
 **What it normalizes, and why each rule is safe:**
 
-| Rule | Example (from tests) | Why it cannot merge two different items |
+| Rule | Example (from tests) | Why it never merges two different items |
 |---|---|---|
-| Resolve relative, protocol-relative and root-relative hrefs against the page | `/event/institute-lecture-taming-turbulence` and `event/international-conference-quantum-dynamics#main-content` on `https://www.iitb.ac.in/` | This is standard RFC 3986 resolution, exactly what a browser does. |
-| Lowercase scheme and host; drop `:80` / `:443` | `HTTPS://WWW.IITB.AC.IN:443/event/...` | DNS host names and default ports are case- and port-insensitive by definition. |
-| Keep path case and trailing slashes | `/Event/X` stays `/Event/X` | The server decides whether `/a/` and `/a` are the same resource. Week 2 showed real sites where they differ (`test_storage_ee_slash_and_no_slash_are_distinct_keys`). |
-| Drop the fragment | `#main-content`, `#register` | A fragment is never sent to the server, so it cannot select a different item. The one exception is route fragments (`#!/…`, `#/…`), kept because on client-routed pages they *are* the item (and `synthetic_item_url` relies on `#/item/<hash>`). |
-| Drop tracking and session params | `utm_*`, `fbclid`, `gclid`, `mc_cid`, `mc_eid`, `ref`, `sid`, `PHPSESSID`, `;jsessionid=` | They identify the click or the visitor, not the content (`tests/test_week3_canonical.py::test_tracking_fragment_case_and_port_variants_collapse`). |
-| Keep every other param (sorted by key) | `?page=2` survives | A semantic param can select a different resource. |
+| Resolve relative, protocol-relative and root-relative hrefs against the page | `/event/institute-lecture-taming-turbulence` and `event/international-conference-quantum-dynamics#main-content` | Standard RFC 3986 resolution, as a browser does |
+| Lowercase scheme and host; drop `:80` / `:443` | `HTTPS://WWW.IITB.AC.IN:443/event/...` | Host names and default ports are case- and port-insensitive by definition |
+| Keep path case and trailing slashes | `/Event/X` stays `/Event/X` | Only the server knows whether `/a/` and `/a` are one resource (Week 2: `test_storage_ee_slash_and_no_slash_are_distinct_keys`) |
+| Drop the fragment (except `#!/…`, `#/…` route fragments) | `#main-content`, `#register` | A fragment is never sent to the server |
+| Drop tracking and session params | `utm_*`, `fbclid`, `gclid`, `mc_cid`, `mc_eid`, `ref`, `sid`, `PHPSESSID`, `;jsessionid=` | They identify the click or the visitor, not the content (`tests/test_week3_canonical.py::test_tracking_fragment_case_and_port_variants_collapse`) |
+| **Sort** the remaining params by key | `?view=list&page=2` → `?page=2&view=list` | Two spellings of one query become one key. Decided in R2; tested in `test_remaining_params_are_sorted_into_one_canonical_order` |
 
-**Proof across methods (the 1B checkpoint).** In `tests/test_discovery_record.py::test_same_item_same_url_across_methods`,
-one event appears as:
-- a relative HTML href;
-- an RSS link with `utm_source=rss&utm_medium=feed#main-content`;
-- a sitemap `<loc>`.
+**The same item across methods** (the 1B checkpoint).
+- `tests/test_discovery_record.py::test_same_item_same_url_across_methods`: a relative HTML href, an RSS link with
+  `utm_source=rss&utm_medium=feed#main-content`, and a sitemap `<loc>` all give the identical `discovered_url`.
+- `tests/test_discovery_interface.py::test_duplicate_discovery_url`: they collapse into **one** candidate with
+  `discovery_methods == ("html", "rss", "sitemap")`.
+- Offline e2e: one `discovered_items` row with `["html", "rss"]` and one record.
 
-All three records carry the identical `discovered_url`, with identical spec keys.
-`tests/test_discovery_interface.py::test_duplicate_discovery_url` shows the collapse happening on the canonical URL:
-three raw hrefs become one candidate with `discovery_methods == ("html", "rss", "sitemap")`. Offline,
-`taming-turbulence` is found by html and rss and stored as **one** `discovered_items` row with
-`["html", "rss"]` and one record (`tests/test_aggregator_e2e.py::test_routing_and_detail_fetches`).
+**The same key in every table.** `records.item_url` (PK), `discovered_items.discovered_url` (PK) and the link tables'
+`item_url` (FK, D4). After two live runs, after two offline runs, and after the changed run, every duplicate check
+returns 0 rows (`live_runs.md`, `demo_offline.md`).
 
-**Proof across runs and tables.** The canonical URL is the key everywhere:
-- `records.item_url` (PK);
-- `discovered_items.discovered_url` (PK);
-- `item_people.item_url` / `item_organizations.item_url` (FK, D4).
+**Known limit.** Two different URLs for one event (a renamed slug, a redirect) stay two keys. The redirect shows in
+FETCH `final_url=`, but deciding that two URLs are one event is a matching problem, deliberately not guessed.
 
-The duplicate checks after two offline runs, after the changed run, and after two live runs all return 0 rows
-(`demo_offline.md`, `live_runs.md`). There is no second key to drift from it.
+## 6. Is a missing field handled without crashing?
 
-**Open point.** D2 asked to keep the remaining params in their original order. Two Week 2 tests require sorted
-order, so sorting is kept and the Week 3 test is xfail (`tests/test_week3_canonical.py::test_remaining_params_keep_their_original_order`).
-Sorting is the *safer* canonical form for dedup, because `?b=2&a=1` and `?a=1&b=2` become one key; the cost is that
-the stored URL may not be byte-identical to the one in the page. Parth decides (Q1).
+**Yes, at every level:**
+- **A missing optional field on a detail page** (no venue, no speaker, no end time) becomes `None` / `[]`.
+  `tests/test_entities_extraction.py::test_event_with_no_speaker` covers real pages; 4 of the 20 live pages have no
+  labelled speaker.
+- **A missing structure** (no `<article class="node--type-event">`) raises a clear `ValueError` inside the adapter.
+  The aggregator logs `DETAIL_FAILURE`, counts a parse failure and keeps going. The record is stored from listing
+  data, and stored values are kept by carry-forward (`09_metrics/failure_signatures.md`, scenario 4: 20 parse
+  failures, run still `success`).
+- **A calendar entry with no start** is skipped, never crashes. The offline calendar fixture contains one
+  (`tests/test_calendar_discovery.py::test_calendar_pipeline_end_to_end_offline` discovers 13, not 14).
+- **A missing calendar block** raises `fullCalendarView events not found` (`test_broken_calendar_is_a_clear_error`),
+  which fails the run with a summary instead of storing nothing silently.
+- **Missing feed and sitemap fields** (no date, no lastmod, no title) become `None` with the raw value kept
+  (`tests/test_discovery_feed_sitemap.py`).
+- **A required field that is really missing** (no `event_start` at all) fails validation: logged as
+  `VALIDATION_FAILURE`, counted in `FAILED`, not stored.
 
-**Known limit.** Canonicalization cannot know that two *different* URLs are the same event, for example after a
-site renames a slug and redirects. The redirect is visible in FETCH `final_url=`, but the record key stays the
-listing URL. That is a matching problem, deliberately not solved by guessing.
-
-## 3. Is the crawl scoped so it cannot wander or explode?
-
-**Yes.** `src/scope.py::scope_decision` and `tests/test_scope.py` (13 brief cases plus extras; the md table and the
-tests are checked against each other). It enforces:
-- exact host matching (`notiitb.ac.in` is rejected) and trailing-slash prefixes (`/events/` ≠ `/events-archive/`);
-- excluded login and search prefixes;
-- calendar-explosion query keys (`month`, `view`, …).
-
-Caps come from the config: 1 listing page, 40 discovered items, 20 detail fetches. Out-of-scope candidates are kept
-with their reason, never fetched (`02_scope/scope_cases.md`).
-
-## 4. Are fetch, parse, normalize and store separate?
+## 7. Are speakers/organizations supported by source text?
 
 **Yes.**
-- **Fetch:** only in `Fetcher`, driven from `src/discovery/discover.py::discover` and `src/aggregator.py::run_aggregator`.
-- **Parse:** `src/discovery/{html,feed,sitemap}.py` and `sources/iit_bombay_events.py::parse_event_detail`, which take
-  text and never fetch.
-- **Normalize:** `src/schema.py::assemble_record` and `validate_record`.
-- **Store:** only `src/storage.py` touches sqlite.
+- Labels come from the adapter, roles only from labels, and an affiliation only when written next to the name.
+  Prose such as "About the Speaker: Dr. …" or "the Department of Chemistry is organizing" is **not** extracted.
+- Every mention keeps `source_text`, the labelled line verbatim.
+  `tests/test_entities_extraction.py::test_every_entity_has_source_text_that_appears_verbatim_in_its_fixture` checks
+  all 20 fixtures, and `item_people.source_text` stores it, so every stored link points back to its line.
+- **Defects found live (R1).** The live run turned up two name shapes the parser got wrong: a bracketed nickname and
+  post-nominals without a comma. Because the source text was stored, both were found and the fixed code was checked
+  against the stored lines (D34).
 
-`tests/test_aggregator_e2e.py::test_adapter_stays_short_and_has_no_generic_code` keeps the adapter free of
-fetching, storage and logging setup.
+## 8. Are uncertain identities merged too aggressively?
 
-## 5. Is dedup correct within a run, across methods, and across runs?
+**No.**
+- Identity is exact `name_key` equality only (`src/entities.py::name_key`): NFKC, casefold, decorative punctuation
+  removed, honorific removed first. Initials are never expanded, and nothing is fuzzy-matched.
+- **Pairs that might be one person or organization go to `entity_alias_candidates` with `status = 'needs_review'`,
+  never merged:**
+  - `A. Rao` / `Ananya Rao`;
+  - `Ananya R.` / `Ananya Rao`;
+  - `Centre` / `Center for Policy Research`.
+- A bare acronym matches only on the page that defines it.
+- All 16 fixture pairs are decided and tested (`07_resolution/entity_matching_policy.md`,
+  `tests/test_matching_policy.py`).
+- **The one accepted collapse** is two different people with an identical full name (D5). Per-event affiliations stay
+  on the link rows, so it remains visible.
 
-**Yes.**
-- **Within a run and across methods:** dedup on the canonical URL, with the merge rule html > rss > atom > sitemap,
-  field by field (D15, `03_discovery_interface/notes.md`).
-- **Across runs:** `INSERT … ON CONFLICT(item_url)` upsert.
-- **Links:** composite keys plus `INSERT OR IGNORE`.
-- **Review pairs:** `(kind, a_id, b_id)`.
+## 9. Can you tell from logs whether zero new items means "nothing new" or "parser broken"?
 
-`tests/test_entity_storage.py::test_second_run_adds_zero_link_rows` and the duplicate checks in both demos.
-
-## 6. Are run states and change detection right?
-
-**Yes.**
-- The four states `new` / `changed` / `unchanged` / `not_seen_this_run` (D6, `04_incremental/run_state_notes.md`).
-- The hash covers content fields only; lists are sorted before hashing.
-- `fetched_at` and other volatile fields never mark a change: `tests/test_incremental.py::test_only_fetched_at_changed_is_unchanged`
-  and `test_reordered_speakers_and_organizations_are_unchanged`.
-- An absent item is kept and counted, never deleted (`test_four_states_and_absent_item_is_kept`).
-- Rediscovery is logged and counted by its hash (`test_absent_then_back_is_logged_rediscovered_and_counted_by_hash`).
-- Live run 2 is 40 of 40 unchanged.
-
-## 7. Are entities only what the page states?
-
-**Yes.**
-- Labels come from the adapter, roles only from labels, and an affiliation only when it is written next to the name.
-- `source_text` is verbatim, and every mention is checked against its fixture:
-  `tests/test_entities_extraction.py::test_every_entity_has_source_text_that_appears_verbatim_in_its_fixture`
-  (20 fixtures).
-- Unlabelled speaker-like text yields nothing (`test_unlabelled_speaker_like_text_extracts_nothing`, real pages).
-- There is no NLP or inference. `records.speakers` and `records.organizations` come from the same extraction.
-
-## 8. Can two different people or organizations be merged by mistake?
-
-**Only through an identical `name_key`, which is a documented, accepted identity claim (D5).** Everything else goes
-to review and is never merged:
-- `src/entities.py::person_match` and `org_match`;
-- `tests/test_matching_policy.py`: 10 person pairs and 6 organization pairs, plus
-  `test_review_pairs_are_queued_never_merged`, which shows that a reviewer's status survives re-runs.
-
-`name_key` never expands initials (`A. Rao` ≠ `Ananya Rao`). A bare acronym is an alias only on the page that
-defines it.
-
-## 9. Would a broken listing, a broken parser, or a dead site be noticed?
-
-**Yes, each with a distinct signature** (`09_metrics/failure_signatures.md`, real output):
+**Yes.** Every run prints a summary block and a `RUN_SUMMARY` log line, and stores the metrics on its `runs` row,
+failed runs included (`09_metrics/failure_signatures.md`, real output; `tests/test_metrics.py`):
 
 | Signature | Meaning |
 |---|---|
-| discovered 25 / parsed 20 / new 0 | Nothing new |
-| discovered 25 / parsed 0 / failed 20 | The detail parser broke |
-| discovered 0, HTTP 200, status failed | The listing selector broke |
-| HTTP 503, status failed | The site is down |
+| discovered N, parsed ~N, new 0, unchanged ~N, failed 0 | Nothing new. Live run 2: discovered 122, parsed 20, unchanged 40. |
+| parsed 0 with failed = details attempted | The detail parser broke |
+| discovered 0, HTTP 200, status failed | The listing broke |
+| HTTP non-200, status failed | The fetch failed |
 
-- `COVERAGE_DROP` catches a silently emptied field when the counts look normal.
-- `DISCOVER_EMPTY` catches a broken listing that a second discovery method would hide.
-- `tests/test_metrics.py` asserts all of these, including that a failed run's summary is stored on its `runs` row.
+Warnings for the quiet failures:
+- **`COVERAGE_DROP`:** a ≥ 30-point drop in speaker/date/org coverage, when the counts look normal.
+- **`DISCOVER_EMPTY`:** a page that answered 200 with 0 items, when another method still found some.
+- **`DISCOVERY_DROP`:** a sharp fall in items discovered against the previous successful run (R8).
 
-## 10. Is it reproducible offline, and is every generic change justified?
+## 10. Could this adapter run repeatedly without duplicating records?
 
 **Yes.**
-- `scripts/offline_pytest.py` runs both suites with outbound HTTP blocked. The final totals are in
-  `assignments/week3/WEEK3_STATUS.md`. A run with Wi-Fi actually off is still "Needs Parth".
-- The offline aggregator (`scripts/aggregator_fixture_site.py` plus `local_aggregator_fixture`) reproduces the whole
-  pipeline through the scheduler.
-- Generic changes G1–G9 are listed with reasons in README "Changes to the generic layer" and DECISIONS.md.
-- Existing tests were edited only for the Section 4 `existing` → `unchanged` rename (`git show b68ef39 -- tests`).
+- **Keys:** records are keyed and upserted on the canonical URL (`INSERT … ON CONFLICT(item_url)`). Entity links
+  have composite keys plus `INSERT OR IGNORE`, and parsed items have their links replaced, not appended. Review pairs
+  are keyed on `(kind, a_id, b_id)`, and `discovered_items` on its URL.
+- **Live:** two back-to-back runs on 2026-10-20 gave 40 new, then **40 unchanged**, 0 changed, 0 duplicate rows in any
+  table, and 0 new links in run 2.
+- **Offline:** after three runs, including a changed site, every duplicate check returns 0 rows
+  (`demo_offline.md`; `tests/test_entity_storage.py::test_second_run_adds_zero_link_rows`;
+  `tests/test_aggregator_e2e.py`).
+- **Change detection:** only content changes mark `changed`. `fetched_at` and other volatile fields never do
+  (`tests/test_incremental.py`).

@@ -148,7 +148,7 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 - **Found while testing:** the first version reported the first *successful* page's status (a 503 listing showed http_status=200 when the feed worked); fixed in `discover()`.
 - **Reverse:** `src/metrics.py` (COVERAGE_DROP_POINTS) and `src/discovery/discover.py`.
 
-## D30 · 11 · Review questions derived from the Week 3 requirements
+## D30 · 11 · Review questions derived from the Week 3 requirements — **SUPERSEDED (repair R4)**: the official questions from WEEK3_SPEC.md Section 11 are used
 - **Decision:** the 10 Section 11 questions were not in the brief; used 10 derived from Sections 1–10, logged as Q4. The TISS review template is left blank (the brief says not to review his code).
 - **Reverse:** replace the headings with the official list.
 
