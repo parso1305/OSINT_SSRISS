@@ -6,7 +6,10 @@ listing. Week 1 covers the basics: HTTP inspection, site recon, DOM mapping, fet
 builds a monitoring system. On a schedule, it fetches the listing politely (robots.txt, delays, timeouts, verified
 TLS), follows pagination and detail pages, and normalizes each event into a shared schema. It then validates and
 stores the events in SQLite, and flags which ones are new, unchanged or changed. Each site plugs in through a small
-adapter and a config entry. Every result below links to the test, log or file that proves it.
+adapter and a config entry. Week 3 adds a central aggregator on the same framework: IIT Bombay's institute-wide
+events calendar. It discovers lecture-type events, keeps the crawl inside scope rules, detects new, changed and
+unchanged items, and extracts speakers and organizations as linked entities only when the page labels them. Every
+result below links to the test, log or file that proves it.
 
 ## Start here
 
@@ -22,6 +25,7 @@ adapter and a config entry. Every result below links to the test, log or file th
 |---|---|---|---|
 | 1 | [`Assignment/`](Assignment) | Exercises: HTTP inspection, IIT Bombay recon, DOM selector map, fetch + parse, normalization + SQLite dedup | PASS as exercises, with KNOWN LIMITATIONS listed in [its README](Assignment/README.md) |
 | 2 | [`Assignment_week_2/web-monitor/`](Assignment_week_2/web-monitor) | The monitoring system: assignments 1 and 3–8, the audit and its fixes | 56 of 58 benchmark items PASS; 1 DEFERRED, 1 NOT STARTED |
+| 3 | [`Assignment_week_2/web-monitor/assignments/week3/`](Assignment_week_2/web-monitor/assignments/week3) (code in the same `web-monitor`) | Central aggregator: candidate matrix, feed/sitemap/HTML discovery, scope filter, incremental runs, entity extraction and storage, matching policy, content router, run metrics, the IITB events aggregator; spec index in [`week3/README.md`](Assignment_week_2/web-monitor/assignments/week3/README.md) | Built and tested on branch `week3-auto`; cross-review and merge pending ([`WEEK3_STATUS.md`](Assignment_week_2/web-monitor/assignments/week3/WEEK3_STATUS.md)) |
 | — | Assignment 9 | Template swap with a teammate's framework; scheduled next. | NOT STARTED |
 
 ## Headline results (Week 2)
@@ -34,13 +38,24 @@ adapter and a config entry. Every result below links to the test, log or file th
 | **Generalization**: a second IIT Bombay department (Mechanical Engineering, 20 events) and a structurally different site (Chennai Mathematical Institute: 134 stored, 1 correctly rejected) ran through the same pipeline with only an adapter + config | [`generalization_run.log`](Assignment_week_2/web-monitor/assignments/week2_audit/logs/after_fixes/generalization_run.log), [`schema_review.md` §(h)](Assignment_week_2/web-monitor/assignments/06_schema/schema_review.md) |
 | **Audit → fixes**: an independent audit found 1 critical and 6 major problems (uncommitted code, TLS silently disabled, empty listing recorded as success, unparseable dates erasing data, no retry after a failure, no `requirements.txt`, cross-source key). 6 are fixed, one commit each with a regression test; the cross-source key (M5) and two minor items are documented as known limitations | [`AUDIT_REPORT.md`](Assignment_week_2/web-monitor/assignments/week2_audit/AUDIT_REPORT.md), [`FIXES.md`](Assignment_week_2/web-monitor/assignments/week2_audit/FIXES.md) |
 
+## Headline results (Week 3)
+
+| Result | Evidence |
+|---|---|
+| **361 tests pass, 1 skipped** (main suite) and **43 pass, 3 xfailed** (Week 2 audit suite), both run with outbound HTTP blocked (`scripts/offline_pytest.py`) | [`WEEK3_STATUS.md`](Assignment_week_2/web-monitor/assignments/week3/WEEK3_STATUS.md), [`tests/`](Assignment_week_2/web-monitor/tests) |
+| **Offline end-to-end, through the Week 2 scheduler**: run 1 has 22 new; run 2 has 22 unchanged; 0 duplicate rows in records, entity links or discovered items; the changed site reports new 1 · changed 2 · not seen 2, with nothing deleted | [`demo_offline.md`](Assignment_week_2/web-monitor/assignments/week3/10_aggregator/demo_offline.md) |
+| **Live, against www.iitb.ac.in `/events`** (2026-10-20): 122 lecture-type entries found, 40 in scope, 20 detail pages; run 1 has 40 new, run 2 has 40 unchanged; **16 speakers extracted (`pct_with_speaker` 80 %)**; 0 duplicates; 44 polite requests | [`live_runs.md`](Assignment_week_2/web-monitor/assignments/week3/10_aggregator/live_runs.md) |
+| **Run metrics tell "nothing new" from "broken"**: real output for a broken listing, a broken detail parser, HTTP 503, a renamed label (`COVERAGE_DROP`) and a listing hidden behind a second method (`DISCOVER_EMPTY`, `DISCOVERY_DROP`) | [`failure_signatures.md`](Assignment_week_2/web-monitor/assignments/week3/09_metrics/failure_signatures.md) |
+| **Entities with provenance**: every person and organization links back to its verbatim source line; two documented queries run on the fixture DB; possible matches are queued for review, never merged | [`entity_schema.md`](Assignment_week_2/web-monitor/assignments/week3/06_entities/entity_schema.md), [`entity_matching_policy.md`](Assignment_week_2/web-monitor/assignments/week3/07_resolution/entity_matching_policy.md) |
+| **One canonical URL per item** across HTML, RSS and sitemap discovery and across runs (Parth's focus area) | [`self_review.md` Q5](Assignment_week_2/web-monitor/assignments/week3/11_review/self_review.md), `tests/test_discovery_record.py::test_same_item_same_url_across_methods` |
+
 ## Repository layout
 
 ```text
 OSINT_SSRISS/
 ├── README.md                        this page
 ├── Assignment/                      Week 1 exercises (01_http … 05_normalization)
-└── Assignment_week_2/web-monitor/   Week 2 system
+└── Assignment_week_2/web-monitor/   Week 2 system + Week 3 aggregator (assignments/week3/, src/discovery/, src/aggregator.py)
     ├── README.md  RESULTS.md        how it works / what it achieved
     ├── src/                         generic pipeline: fetcher, pagination, enrichment, schema, storage, runner, scheduler
     ├── sources/                     site adapters (IIT Bombay HSS)
