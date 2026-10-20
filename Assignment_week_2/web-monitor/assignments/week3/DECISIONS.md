@@ -10,6 +10,7 @@ D1–D6 were made by Parth before the run and are logged as given.
 - **Reverse:** change `listing_url`/`adapter` of the `iit_bombay_events` entry in `config/sources.json`.
 
 ## D2 · 1B, 2 · Canonical URLs (resolve_item_url)
+- **Update (repair R2, 2026-10-20): RESOLVED — sorted order kept.** Parth chose sorted query parameters. The xfail test was replaced by `tests/test_week3_canonical.py::test_remaining_params_are_sorted_into_one_canonical_order`, which asserts the sorted canonical form (`?view=list&page=2` and `?page=2&view=list` both become `?page=2&view=list`). Q1 closed.
 - **Decision (as given):** drop fragment, drop utm_*/fbclid/gclid/mc_cid/mc_eid, keep other params in original order, lowercase scheme and host, drop :80/:443 — only where existing tests stay green unchanged.
 - **Finding:** `src/urls.py` already does all of it except two points that existing tests encode:
   1. Remaining query params are **sorted** by key, not kept in original order (`tests/test_canonicalization.py::test_resolve_url_strip_tracking_params` expects `?category=talks&page=2` from `?page=2&...&category=talks`; `tests/test_url_resolution.py::test_strips_tracking_and_session_params_keeps_semantic_ones` expects `?a=1&b=2` from `?b=2&a=1`).

@@ -1,8 +1,7 @@
 """Week 3 D2 (focus area: canonical item URLs): what resolve_item_url() guarantees for discovered URLs.
 
-D2 asked for: drop the fragment, drop utm_*/fbclid/gclid/mc_cid/mc_eid, keep other params in their original
-order, lowercase scheme and host, drop :80/:443. src/urls.py already did all of it except the param order
-(Week 2 tests require sorted params), so that one test is xfail; see assignments/week3/DECISIONS.md D2.
+D2: drop the fragment, drop utm_*/fbclid/gclid/mc_cid/mc_eid, lowercase scheme and host, drop :80/:443, and keep the
+remaining params SORTED by key (decided in repair R2; assignments/week3/DECISIONS.md D2).
 """
 
 import pytest
@@ -39,9 +38,10 @@ def test_semantic_params_are_kept():
     assert resolve_item_url(ITEM + "?page=2&utm_source=x", "") == ITEM + "?page=2"
 
 
-@pytest.mark.xfail(strict=False, reason="D2: Week 2 tests (test_canonicalization.py::test_resolve_url_strip_tracking_params, "
-                   "test_url_resolution.py::test_strips_tracking_and_session_params_keeps_semantic_ones) require "
-                   "sorted query params; src/urls.py keeps sorting. See DECISIONS.md D2 / OPEN_QUESTIONS.md Q1.")
-def test_remaining_params_keep_their_original_order():
-    assert resolve_item_url("https://www.iitb.ac.in/events?view=list&page=2", "") == \
-        "https://www.iitb.ac.in/events?view=list&page=2"
+def test_remaining_params_are_sorted_into_one_canonical_order():
+    """D2 (decided in repair R2): remaining query params are sorted by key. Two spellings of the same query are one
+    item, so order can never split an item into two keys."""
+    canonical = "https://www.iitb.ac.in/events?page=2&view=list"
+    assert resolve_item_url("https://www.iitb.ac.in/events?view=list&page=2", "") == canonical
+    assert resolve_item_url("https://www.iitb.ac.in/events?page=2&view=list", "") == canonical
+    assert resolve_item_url("https://www.iitb.ac.in/events?view=list&utm_source=x&page=2#top", "") == canonical
