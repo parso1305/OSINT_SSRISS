@@ -12,6 +12,9 @@ source is logged as a WARNING even when the counts look normal (a renamed field 
   COVERAGE_DROP_POINTS = 30   warn when a % falls by >= 30 percentage points (e.g. with-speaker 80% -> 40%),
                               comparing only runs that parsed at least one item.
 
+A sharp fall in items_discovered (to half or less of the previous successful run, which found >= 10) is logged as
+WARNING DISCOVERY_DROP: a broken listing cannot hide behind another discovery method that still works (repair R8).
+
 CLI:  python -m src.metrics --last --db <path> [--source <name>]
 """
 
@@ -21,6 +24,8 @@ import sys
 from typing import Optional
 
 COVERAGE_DROP_POINTS = 30.0
+DISCOVERY_DROP_RATIO = 0.5      # warn when items_discovered falls to half or less of the previous successful run
+DISCOVERY_DROP_MIN_PREVIOUS = 10   # ... only when the previous run discovered at least this many (small counts jitter)
 BLOCK_FIELDS = (
     ("SOURCE", "source"), ("PAGES_FETCHED", "pages_fetched"), ("ITEMS_DISCOVERED", "items_discovered"),
     ("ITEMS_PARSED", "items_parsed"), ("NEW", "new"), ("CHANGED", "changed"), ("UNCHANGED", "unchanged"),
@@ -88,6 +93,22 @@ def coverage_warnings(summary: dict, previous: Optional[dict]) -> list[str]:
     return warnings
 
 
+def discovery_warnings(summary: dict, previous: Optional[dict]) -> list[str]:
+    """DISCOVERY_DROP when items_discovered fell to DISCOVERY_DROP_RATIO or less of the previous successful run of the
+    same source (which discovered at least DISCOVERY_DROP_MIN_PREVIOUS). Catches a broken listing that another
+    discovery method still partly covers: the run succeeds, but far fewer URLs were found (repair R8)."""
+    if not previous or summary.get("status") != "success":
+        return []
+    before, now = previous.get("items_discovered"), summary.get("items_discovered")
+    if before is None or now is None or before < DISCOVERY_DROP_MIN_PREVIOUS:
+        return []
+    if now <= before * DISCOVERY_DROP_RATIO:
+        return [f"DISCOVERY_DROP source={summary['source']} run_id={summary.get('run_id') or 'none'} "
+                f"metric=items_discovered previous={before} now={now} threshold_ratio={DISCOVERY_DROP_RATIO:g} "
+                f"previous_run_id={previous.get('run_id')}"]
+    return []
+
+
 def runs_row(summary: dict) -> dict:
     """The summary as storage.finish_run metrics (runs table column names)."""
     row = {k: summary.get(k) for k in ("http_status", "pages_fetched", "items_discovered", "items_parsed",
@@ -116,7 +137,7 @@ def emit(summary: dict, logger: logging.Logger, previous: Optional[dict] = None,
     out = stream or sys.stdout
     print(format_block(summary), file=out, flush=True)
     logger.log(logging.INFO if summary.get("status") == "success" else logging.ERROR, format_log_line(summary))
-    warnings = coverage_warnings(summary, previous)
+    warnings = coverage_warnings(summary, previous) + discovery_warnings(summary, previous)
     for warning in warnings:
         logger.warning(warning)
     return warnings

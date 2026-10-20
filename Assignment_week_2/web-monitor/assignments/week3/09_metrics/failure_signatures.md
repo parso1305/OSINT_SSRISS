@@ -68,7 +68,7 @@ Example: with-speaker 65 % → 5 % fires; 80 % → 51 % does not
 | **discovered 0 with HTTP 200**, status failed | **The listing selector broke, or the page really is empty.** The run fails (`EmptyListingError`, as in Week 2) and nothing is written. `DISCOVER_EMPTY` names the page. `allow_empty_listing: true` would accept a really empty page. | 5 |
 | **HTTP non-200** (or none), discovered 0, status failed | **The fetch failed.** `DISCOVER_FAILURE status=503`, then `FAILURE stage=fetch`. | 7 |
 | counts normal, but `COVERAGE_DROP` | **A field silently emptied.** Here a renamed `Speaker:` label means speakers vanish while pages still parse. Shows as `changed` too. | 3 |
-| a 2nd discovery method masks a broken listing | The feed still finds items, so the totals look plausible, but `DISCOVER_EMPTY method=html … status=200 found=0` is logged for the broken page. | 6 |
+| a 2nd discovery method masks a broken listing | The feed still finds items, so the totals look plausible, but `DISCOVER_EMPTY method=html … status=200 found=0` is logged for the broken page, and on a source with a previous successful run `DISCOVERY_DROP` (R8) fires too. | 6, 8 |
 
 ## Real output from the scenario runs
 
@@ -206,3 +206,27 @@ ORGANIZATIONS_EXTRACTED: 0
 2026-10-17 06:40:46 [ERROR] logger=web_monitor RUN_SUMMARY run_id=fc4777ed0a184225b7911a081505d883 source=local_aggregator_fixture status=failed http_status=503 pages_fetched=0 items_discovered=0 items_parsed=0 new=0 changed=0 unchanged=0 not_seen_this_run=0 failed=0 parse_failures=0 detail_failures=0 people_extracted=0 organizations_extracted=0 pct_with_date=none pct_with_speaker=none pct_with_org=none error="FetchError: HTTP 503 Service Unavailable for url: http://127.0.0.1:PORT/"
 2026-10-17 06:40:46 [ERROR] logger=web_monitor RUN_END run_id=fc4777ed0a184225b7911a081505d883 source=local_aggregator_fixture status=failed duration_ms=48 new=0 unchanged=0 changed=0 not_seen_this_run=0 failed=0 error="AggregatorRunError: every discovery page failed: HTTP 503 Service Unavailable for url: http://127.0.0.1:PORT/"
 ```
+
+## Discovery-drop warning (repair R8)
+
+`WARNING DISCOVERY_DROP` fires when `items_discovered` falls to **half or less** of the previous successful run of the
+same source. It only applies when that previous run discovered at least 10, because small counts jitter. It is the
+count-based companion of `COVERAGE_DROP`: a relative ratio here, absolute points there, since counts vary in size
+between sources.
+
+It catches a broken listing that another discovery method still partly covers. The run succeeds and nothing looks
+failed, but far fewer URLs were found.
+
+Scenario 8 runs on one DB: a healthy html + rss run (25 discovered), then the same source with the html listing
+broken, where the feed still finds 3. Output from 2026-10-20 (`tests/test_metrics.py::test_discovery_drop_warns_when_a_second_method_hides_a_broken_listing`):
+
+```
+2026-10-20 19:12:50 [WARNING] logger=web_monitor DISCOVER_EMPTY source_id=local_aggregator_fixture method=html url=http://127.0.0.1:PORT/ status=200 found=0 hint="selector miss or really empty page"
+STATUS: success
+ITEMS_DISCOVERED: 3
+2026-10-20 19:12:50 [INFO] logger=web_monitor RUN_SUMMARY run_id=95ee09bdadbb4620a821c55f83d679ae source=local_aggregator_fixture status=success http_status=200 pages_fetched=2 items_discovered=3 items_parsed=3 new=0 changed=0 unchanged=3 not_seen_this_run=19 failed=0 parse_failures=0 detail_failures=0 people_extracted=2 organizations_extracted=0 pct_with_date=100.0 pct_with_speaker=66.7 pct_with_org=0.0 error=""
+2026-10-20 19:12:50 [WARNING] logger=web_monitor DISCOVERY_DROP source=local_aggregator_fixture run_id=95ee09bdadbb4620a821c55f83d679ae metric=items_discovered previous=25 now=3 threshold_ratio=0.5 previous_run_id=566e34c6319e4db3b6c5ca862808f752
+```
+
+Threshold tests: 25 → 3 and 40 → 20 warn; 40 → 21 does not; a previous run of 9 never warns
+(`test_discovery_drop_threshold`).

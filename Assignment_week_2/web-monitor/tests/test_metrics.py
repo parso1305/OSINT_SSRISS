@@ -117,3 +117,27 @@ def test_coverage_threshold(before, now, warns):
     previous = {"items_parsed": 10, "pct_with_speaker": before, "run_id": "p"}
     current = {"items_parsed": 10, "pct_with_speaker": now, "source": "s"}
     assert bool(metrics.coverage_warnings(current, previous)) is warns
+
+
+# -- repair R8: a sharp fall in items_discovered is a WARNING even when the run succeeds ---------------------------
+
+def test_discovery_drop_warns_when_a_second_method_hides_a_broken_listing(tmp_path, port):
+    run(tmp_path, "masked", port)                                            # healthy: html + rss, 25 discovered
+    result, text = run(tmp_path, "masked", port, broken="listing")           # html broken, rss still finds 3
+    s = result["summary"]
+    assert s["status"] == "success" and s["items_discovered"] == 3
+    assert "DISCOVERY_DROP source=local_aggregator_fixture" in text and "previous=25 now=3 threshold_ratio=0.5" in text
+
+
+@pytest.mark.parametrize("before, now, warns", [(25, 3, True), (40, 20, True), (40, 21, False), (9, 0, False),
+                                                (None, 0, False)])
+def test_discovery_drop_threshold(before, now, warns):
+    previous = {"items_discovered": before, "run_id": "p"}
+    current = {"items_discovered": now, "source": "s", "status": "success"}
+    assert bool(metrics.discovery_warnings(current, previous)) is warns
+
+
+def test_no_discovery_drop_on_a_normal_second_run(tmp_path, port):
+    run(tmp_path, "steady", port)
+    _, text = run(tmp_path, "steady", port)
+    assert "DISCOVERY_DROP" not in text

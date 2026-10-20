@@ -176,3 +176,8 @@ not_seen_this_run = rows of this source with last_seen_at older than this run's 
 ## D35 · R3 · iit_bombay_events enabled
 - **Decision:** `"enabled": true` after R1 passed (both live runs succeeded, run 2 all unchanged, 0 duplicates). A plain `python -m src.scheduler --once` (Task Scheduler) now runs it when due: `interval_minutes 1440`, so at most one run a day, 22 requests each (robots.txt, /events, 20 details), 3 s apart.
 - **Reverse:** set `"enabled": false`.
+
+## D36 · R8 · DISCOVERY_DROP warning
+- **Decision:** `src/metrics.py::discovery_warnings` logs `WARNING DISCOVERY_DROP` when a successful run's items_discovered is ≤ 50 % of the previous successful run of the same source, provided that run discovered ≥ 10. Same place and style as COVERAGE_DROP (compared against the previous successful run, emitted with the summary); a ratio rather than points because counts differ in scale between sources.
+- **Why:** R8: a broken listing must not hide behind another discovery method that still works (DISCOVER_EMPTY names the page; DISCOVERY_DROP flags the run).
+- **Reverse:** remove `discovery_warnings` from `emit`.

@@ -25,7 +25,7 @@ config entry -> discovery (html / rss / atom / sitemap -> DiscoveryRecord, canon
      external_link / unknown) -> capped detail fetch -> router again (Content-Type) -> adapter.parse_event_detail
   -> assemble + validate -> entity mentions (people, organizations; labelled roles only)
   -> ONE transaction: records + entity links + review queue + discovered_items -> not_seen_this_run
-  -> run metrics (summary block, RUN_SUMMARY log line, runs-table columns, coverage-drop warning)
+  -> run metrics (summary block, RUN_SUMMARY log line, runs-table columns, coverage-drop and discovery-drop warnings)
 ```
 
 ## Setup
